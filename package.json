@@ -1,0 +1,10 @@
+{
+  "name": "sheeva",
+  "version": "0.1.0",
+  "description": "Multi-hand Automation Test Runner",
+  "author": {
+    "name": "Vitaliy Potapov",
+    "email": "noginsk@rambler.ru"
+  },
+  "license": "MIT"
+}
