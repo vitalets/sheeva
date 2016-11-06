@@ -9,7 +9,6 @@ const Queue = require('./queue');
 const Collector = require('./collector');
 const api = require('./api');
 
-
 module.exports = class Sheeva {
   /**
    * Constructor
@@ -21,7 +20,7 @@ module.exports = class Sheeva {
   constructor(config) {
     this._config = config;
     this._fileSuites = [];
-    this._collector = new Collector();
+    this.collector = new Collector();
   }
   run() {
     const context = this._config.context || global;
@@ -30,7 +29,7 @@ module.exports = class Sheeva {
     api.cleanup(context);
     const queues = this._fileSuites.map(suite => new Queue(suite));
     queues.forEach(queue => {
-      queue.onEvent = (event, data) => this._collector.update(event, data);
+      queue.onEvent = (event, data) => this.collector.update(event, data);
       queue.run()
     });
   }
@@ -39,7 +38,6 @@ module.exports = class Sheeva {
     // console.log('Run files:', this._files, this._config.files)
     this._files.forEach(file => {
       const suite = new Suite({
-        parent: null,
         name: file,
         fn: () => require(path.resolve(file))
       });

@@ -112,7 +112,7 @@ module.exports = class Queue {
       const suite = this.currentTest.parents[i];
       this.suiteStack.push(suite);
       this.emit(events.SUITE_START, {suite});
-      const error = executor.callArray(suite.before);
+      const error = this.executeHooksArray(suite, 'before');
       if (error) {
         return suite;
       }
@@ -129,7 +129,7 @@ module.exports = class Queue {
     for (let i = 0; i < this.suiteStack.length; i++) {
       const suite = this.suiteStack[i];
       this.beforeEachStack.push(suite);
-      const error = executor.callArray(suite.beforeEach);
+      const error = this.executeHooksArray(suite, 'beforeEach');
       if (error) {
         return suite;
       }
@@ -170,7 +170,7 @@ module.exports = class Queue {
     let errorSuite = null;
     for (let i = this.beforeEachStack.length - 1; i >= 0; i--) {
       const suite = this.beforeEachStack[i];
-      const error = executor.callArray(suite.afterEach);
+      const error = this.executeHooksArray(suite, 'afterEach');
       if (error) {
         errorSuite = suite;
       }
@@ -192,7 +192,7 @@ module.exports = class Queue {
     let errorSuite = null;
     for (let i = suites.length - 1; i >= 0; i--) {
       const suite = suites[i];
-      const error = executor.callArray(suite.after);
+      const error = this.executeHooksArray(suite, 'after');
       this.emit(events.SUITE_END, {suite, error});
       if (error) {
         errorSuite = suite;
@@ -201,12 +201,27 @@ module.exports = class Queue {
     return errorSuite;
   }
 
+  executeHooksArray(suite, type) {
+    const hooks = suite[type];
+    hooks.forEach((hook, index) => {
+      this.emit(events.HOOK_START, {suite, type, index});
+      try {
+        hook();
+        this.emit(events.HOOK_END, {suite, type, index});
+      } catch (error) {
+        this.emit(events.HOOK_END, {suite, type, index, error});
+        return error;
+      }
+    });
+  }
+
   emit(event, data) {
     if (this.onEvent) {
-      // move to next tick to do main things before
-      process.nextTick(() => {
-        this.onEvent.call(null, event, data);
-      });
+      // todo: move to next tick to do main things first
+      // process.nextTick(() => {
+      //   this.onEvent.call(null, event, data);
+      // });
+      this.onEvent.call(null, event, data);
     }
   }
   // endSuite(suite) {
