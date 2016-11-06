@@ -6,5 +6,17 @@
     "name": "Vitaliy Potapov",
     "email": "noginsk@rambler.ru"
   },
-  "license": "MIT"
+  "scripts": {
+    "start": "node ./examples/run",
+    "test": "node ./test/run",
+    "mocha": "mocha ./examples/mocha"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "glob": "^7.1.1"
+  },
+  "devDependencies": {
+    "mocha": "^3.1.2",
+    "unexpected": "^10.18.1"
+  }
 }
