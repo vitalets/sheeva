@@ -1,12 +1,12 @@
 /**
- * Queue - flat sequence of tests
+ * Queue - flat sequence of tests.
+ * During executioon pointer moves test by test in normal flow.
+ * In case of error in hook, pointer moves to end of suite.
  *
  * @type {Queue}
  */
 
-const utils = require('./utils');
-const executor = require('./executor');
-const events = require('./events');
+const events = require('../events');
 
 module.exports = class Queue {
   /**
@@ -20,7 +20,7 @@ module.exports = class Queue {
     this.currentIndex = -1;
     this.currentTest = null;
     this.nextTest = this.tests[0];
-    // stack of started suites
+    // stack of started suites (where before hook was called)
     this.suiteStack = [];
     // stack of called beforeEach
     this.beforeEachStack = [];
@@ -255,9 +255,26 @@ module.exports = class Queue {
    *
    * @returns {Suite}
    */
-   getCommonSuite() {
-     return utils.getCommonParent(this.currentTest, this.nextTest);
-   }
+  getCommonSuite() {
+    if (!this.currentTest || !this.nextTest) {
+      return null;
+    }
+
+    const maxLength = Math.max(
+      this.currentTest.parents.length,
+      this.nextTest.parents.length
+    );
+    for (let i = 0; i < maxLength; i++) {
+      const p1 = this.currentTest.parents[i];
+      const p2 = this.nextTest.parents[i];
+      if (p1 != p2) {
+        return this.currentTest.parents[i - 1];
+      }
+    }
+
+    // todo: warn
+    return this.currentTest.parent;
+  }
 };
 
 function flatten(suite) {

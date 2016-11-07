@@ -1,3 +1,7 @@
+/**
+ * Global API for tests
+ *
+ */
 
 const Suite = require('./suite');
 const Test = require('./test');

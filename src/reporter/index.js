@@ -2,19 +2,17 @@
  * Manages reporters and events
  */
 
-const builtIn = {
+const builtInReporters = {
   console: require('./console'),
   json: require('./json'),
 };
 
-module.exports = class Reporting {
+module.exports = class ProxyReporter {
   constructor(reportersConfig) {
-    reportersConfig = reportersConfig
-      ? (Array.isArray(reportersConfig) ? reportersConfig : [reportersConfig])
-      : ['console'];
+    reportersConfig = Array.isArray(reportersConfig) ? reportersConfig : [reportersConfig];
     this._reporters = reportersConfig.map(createReporter);
   }
-  getReporter(index) {
+  get(index) {
     return this._reporters[index];
   }
   onEvent(event, data) {
@@ -38,8 +36,8 @@ module.exports = class Reporting {
 
 function createReporter(Reporter) {
   if (typeof Reporter === 'string') {
-    if (builtIn.hasOwnProperty(Reporter)) {
-      Reporter = builtIn[Reporter];
+    if (builtInReporters.hasOwnProperty(Reporter)) {
+      Reporter = builtInReporters[Reporter];
     } else {
       // todo: require
       throw new Error(`Reporter not found: ${Reporter}`)

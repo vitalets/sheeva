@@ -12,8 +12,9 @@ module.exports = class ConsoleReporter {
   onEvent(event, data) {
     switch (event) {
       case events.START:
-        this.totalFiles = data.files.length;
-        console.log(`Running ${data.files.length} file(s) on ${data.envs.length} env(s)...`);
+        const {files, envs, config} = data;
+        this.totalFiles = files.length;
+        console.log(`Running ${files.length} file(s) on ${envs.length} env(s) with concurency=${config.concurency}`);
         break;
       case events.END:
         console.log(`End.`);
@@ -25,10 +26,10 @@ module.exports = class ConsoleReporter {
     switch (event) {
       case events.TEST_END:
         if (data && data.error) {
-          console.log(`FAILED: ${data.test.name}`);
+          console.log(`FAIL: ${data.test.name}`);
           processError(data);
         } else {
-          console.log(`PASSED: ${data.test.name}`)
+          console.log(`PASS: ${data.test.name}`)
         }
         return;
         break;
