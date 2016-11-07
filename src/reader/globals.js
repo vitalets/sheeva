@@ -5,21 +5,40 @@
 
 const Suite = require('./suite');
 const Test = require('./test');
-const Meta = require('./meta');
 
 let currentSuite = null;
-let meta = null;
+let options = {};
 
 exports.describe = function (name, fn) {
-  const suite = new Suite({meta, name, fn});
+  const suite = new Suite(Object.assign({name, fn}, options));
   currentSuite.addSuite(suite);
-  meta = null;
+  options = {};
+};
+
+exports.ddescribe = exports.describe.only = function (name, fn) {
+  options.only = true;
+  exports.describe(name, fn);
+};
+
+exports.xdescribe = exports.describe.skip = function (name, fn) {
+  options.skip = true;
+  exports.describe(name, fn);
 };
 
 exports.it = function (name, fn) {
-  const test = new Test({meta, name, fn});
+  const test = new Test(Object.assign({name, fn}, options));
   currentSuite.addTest(test);
-  meta = null;
+  options = {};
+};
+
+exports.iit = exports.it.only = function (name, fn) {
+  options.only = true;
+  exports.it(name, fn);
+};
+
+exports.xit = exports.it.skip = function (name, fn) {
+  options.skip = true;
+  exports.it(name, fn);
 };
 
 exports.before = function (fn) {
@@ -40,54 +59,25 @@ exports.afterEach = function (fn) {
 
 // meta
 
-exports.tags = function () {
+exports.$tags = function () {
 
 };
 
-exports.skip = function (fn) {
-
+exports.$skip = function (fn) {
+  options.skip = fn ? fn() : true;
 };
 
-exports.only = function () {
-
+exports.$only = function () {
+  options.only = true;
 };
 
-exports.runIf = function (fn) {
-
+exports.$if = function (fn) {
+  options.skip = !fn();
 };
 
-exports.serial = function () {
-
+exports.$serial = function () {
+  options.serial = true;
 };
-
-exports.expose = function (context) {
-  exposeOrCleanup(context, false);
-};
-
-exports.cleanup = function (context) {
-  exposeOrCleanup(context, true);
-};
-
-function exposeOrCleanup(context, cleanup) {
-  const excludes = ['expose', 'cleanup'];
-  Object.keys(exports)
-    .filter(key => typeof exports[key] === 'function' && excludes.indexOf(key) === -1)
-    .forEach(key => {
-      if (cleanup) {
-        delete context[key];
-      } else {
-        context[key] = exports[key];
-      }
-    })
-}
-
-//
-// function getMeta() {
-//   if (!currentMeta) {
-//     currentMeta = new Meta();
-//   }
-//   return currentMeta;
-// }
 
 Object.defineProperty(exports, 'currentSuite', {
   get: () => currentSuite,

@@ -1,0 +1,17 @@
+{
+  "env": {
+    "browser": true,
+    "webextensions": true,
+    "mocha": true
+  },
+
+  "globals": {
+    "$only": false,
+    "$skip": false,
+    "$if": false,
+    "$serial": false,
+    "tags": false,
+    "fn": false,
+    "expect": false
+  }
+}

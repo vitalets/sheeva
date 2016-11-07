@@ -11,15 +11,17 @@ module.exports = class Test {
    * @param {Object} options
    * @param {String} options.name
    * @param {Function} options.fn
-   * @param {Object} options.meta
+   * @param {Boolean} options.only
+   * @param {Boolean} options.skip
    */
   constructor(options) {
     // assert options
     this.name = options.name;
     this.fn = options.fn;
-    this.meta = options.meta;
-    this.parents = null;
-    this.parent = null;
+    this.only = options.only;
+    this.skip = options.skip;
+    this.parents = [];
+    this.parent = undefined;
   }
   setParents(parents) {
     this.parents = parents;

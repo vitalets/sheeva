@@ -1,20 +1,24 @@
 
-global.expect = require('unexpected');
-global.Sheeva = require('../src');
+const path = require('path');
+const expect = require('unexpected');
+const Sheeva = require('../src');
+
+global.expect = expect;
+global.Sheeva = Sheeva;
 global.fn = require('./calls');
-global.run = function (files) {
+global.run = function (file) {
   const sheeva = new Sheeva({
     reporters: require('./reporter'),
-    files
+    files: file
   });
+  const absPath = path.resolve(file);
+  delete require.cache[absPath];
   sheeva.run();
   return sheeva.getReporter(0).log;
 };
 
 const config = {
-  //files: './test/specs/*.js'
-  //files: './test/specs/normal-flow.test.js'
-  files: './test/specs/error-flow-it.test.js'
+  files: './test/specs/*.js'
 };
 new Sheeva(config).run();
 

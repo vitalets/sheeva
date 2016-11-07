@@ -11,14 +11,19 @@ module.exports = class Suite {
    * @param {Object} options
    * @param {String} options.name
    * @param {Function} options.fn
-   * @param {Meta} options.meta
+   * @param {Boolean} [options.only=false]
+   * @param {Boolean} [options.skip=false]
+   * @param {Boolean} [options.serial=false]
    */
   constructor(options) {
     this.name = options.name;
     this.fn = options.fn;
-    this.meta = options.meta;
+    this.only = options.only;
+    this.skip = options.skip;
+    this.serial = options.serial;
     this.parents = [];
     this.parent = undefined;
+    this.hasOnly = false;
     // hooks
     this.before = [];
     this.beforeEach = [];
@@ -28,12 +33,10 @@ module.exports = class Suite {
     this.suites = [];
   }
   addSuite(suite) {
-    this.suites.push(suite);
-    suite.setParents(this.parents.concat([this]));
+    this._addItem('suites', suite);
   }
   addTest(test) {
-    this.tests.push(test);
-    test.setParents(this.parents.concat([this]));
+    this._addItem('tests', test);
   }
   addHook(type, fn) {
     this[type].push(fn);
@@ -44,5 +47,16 @@ module.exports = class Suite {
   }
   fill() {
     this.fn();
+    if (this.hasOnly) {
+      this.parents.forEach(parent => parent.hasOnly = true);
+    }
   }
+  _addItem(type, item) {
+    if (item.only) {
+      this.hasOnly = true;
+    }
+    this[type].push(item);
+    item.setParents(this.parents.concat([this]));
+  }
+
 };

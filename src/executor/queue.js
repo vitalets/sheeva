@@ -208,14 +208,14 @@ module.exports = class Queue {
   }
 
   /**
-   * Executes all `after` hook until stopSuite reached
+   * Executes all `after` hook until stopSuite reached (not including stopSuite!)
    *
    * @param {Suite} stopSuite
    * @returns {*}
    */
   executeAfter(stopSuite) {
     const index = this.suiteStack.findIndex(suite => suite === stopSuite);
-    const tailCount = this.suiteStack.length - index + 1;
+    const tailCount = this.suiteStack.length - (index + 1);
     const suites = this.suiteStack.splice(-tailCount);
     for (let i = suites.length - 1; i >= 0; i--) {
       const suite = suites[i];
@@ -278,9 +278,14 @@ module.exports = class Queue {
 };
 
 function flatten(suite) {
-  const subSuites = suite.suites.reduce((res, item) => res.concat(flatten(item)), []);
+  const filterFn = suite.hasOnly
+    ? item => item.hasOnly || item.only
+    : () => true;
+  const subSuites = suite.suites
+    .filter(filterFn)
+    .reduce((res, item) => res.concat(flatten(item)), []);
   return []
-    .concat(suite.tests)
+    .concat(suite.tests.filter(filterFn))
     .concat(subSuites)
 }
 

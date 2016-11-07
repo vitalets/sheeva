@@ -9,13 +9,14 @@
   "scripts": {
     "start": "node ./examples/run",
     "test": "node ./test/run",
-    "mocha": "mocha ./examples/mocha"
+    "mocha": "node ./examples/mocha"
   },
   "license": "MIT",
   "dependencies": {
     "glob": "^7.1.1"
   },
   "devDependencies": {
+    "eslint": "^3.9.1",
     "mocha": "^3.1.2",
     "unexpected": "^10.18.1"
   }

@@ -42,14 +42,14 @@ describe('suite 1', function () {
     //throw new Error('abc')
   });
 
-  it('test 1', function() {
-    console.log('test 1');
-    //throw new Error('abc')
-  });
-
-  it('test 1.1', function() {
-    console.log('test 1.1');
-  });
+  // it('test 1', function() {
+  //   console.log('test 1');
+  //   //throw new Error('abc')
+  // });
+  //
+  // it('test 1.1', function() {
+  //   console.log('test 1.1');
+  // });
 
   describe('suite 2', function () {
     afterEach(function () {
