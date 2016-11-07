@@ -14,7 +14,7 @@ global.run = function (files) {
 const config = {
   //files: './test/specs/*.js'
   //files: './test/specs/normal-flow.test.js'
-  //files: './test/specs/error-flow.test.js'
+  files: './test/specs/error-flow-it.test.js'
 };
 new Sheeva(config).run();
 

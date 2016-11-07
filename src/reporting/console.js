@@ -22,26 +22,17 @@ module.exports = class ConsoleReporter {
     processError(data);
   }
   onSessionEvent(event, data) {
-    // switch (event) {
-    //   case events.SUITE_START:
-    //     this.log.push(`${event} ${suiteName}`);
-    //     break;
-    //   case events.SUITE_END:
-    //     this.log.push(`${event} ${suiteName}${errMessage}`);
-    //     break;
-    //   case events.HOOK_START:
-    //     this.log.push(`${event} ${suiteName} ${data.type} ${data.index}`);
-    //     break;
-    //   case events.HOOK_END:
-    //     this.log.push(`${event} ${suiteName} ${data.type} ${data.index}${errMessage}`);
-    //     break;
-    //   case events.TEST_START:
-    //     this.log.push(`${event} ${data.test.name}`);
-    //     break;
-    //   case events.TEST_END:
-    //     this.log.push(`${event} ${data.test.name}${errMessage}`);
-    //     break;
-    // }
+    switch (event) {
+      case events.TEST_END:
+        if (data && data.error) {
+          console.log(`FAILED: ${data.test.name}`);
+          processError(data);
+        } else {
+          console.log(`PASSED: ${data.test.name}`)
+        }
+        return;
+        break;
+    }
     processError(data);
   }
 };

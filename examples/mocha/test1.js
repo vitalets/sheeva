@@ -14,11 +14,12 @@ describe('suite 1', function () {
 
   beforeEach(function () {
     console.log(`beforeEach`, i)
-    if (i <= 1) {
-      i++;
-    } else {
-      throw new Error('abc')
-    }
+    //throw new Error('abc');
+    // if (i <= 1) {
+    //   i++;
+    // } else {
+    //   throw new Error('abc')
+    // }
   });
 
   afterEach(function () {
