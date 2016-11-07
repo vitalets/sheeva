@@ -1,15 +1,14 @@
 /**
- * Collects events from several sessions
+ * Reporter that just put events into log
  */
 
-const events = require('./events');
+const events = require('../src/events');
 
-module.exports = class Collector {
+module.exports = class LogReporter {
   constructor() {
-    this.suites = new Map();
     this.log = [];
   }
-  update(event, data) {
+  onSessionEvent(event, data) {
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
     const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
     switch (event) {
@@ -31,9 +30,6 @@ module.exports = class Collector {
       case events.TEST_END:
         this.log.push(`${event} ${data.test.name}${errMessage}`);
         break;
-    }
-    if (data && data.error) {
-      console.log(data.error.message);
     }
   }
 };

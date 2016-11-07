@@ -15,9 +15,8 @@ describe('error flow', () => {
 
   it('should run all hooks in case of test error', () => {
     fn.once('test 1', error);
-    const sheeva = new Sheeva({files: './test/data/it-hooks.js'});
-    sheeva.run();
-    expect(sheeva.collector.log, 'to equal', [
+    const report = run('./test/data/it-hooks.js');
+    expect(report, 'to equal', [
       'SUITE_START root',
       'HOOK_START root before 0',
       'HOOK_END root before 0',
@@ -51,20 +50,19 @@ describe('error flow', () => {
     ]);
   });
 
-  it('should run skip suite in case of before error', () => {
-    fn.once('before 1', error);
-    const sheeva = new Sheeva({files: './test/data/it-hooks.js'});
-    sheeva.run();
-    expect(sheeva.collector.log, 'to equal', [
-      'SUITE_START root',
-      'HOOK_START root before 0',
-      'HOOK_END root before 0 err',
-      'HOOK_START root after 0',
-      'HOOK_END root after 0',
-      'HOOK_START root after 1',
-      'HOOK_END root after 1',
-      'SUITE_END root'
-    ]);
-  });
+  // it('should run skip suite in case of before error', () => {
+  //   fn.once('before 1', error);
+  //   const report = run('./test/data/it-hooks.js');
+  //   expect(report, 'to equal', [
+  //     'SUITE_START root',
+  //     'HOOK_START root before 0',
+  //     'HOOK_END root before 0 err',
+  //     'HOOK_START root after 0',
+  //     'HOOK_END root after 0',
+  //     'HOOK_START root after 1',
+  //     'HOOK_END root after 1',
+  //     'SUITE_END root'
+  //   ]);
+  // });
 
 });

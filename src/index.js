@@ -6,8 +6,9 @@ const path = require('path');
 const glob = require('glob');
 const Suite = require('./suite');
 const Queue = require('./queue');
-const Collector = require('./collector');
 const api = require('./api');
+const events = require('./events');
+const Reporting = require('./reporting');
 
 module.exports = class Sheeva {
   /**
@@ -15,25 +16,30 @@ module.exports = class Sheeva {
    *
    * @param {Object} config
    * @param {String} config.files
-   * @param {String} config.reporter
+   * @param {Array<String|Object>} [config.reporters='console']
    */
   constructor(config) {
     this._config = config;
     this._fileSuites = [];
-    this.collector = new Collector();
   }
   run() {
-    const context = this._config.context || global;
-    api.expose(context);
-    this.readFiles();
-    api.cleanup(context);
+    this._envs = this._config.createEnvs ? this._config.createEnvs() : ['defaultEnv'];
+    this._readFiles();
+    this._reporting = new Reporting(this._config.reporters);
+    this._emitStart();
     const queues = this._fileSuites.map(suite => new Queue(suite));
     queues.forEach(queue => {
-      queue.onEvent = (event, data) => this.collector.update(event, data);
+      queue.onEvent = (event, data) => this._reporting.onSessionEvent(event, data);
       queue.run()
     });
+    this._emitEnd();
   }
-  readFiles() {
+  getReporter(index) {
+    return this._reporting.getReporter(index);
+  }
+  _readFiles() {
+    this._context = this._config.context || global;
+    api.expose(this._context);
     this._files = glob.sync(this._config.files);
     // console.log('Run files:', this._files, this._config.files)
     this._files.forEach(file => {
@@ -44,6 +50,17 @@ module.exports = class Sheeva {
       fillSuite(suite);
       this._fileSuites.push(suite);
     });
+    api.cleanup(this._context);
+  }
+  _emitStart() {
+    const data = {
+      envs: this._envs,
+      files: this._files
+    };
+    this._reporting.onEvent(events.START, data);
+  }
+  _emitEnd() {
+    this._reporting.onEvent(events.END);
   }
 };
 
@@ -51,19 +68,4 @@ function fillSuite(suite) {
   api.currentSuite = suite;
   suite.fill();
   suite.suites.forEach(fillSuite);
-}
-
-function toStr(suites, level = 0) {
-  return `== LEVEL: ${level} ==` + suites.map(s => {
-    return `
-SUITE: ${s._options.name}
-    before(${s._before.length})
-    beforeEach(${s._beforeEach.length})
-    after(${s._after.length})
-    afterEach(${s._afterEach.length})
-    it(${s._tests.length})
-    suites(${s._suites.length})
-    ${s._suites.length ? toStr(s._suites, level + 1) : ''}
-`;
-  }).join('\n')
 }

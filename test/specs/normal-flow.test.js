@@ -6,9 +6,8 @@ describe('normal flow', () => {
   });
 
   it('should run it without describe', () => {
-    const sheeva = new Sheeva({files: './test/data/it.js'});
-    sheeva.run();
-    expect(sheeva.collector.log, 'to equal', [
+    const report = run('./test/data/it.js');
+    expect(report, 'to equal', [
       'SUITE_START root',
       'TEST_START test 1',
       'TEST_END test 1',
@@ -19,9 +18,8 @@ describe('normal flow', () => {
   });
 
   it('should run it and all hooks within describe', () => {
-    const sheeva = new Sheeva({files: './test/data/it-hooks.js'});
-    sheeva.run();
-    expect(sheeva.collector.log, 'to equal', [
+    const report = run('./test/data/it-hooks.js');
+    expect(report, 'to equal', [
       'SUITE_START root',
       'HOOK_START root before 0',
       'HOOK_END root before 0',
@@ -56,9 +54,8 @@ describe('normal flow', () => {
   });
 
   it('should run it with describe', () => {
-    const sheeva = new Sheeva({files: './test/data/describe-it.js'});
-    sheeva.run();
-    expect(sheeva.collector.log, 'to equal', [
+    const report = run('./test/data/describe-it.js');
+    expect(report, 'to equal', [
       'SUITE_START root',
       'SUITE_START suite',
       'TEST_START test 1',
@@ -71,9 +68,8 @@ describe('normal flow', () => {
   });
 
   it('should run it and all hooks within describe', () => {
-    const sheeva = new Sheeva({files: './test/data/describe-it-hooks.js'});
-    sheeva.run();
-    expect(sheeva.collector.log, 'to equal', [
+    const report = run('./test/data/describe-it-hooks.js');
+    expect(report, 'to equal', [
       'SUITE_START root',
       'SUITE_START suite',
       'HOOK_START suite before 0',

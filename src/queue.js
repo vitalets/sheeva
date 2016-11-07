@@ -24,11 +24,11 @@ module.exports = class Queue {
     this.suiteStack = [];
     // stack of called beforeEach
     this.beforeEachStack = [];
-    this.onEvent = null;
+    this.onEvent = () => {};
   }
 
   run() {
-    this.emit(events.QUEUE_START);
+    this.onEvent(events.QUEUE_START);
     this.next();
   }
 
@@ -46,7 +46,7 @@ module.exports = class Queue {
       this.executeTest();
       this.next();
     } else {
-      this.emit(events.QUEUE_END, this.suite);
+      this.onEvent(events.QUEUE_END, this.suite);
     }
   }
 
@@ -111,7 +111,7 @@ module.exports = class Queue {
     for (let i = lastSuiteIndex + 1; i < this.currentTest.parents.length; i++) {
       const suite = this.currentTest.parents[i];
       this.suiteStack.push(suite);
-      this.emit(events.SUITE_START, {suite});
+      this.onEvent(events.SUITE_START, {suite});
       const error = this.executeHooksArray(suite, 'before');
       if (error) {
         return suite;
@@ -148,12 +148,12 @@ module.exports = class Queue {
     const bErrorSuite = this.executeBeforeEach();
     const test = this.currentTest;
     if (!bErrorSuite) {
-      this.emit(events.TEST_START, {test});
+      this.onEvent(events.TEST_START, {test});
       try {
         this.currentTest.fn();
-        this.emit(events.TEST_END, {test});
+        this.onEvent(events.TEST_END, {test});
       } catch (error) {
-        this.emit(events.TEST_END, {test, error});
+        this.onEvent(events.TEST_END, {test, error});
       }
     }
     const aErrorSuite = this.executeAfterEach();
@@ -193,7 +193,7 @@ module.exports = class Queue {
     for (let i = suites.length - 1; i >= 0; i--) {
       const suite = suites[i];
       const error = this.executeHooksArray(suite, 'after');
-      this.emit(events.SUITE_END, {suite, error});
+      this.onEvent(events.SUITE_END, {suite, error});
       if (error) {
         errorSuite = suite;
       }
@@ -204,26 +204,17 @@ module.exports = class Queue {
   executeHooksArray(suite, type) {
     const hooks = suite[type];
     hooks.forEach((hook, index) => {
-      this.emit(events.HOOK_START, {suite, type, index});
+      this.onEvent(events.HOOK_START, {suite, type, index});
       try {
         hook();
-        this.emit(events.HOOK_END, {suite, type, index});
+        this.onEvent(events.HOOK_END, {suite, type, index});
       } catch (error) {
-        this.emit(events.HOOK_END, {suite, type, index, error});
+        this.onEvent(events.HOOK_END, {suite, type, index, error});
         return error;
       }
     });
   }
 
-  emit(event, data) {
-    if (this.onEvent) {
-      // todo: move to next tick to do main things first
-      // process.nextTick(() => {
-      //   this.onEvent.call(null, event, data);
-      // });
-      this.onEvent.call(null, event, data);
-    }
-  }
   // endSuite(suite) {
   //   // move to last test in suite
   //   // common parent
