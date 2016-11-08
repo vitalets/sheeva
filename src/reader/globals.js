@@ -16,12 +16,12 @@ exports.describe = function (name, fn) {
 };
 
 exports.ddescribe = exports.describe.only = function (name, fn) {
-  options.only = true;
+  exports.$only();
   exports.describe(name, fn);
 };
 
 exports.xdescribe = exports.describe.skip = function (name, fn) {
-  options.skip = true;
+  exports.$skip();
   exports.describe(name, fn);
 };
 
@@ -32,12 +32,12 @@ exports.it = function (name, fn) {
 };
 
 exports.iit = exports.it.only = function (name, fn) {
-  options.only = true;
+  exports.$only();
   exports.it(name, fn);
 };
 
 exports.xit = exports.it.skip = function (name, fn) {
-  options.skip = true;
+  exports.$skip();
   exports.it(name, fn);
 };
 
