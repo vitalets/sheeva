@@ -28,7 +28,12 @@ module.exports = class ConsoleReporter {
     switch (event) {
       case events.TEST_END: {
         if (data && data.error) {
-          console.log(`FAIL: [${data.test.parent.name}] ${data.test.name}`);
+          const msg = ['FAIL:']
+            .concat(data.test.parents.map(suite => suite.name))
+            .concat([data.test.name])
+            .map((item, i) => ' '.repeat(i * 2) + item)
+            .join('\n');
+          console.log(msg);
           processError(data);
         } else {
           console.log(`PASS: ${data.test.name}`)
