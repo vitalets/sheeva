@@ -5,45 +5,52 @@
 const path = require('path');
 const glob = require('glob');
 const Suite = require('./suite');
-const globals = require('./globals');
+const api = require('./api');
+const builder = require('./builder');
+const meta = require('./meta');
 
 module.exports = class Reader {
-  constructor(context) {
-    this._context = context;
+  /**
+   * Constructor
+   *
+   * @param {Object} options
+   * @param {Array} options.envs
+   * @param {Array} [options.tags]
+   */
+  constructor(options) {
+    this._envs = options.envs;
+    this._envSuites = new Map();
+    this._envs.forEach(env => this._envSuites.set(env, []));
+    meta.setTags(options.tags);
   }
-  read(pattern) {
-    exposeGlobals(this._context);
+  read(context, pattern) {
+    exposeApi(context);
     this._files = glob.sync(pattern);
-    this._suites = [];
-    for (let i = 0; i < this._files.length; i++) {
-      const file = this._files[i];
-      const suite = new Suite({
-        name: file,
-        fn: () => require(path.resolve(file))
-      });
-      fillSuite(suite);
-      this._suites.push(suite);
-    }
-    cleanupGlobals(this._context);
+    this._files.forEach(file => {
+      const suites = this._envs.map(env => new Suite({name: file, env}));
+      const fn = () => require(path.resolve(file));
+      builder.fillSuites(suites, fn);
+      suites.forEach(this._addSuiteToEnv, this);
+    });
+    cleanupApi(context);
+  }
+  _addSuiteToEnv(suite) {
+    const envSuites = this._envSuites.get(suite.env);
+    envSuites.push(suite);
+    this._envSuites.set(suite.env, envSuites);
   }
   get files() {
     return this._files;
   }
-  get suites() {
-    return this._suites;
+  get envSuites() {
+    return this._envSuites;
   }
 };
 
-function fillSuite(suite) {
-  globals.currentSuite = suite;
-  suite.fill();
-  suite.suites.forEach(fillSuite);
+function exposeApi(context) {
+  Object.keys(api).forEach(key => context[key] = api[key]);
 }
 
-function exposeGlobals(context) {
-  Object.keys(globals).forEach(key => context[key] = globals[key]);
-}
-
-function cleanupGlobals(context) {
-  Object.keys(globals).forEach(key => delete context[key]);
+function cleanupApi(context) {
+  Object.keys(api).forEach(key => delete context[key]);
 }

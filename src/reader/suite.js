@@ -10,14 +10,14 @@ module.exports = class Suite {
    *
    * @param {Object} options
    * @param {String} options.name
-   * @param {Function} options.fn
+   * @param {Object} options.env
    * @param {Boolean} [options.only=false]
    * @param {Boolean} [options.skip=false]
    * @param {Boolean} [options.serial=false]
    */
   constructor(options) {
     this.name = options.name;
-    this.fn = options.fn;
+    this.env = options.env;
     this.only = options.only;
     this.skip = options.skip;
     this.serial = options.serial;
@@ -45,18 +45,17 @@ module.exports = class Suite {
     this.parents = parents;
     this.parent = parents[parents.length - 1];
   }
-  fill() {
-    this.fn();
-    if (this.hasOnly) {
-      this.parents.forEach(parent => parent.hasOnly = true);
-    }
-  }
   _addItem(type, item) {
-    if (item.only) {
-      this.hasOnly = true;
+    if (item.only && !this.hasOnly) {
+      this._setHasOnly();
     }
     this[type].push(item);
     item.setParents(this.parents.concat([this]));
   }
-
+  _setHasOnly() {
+    this.hasOnly = true;
+    if (this.parent && !this.parent.hasOnly) {
+      this.parents.forEach(parent => parent.hasOnly = true);
+    }
+  }
 };

@@ -8,7 +8,17 @@ module.exports = class Executor {
   constructor(reporter) {
     this._reporter = reporter;
   }
-  run(suites) {
+
+  /**
+   * Run
+   *
+   * @param {Map} envSuites
+   */
+  run(envSuites) {
+    envSuites.forEach(this._runEnv, this);
+  }
+
+  _runEnv(suites, env) {
     const onlySuites = suites.filter(suite => suite.hasOnly);
     const suitesToRun = onlySuites.length ? onlySuites : suites;
     const queues = suitesToRun.map(suite => new Queue(suite));

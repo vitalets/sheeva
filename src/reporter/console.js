@@ -14,7 +14,7 @@ module.exports = class ConsoleReporter {
       case events.START: {
         const {files, envs, config} = data;
         this.totalFiles = files.length;
-        console.log(`Running ${files.length} file(s) on ${envs.length} env(s) with concurency = ${config.concurency}`);
+        console.log(`Running ${files.length} file(s) on ${envs.length} env(s) with concurrency = ${config.concurrency}`);
         break;
       }
       case events.END: {

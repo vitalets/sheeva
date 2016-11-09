@@ -3,16 +3,13 @@
  *
  */
 
-const Suite = require('./suite');
-const Test = require('./test');
+const builder = require('./builder');
+const meta = require('./meta');
 
-let currentSuite = null;
-let options = {};
+// suite
 
 exports.describe = function (name, fn) {
-  const suite = new Suite(Object.assign({name, fn}, options));
-  currentSuite.addSuite(suite);
-  options = {};
+  builder.addSuite(name, fn);
 };
 
 exports.ddescribe = exports.describe.only = function (name, fn) {
@@ -25,10 +22,10 @@ exports.xdescribe = exports.describe.skip = function (name, fn) {
   exports.describe(name, fn);
 };
 
+// test
+
 exports.it = function (name, fn) {
-  const test = new Test(Object.assign({name, fn}, options));
-  currentSuite.addTest(test);
-  options = {};
+  builder.addTest(name, fn);
 };
 
 exports.iit = exports.it.only = function (name, fn) {
@@ -41,47 +38,42 @@ exports.xit = exports.it.skip = function (name, fn) {
   exports.it(name, fn);
 };
 
+// hooks
+
 exports.before = function (fn) {
-  currentSuite.addHook('before', fn);
+  builder.addHook('before', fn);
 };
 
 exports.beforeEach = function (fn) {
-  currentSuite.addHook('beforeEach', fn);
+  builder.addHook('beforeEach', fn);
 };
 
 exports.after = function (fn) {
-  currentSuite.addHook('after', fn);
+  builder.addHook('after', fn);
 };
 
 exports.afterEach = function (fn) {
-  currentSuite.addHook('afterEach', fn);
+  builder.addHook('afterEach', fn);
 };
 
 // meta
 
 exports.$tags = function () {
-
+  meta.tags.apply(meta, arguments);
 };
 
 exports.$skip = function (fn) {
-  options.skip = fn ? fn() : true;
+  meta.skip(fn);
 };
 
 exports.$only = function () {
-  options.only = true;
+  meta.only();
 };
 
 exports.$if = function (fn) {
-  options.skip = !fn();
+  meta.if(fn);
 };
 
-exports.$serial = function () {
-  options.serial = true;
+exports.$serial =function () {
+  meta.serial();
 };
-
-Object.defineProperty(exports, 'currentSuite', {
-  get: () => currentSuite,
-  set: suite => currentSuite = suite,
-  enumerable: false,
-  configurable: false
-});
