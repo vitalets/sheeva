@@ -2,7 +2,9 @@
 $only();
 describe('suite', () => {
   it('test 0', fn('test 0'));
-  it('test 1', fn('test 1'));
+  describe('suite 1', () => {
+    it('test 1', fn('test 1'));
+  });
 });
 
 describe('suite 2', () => {

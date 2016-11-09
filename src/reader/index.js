@@ -8,6 +8,7 @@ const Suite = require('./suite');
 const api = require('./api');
 const builder = require('./builder');
 const meta = require('./meta');
+const debug = require('../debug');
 
 module.exports = class Reader {
   /**
@@ -31,6 +32,9 @@ module.exports = class Reader {
     if (this._hasOnly()) {
       this._processOnly();
     }
+    // debug
+    const firstSuite = this._envSuites.values().next().value[0];
+    debug.printTree(firstSuite);
   }
   _readFiles() {
     this._files.forEach(file => {
