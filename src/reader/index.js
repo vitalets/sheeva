@@ -24,20 +24,40 @@ module.exports = class Reader {
     meta.setTags(options.tags);
   }
   read(context, pattern) {
-    exposeApi(context);
     this._files = glob.sync(pattern);
+    exposeApi(context);
+    this._readFiles();
+    cleanupApi(context);
+    if (this._hasOnly()) {
+      this._processOnly();
+    }
+  }
+  _readFiles() {
     this._files.forEach(file => {
       const suites = this._envs.map(env => new Suite({name: file, env}));
       const fn = () => require(path.resolve(file));
       builder.fillSuites(suites, fn);
       suites.forEach(this._addSuiteToEnv, this);
     });
-    cleanupApi(context);
   }
   _addSuiteToEnv(suite) {
     const envSuites = this._envSuites.get(suite.env);
     envSuites.push(suite);
-    this._envSuites.set(suite.env, envSuites);
+  }
+  _hasOnly() {
+    for (let suites of this._envSuites.entries()) {
+      const hasOnly = suites.some(suite => suite.hasOnly);
+      if (hasOnly) {
+        return true;
+      }
+    }
+    return false;
+  }
+  _processOnly() {
+    this._envSuites.forEach((suites, env) => {
+      suites = suites.filter(filterOnly);
+      this._envSuites.set(env, suites);
+    });
   }
   get files() {
     return this._files;
@@ -53,4 +73,16 @@ function exposeApi(context) {
 
 function cleanupApi(context) {
   Object.keys(api).forEach(key => delete context[key]);
+}
+
+function filterOnly(suite) {
+  if (suite.hasOnly) {
+    suite.tests = suite.tests.filter(test => test.only);
+    const onlySubSuites = suite.suites.filter(subSuite => subSuite.only);
+    const hasOnlySubSuites = suite.suites.filter(filterOnly);
+    suite.suites = onlySubSuites.concat(hasOnlySubSuites);
+    return true;
+  } else {
+    return false;
+  }
 }

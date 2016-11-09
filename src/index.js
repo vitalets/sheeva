@@ -23,8 +23,13 @@ module.exports = class Sheeva {
       envs: this._envs,
       tags: this._config.tags
     });
-    this._reporter = new Reporter(this._config.reporters);
-    this._executor = new Executor(this._reporter);
+    this._reporter = new Reporter({
+      reporters: this._config.reporters
+    });
+    this._executor = new Executor({
+      reporter: this._reporter,
+      config: this._config,
+    });
     this._reader.read(this._config.context, this._config.files);
     this._emitStart();
     this._executor.run(this._reader.envSuites);

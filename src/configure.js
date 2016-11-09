@@ -14,7 +14,8 @@ const defaults = {
   tags: [],
   createEnvs: () => ['defaultEnv'],
   createEnvLabel: env => typeof env === 'string' ? env : JSON.stringify(env),
-  createSession: env => env,
+  createSession: env => Object.assign({}, {env}),
+  closeSession: session => {},
   createSuiteContext: suite => Object.assign({}, suite.parent && suite.parent.context),
   createTestContext: test => Object.assign({}, test.parent && test.parent.context),
   /**

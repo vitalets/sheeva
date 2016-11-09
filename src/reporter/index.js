@@ -7,10 +7,16 @@ const builtInReporters = {
   json: require('./json'),
 };
 
-module.exports = class ProxyReporter {
-  constructor(reportersConfig) {
-    reportersConfig = Array.isArray(reportersConfig) ? reportersConfig : [reportersConfig];
-    this._reporters = reportersConfig.map(createReporter);
+module.exports = class TopReporter {
+  /**
+   * Constructor
+   *
+   * @param {Object} options
+   * @param {Array} options.reporters
+   */
+  constructor(options) {
+    const reporters = Array.isArray(options.reporters) ? options.reporters : [options.reporters];
+    this._reporters = reporters.map(createReporter);
   }
   get(index) {
     return this._reporters[index];

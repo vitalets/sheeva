@@ -5,8 +5,16 @@
 const Queue = require('./queue');
 
 module.exports = class Executor {
-  constructor(reporter) {
-    this._reporter = reporter;
+  /**
+   * Constructor
+   *
+   * @param {Object} options
+   * @param {Reporter} options.reporter
+   * @param {Config} options.config
+   */
+  constructor(options) {
+    this._reporter = options.reporter;
+    this._config = options.config;
   }
 
   /**
@@ -19,12 +27,7 @@ module.exports = class Executor {
   }
 
   _runEnv(suites, env) {
-    const onlySuites = suites.filter(suite => suite.hasOnly);
-    const suitesToRun = onlySuites.length ? onlySuites : suites;
-    const queues = suitesToRun.map(suite => new Queue(suite));
-    queues.forEach(queue => {
-      queue.onEvent = (event, data) => this._reporter.onSessionEvent(event, data);
-      queue.run()
-    });
+    console.log('running env', env, suites.length)
   }
+
 };

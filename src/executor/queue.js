@@ -278,17 +278,5 @@ module.exports = class Queue {
 };
 
 function flatten(suite) {
-  const filterFn = suite.hasOnly
-    ? item => item.hasOnly || item.only
-    : () => true;
-  const subSuites = suite.suites
-    .filter(filterFn)
-    .reduce((res, item) => res.concat(flatten(item)), []);
-  return []
-    .concat(suite.tests.filter(filterFn))
-    .concat(subSuites)
+  return suite.tests.concat(suite.suites.map(flatten));
 }
-
-
-
-
