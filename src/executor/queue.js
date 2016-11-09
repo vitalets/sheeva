@@ -34,7 +34,6 @@ module.exports = class Queue {
   }
 
   run() {
-    this.onEvent(events.QUEUE_START);
     this.next();
   }
 
@@ -47,8 +46,6 @@ module.exports = class Queue {
       this.executeTest();
       this.handleHookError();
       this.next();
-    } else {
-      this.onEvent(events.QUEUE_END, this.suite);
     }
   }
 
@@ -137,7 +134,7 @@ module.exports = class Queue {
     for (let i = lastSuiteIndex + 1; i < this.currentTest.parents.length; i++) {
       const suite = this.currentTest.parents[i];
       this.suiteStack.push(suite);
-      this.onEvent(events.SUITE_START, {suite});
+      this.onEvent(events.SESSION_SUITE_START, {suite});
       const error = this.executeHooksArray(suite, 'before');
       if (error) {
         this.errorSuite = suite;
@@ -228,7 +225,7 @@ module.exports = class Queue {
       const error = beforeError || afterError;
       // errors in after hooks do not influence on queue
       // so they just reported
-      this.onEvent(events.SUITE_END, {suite, error});
+      this.onEvent(events.SESSION_SUITE_END, {suite, error});
     }
   }
 

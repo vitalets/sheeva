@@ -27,14 +27,14 @@ module.exports = class Executor {
      envSuites.forEach(this._runEnv, this);
   }
 
-  _runEnv(suites, env) {
-    const queues = suites
+  _runEnv(envSuites, env) {
+    const queues = envSuites
       .map(suite => new Queue(suite))
       .filter(queue => !queue.isEmpty());
 
     queues.forEach(queue => {
       // debug.printQueue(queue.tests);
-      queue.onEvent = (event, data) => this._reporter.onSessionEvent(event, data);
+      queue.onEvent = (event, data) => this._reporter.onEvent(event, data);
       queue.run()
     });
   }

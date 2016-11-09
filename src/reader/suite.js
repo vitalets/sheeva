@@ -14,6 +14,7 @@ module.exports = class Suite {
    * @param {Boolean} [options.only=false]
    * @param {Boolean} [options.skip=false]
    * @param {Boolean} [options.serial=false]
+   * @param {Boolean} [options.isFile=false]
    */
   constructor(options) {
     this.name = options.name;
@@ -21,6 +22,7 @@ module.exports = class Suite {
     this.only = options.only;
     this.skip = options.skip;
     this.serial = options.serial;
+    this.isFile = options.isFile;
     this.parents = [];
     this.parent = undefined;
     this.hasOnly = false;

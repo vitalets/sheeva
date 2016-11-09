@@ -20,6 +20,7 @@ module.exports = class Reader {
    */
   constructor(options) {
     this._envs = options.envs;
+    // map that contains env => array of suites
     this._envSuites = new Map();
     this._envs.forEach(env => this._envSuites.set(env, []));
     meta.setTags(options.tags);
@@ -38,7 +39,11 @@ module.exports = class Reader {
   }
   _readFiles() {
     this._files.forEach(file => {
-      const suites = this._envs.map(env => new Suite({name: file, env}));
+      const suites = this._envs.map(env => new Suite({
+        name: file,
+        isFile: true,
+        env,
+      }));
       const fn = () => require(path.resolve(file));
       builder.fillSuites(suites, fn);
       suites.forEach(this._addSuiteToEnv, this);

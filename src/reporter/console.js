@@ -2,38 +2,34 @@
  * Reporter that just put events into log
  */
 
+// const status = require('node-status');
 const events = require('../events');
 
 module.exports = class ConsoleReporter {
   constructor() {
-    this.totalFiles = 0;
-    this.executedFiles = 0;
+
   }
   onEvent(event, data) {
     switch (event) {
       case events.START: {
-        const {files, envs, config} = data;
-        this.totalFiles = files.length;
-        console.log(`Running ${files.length} file(s) on ${envs.length} env(s) with concurrency = ${config.concurrency}`);
+        const {files, config, envSuites} = data;
+        console.log(`Processed ${files.length} file(s).`);
+        console.log(`Running on ${envSuites.size} env(s) with concurrency = ${config.concurrency}.`);
         break;
       }
       case events.END: {
         console.log(`End.`);
         break;
       }
-    }
-    processError(data);
-  }
-  onSessionEvent(event, data) {
-    switch (event) {
+      case events.SUITE_START: {
+        break;
+      }
+      case events.SUITE_END: {
+        break;
+      }
       case events.TEST_END: {
         if (data && data.error) {
-          const msg = ['FAIL:']
-            .concat(data.test.parents.map(suite => suite.name))
-            .concat([data.test.name])
-            .map((item, i) => ' '.repeat(i * 2) + item)
-            .join('\n');
-          console.log(msg);
+          console.log(`FAIL:\n${formatTestError(data)}`);
           processError(data);
         } else {
           console.log(`PASS: ${data.test.name}`)
@@ -50,4 +46,12 @@ function processError(data) {
   if (error) {
     console.log(error.name === 'UnexpectedError' ? error.message : error);
   }
+}
+
+function formatTestError(data) {
+  return []
+    .concat(data.test.parents.map(suite => suite.name))
+    .concat([data.test.name])
+    .map((item, i) => ' '.repeat(i * 2) + item)
+    .join('\n');
 }

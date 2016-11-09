@@ -8,8 +8,7 @@ module.exports = class LogReporter {
   constructor() {
     this.log = [];
   }
-
-  onSessionEvent(event, data) {
+  onEvent(event, data) {
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
     const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
     switch (event) {

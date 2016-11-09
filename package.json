@@ -13,7 +13,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "glob": "^7.1.1"
+    "glob": "^7.1.1",
+    "node-status": "^1.0.0"
   },
   "devDependencies": {
     "eslint": "^3.9.1",

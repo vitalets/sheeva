@@ -2,6 +2,9 @@
  * Manages reporters and events
  */
 
+const events = require('../events');
+const Collector = require('./collector');
+
 const builtInReporters = {
   console: require('./console'),
   json: require('./json'),
@@ -23,20 +26,33 @@ module.exports = class TopReporter {
   }
   onEvent(event, data) {
     data = addTimestamp(data);
-    this._proxyEvent('onEvent', event, data);
-  }
-  onSessionEvent(event, data) {
-    data = addTimestamp(data);
-    this._proxyEvent('onSessionEvent', event, data);
-  }
-  _proxyEvent(type, event, data) {
     // todo: use process.nextTick to do main things first
+    this._handleEvent(event, data);
+    this._proxyEvent(event, data);
+  }
+  _proxyEvent(event, data) {
     this._reporters.forEach(reporter => {
-      if (reporter[type]) {
+      if (reporter.onEvent) {
         // todo: try catch
-        reporter[type](event, data);
+        reporter.onEvent(event, data);
       }
-    })
+    });
+  }
+  _handleEvent(event, data) {
+    switch (event) {
+      case events.START: {
+        this._collector = new Collector(this, data.envSuites);
+        break;
+      }
+      case events.SESSION_SUITE_START: {
+        this._collector.handleSessionSuiteStart(data);
+        break;
+      }
+      case events.SESSION_SUITE_END: {
+        this._collector.handleSessionSuiteEnd(data);
+        break;
+      }
+    }
   }
 };
 
@@ -54,6 +70,6 @@ function createReporter(Reporter) {
 
 function addTimestamp(data) {
   data = data || {};
-  data.timestamp = Date.now();
+  data.timestamp = data.timestamp || Date.now();
   return data;
 }
