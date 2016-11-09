@@ -1,13 +1,16 @@
+
 describe('only', () => {
 
   it('should run only test by $only()', () => {
     const report = run('./test/data/only-it.js');
     expect(report, 'to equal', [
       'SUITE_START root',
-      'SUITE_START suite',
-      'TEST_END test 0',
-      'SUITE_END suite',
-      'SUITE_END root',
+      'SUITE_START suite 1',
+      'SUITE_START suite 2',
+      'TEST_END test 1',
+      'SUITE_END suite 2',
+      'SUITE_END suite 1',
+      'SUITE_END root'
     ]);
   });
 
@@ -15,11 +18,15 @@ describe('only', () => {
     const report = run('./test/data/only-describe.js');
     expect(report, 'to equal', [
       'SUITE_START root',
-      'SUITE_START suite',
-      'TEST_END test 0',
+      'SUITE_START suite 1',
+      'SUITE_START suite 2',
       'TEST_END test 1',
-      'SUITE_END suite',
-      'SUITE_END root',
+      'SUITE_START suite 3',
+      'TEST_END test 2',
+      'SUITE_END suite 3',
+      'SUITE_END suite 2',
+      'SUITE_END suite 1',
+      'SUITE_END root'
     ]);
   });
 

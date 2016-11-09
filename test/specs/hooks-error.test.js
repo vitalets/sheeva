@@ -1,5 +1,5 @@
 
-describe('error flow', () => {
+describe('hooks error', () => {
 
   function error() {
     throw new Error('err');
@@ -7,7 +7,7 @@ describe('error flow', () => {
 
   it('should run all hooks in case of test error', () => {
     fn.once('test 0', error);
-    const report = run('./test/data/it-hooks.js');
+    const report = run('./test/data/hooks-it.js');
     expect(report, 'to equal', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -30,7 +30,7 @@ describe('error flow', () => {
 
   it('should skip suite in case of before error', () => {
     fn.once('before 0', error);
-    const report = run('./test/data/it-hooks.js');
+    const report = run('./test/data/hooks-it.js');
     expect(report, 'to equal', [
       'SUITE_START root',
       'HOOK_END root before 0 err',
@@ -42,7 +42,7 @@ describe('error flow', () => {
 
   it('should skip suite in case of before second error', () => {
     fn.once('before 1', error);
-    const report = run('./test/data/it-hooks.js');
+    const report = run('./test/data/hooks-it.js');
     expect(report, 'to equal', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -55,7 +55,7 @@ describe('error flow', () => {
 
   it('should skip suite in case of beforeEach error', () => {
     fn.once('beforeEach 0', error);
-    const report = run('./test/data/it-hooks.js');
+    const report = run('./test/data/hooks-it.js');
     expect(report, 'to equal', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -71,7 +71,7 @@ describe('error flow', () => {
 
   it('should skip suite in case of beforeEach second error', () => {
     fn.once('beforeEach 1', error);
-    const report = run('./test/data/it-hooks.js');
+    const report = run('./test/data/hooks-it.js');
     expect(report, 'to equal', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -88,7 +88,7 @@ describe('error flow', () => {
 
   it('should skip rest of tests in case of afterEach error', () => {
     fn.once('afterEach 0', error);
-    const report = run('./test/data/it-hooks.js');
+    const report = run('./test/data/hooks-it.js');
     expect(report, 'to equal', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -105,7 +105,7 @@ describe('error flow', () => {
 
   it('should skip rest of tests in case of afterEach second error', () => {
     fn.once('afterEach 1', error);
-    const report = run('./test/data/it-hooks.js');
+    const report = run('./test/data/hooks-it.js');
     expect(report, 'to equal', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -123,7 +123,7 @@ describe('error flow', () => {
 
   it('should run all hooks in case of after error', () => {
     fn.once('after 0', error);
-    const report = run('./test/data/it-hooks.js');
+    const report = run('./test/data/hooks-it.js');
     expect(report, 'to equal', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -145,7 +145,7 @@ describe('error flow', () => {
 
   it('should run all hooks in case of after second error', () => {
     fn.once('after 1', error);
-    const report = run('./test/data/it-hooks.js');
+    const report = run('./test/data/hooks-it.js');
     expect(report, 'to equal', [
       'SUITE_START root',
       'HOOK_END root before 0',

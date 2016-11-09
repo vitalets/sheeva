@@ -42,11 +42,6 @@ module.exports = class Queue {
    * Process next item in queue
    */
   next() {
-    // console.log('called next');
-    // console.log('currentIndex', this.currentIndex);
-    // console.log('currentTest', this.currentTest && this.currentTest.name);
-    // console.log('nextTest', this.nextTest && this.nextTest.name);
-
     this.moveToNextTest();
     if (this.currentTest) {
       this.executeTest();
@@ -219,8 +214,7 @@ module.exports = class Queue {
    */
   executeAfter(stopSuite) {
     const index = this.suiteStack.findIndex(suite => suite === stopSuite);
-    const tailCount = this.suiteStack.length - (index + 1);
-    const suites = this.suiteStack.splice(-tailCount);
+    const suites = this.suiteStack.splice(index + 1);
     for (let i = suites.length - 1; i >= 0; i--) {
       const suite = suites[i];
       let beforeError;

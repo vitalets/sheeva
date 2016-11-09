@@ -33,7 +33,7 @@ module.exports = class Executor {
       .filter(queue => !queue.isEmpty());
 
     queues.forEach(queue => {
-      debug.printQueue(queue.tests);
+      // debug.printQueue(queue.tests);
       queue.onEvent = (event, data) => this._reporter.onSessionEvent(event, data);
       queue.run()
     });

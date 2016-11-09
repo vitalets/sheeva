@@ -33,8 +33,8 @@ module.exports = class Reader {
       this._processOnly();
     }
     // debug
-    const firstSuite = this._envSuites.values().next().value[0];
-    debug.printTree(firstSuite);
+    //const firstSuite = this._envSuites.values().next().value[0];
+    //debug.printTree(firstSuite);
   }
   _readFiles() {
     this._files.forEach(file => {
