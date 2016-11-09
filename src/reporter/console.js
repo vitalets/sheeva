@@ -46,7 +46,8 @@ module.exports = class ConsoleReporter {
 };
 
 function processError(data) {
-  if (data && data.error) {
-    console.log(data.error.message);
+  const error = data && data.error;
+  if (error) {
+    console.log(error.name === 'UnexpectedError' ? error.message : error);
   }
 }

@@ -62,10 +62,14 @@ exports.only = function () {
 };
 
 exports.skip = function (fn) {
+  fn = typeof fn === 'function' ? fn : () => true;
   info.skip = info.skip ? info.skip.concat([fn]) : [fn];
 };
 
 exports.if = function (fn) {
+  if (typeof fn !== 'function') {
+    throw new Error('$if should accept function as parameter');
+  }
   info.if = info.if ? info.if.concat([fn]) : [fn];
 };
 
