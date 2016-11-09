@@ -11,6 +11,11 @@ describe('nesting', () => {
     ])
   });
 
+  it('should not run describe without it', () => {
+    const report = run('./test/data/empty-describe.js');
+    expect(report, 'to equal', [])
+  });
+
   it('should run it within describe', () => {
     const report = run('./test/data/describe-it.js');
     expect(report, 'to equal', [
