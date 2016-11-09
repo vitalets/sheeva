@@ -45,7 +45,7 @@ module.exports = class Reader {
     envSuites.push(suite);
   }
   _hasOnly() {
-    for (let suites of this._envSuites.entries()) {
+    for (let suites of this._envSuites.values()) {
       const hasOnly = suites.some(suite => suite.hasOnly);
       if (hasOnly) {
         return true;

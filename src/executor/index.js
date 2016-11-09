@@ -23,11 +23,18 @@ module.exports = class Executor {
    * @param {Map} envSuites
    */
   run(envSuites) {
-    envSuites.forEach(this._runEnv, this);
+     envSuites.forEach(this._runEnv, this);
   }
 
   _runEnv(suites, env) {
-    console.log('running env', env, suites.length)
+    const queues = suites
+      .map(suite => new Queue(suite))
+      .filter(queue => !queue.isEmpty());
+
+    queues.forEach(queue => {
+      queue.onEvent = (event, data) => this._reporter.onSessionEvent(event, data);
+      queue.run()
+    });
   }
 
 };

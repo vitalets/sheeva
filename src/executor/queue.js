@@ -29,6 +29,10 @@ module.exports = class Queue {
     this.error = null;
   }
 
+  isEmpty() {
+    return this.tests.length === 0;
+  }
+
   run() {
     this.onEvent(events.QUEUE_START);
     this.next();
@@ -278,5 +282,6 @@ module.exports = class Queue {
 };
 
 function flatten(suite) {
-  return suite.tests.concat(suite.suites.map(flatten));
+  const subTests = suite.suites.reduce((res, suite) => res.concat(flatten(suite)), []);
+  return suite.tests.concat(subTests);
 }

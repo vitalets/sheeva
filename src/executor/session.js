@@ -13,7 +13,7 @@ module.exports = class Session {
 
   }
 
-  run() {
+  run(queue) {
     const queues = suitesToRun.map(suite => new Queue(suite));
     queues.forEach(queue => {
       queue.onEvent = (event, data) => this._reporter.onSessionEvent(event, data);
