@@ -13,8 +13,8 @@ global.run = function (file) {
   });
   const absPath = path.resolve(file);
   delete require.cache[absPath];
-  sheeva.run();
-  return sheeva.getReporter(0).log;
+  return sheeva.run()
+    .then(() => sheeva.getReporter(0).log);
 };
 
 const config = {

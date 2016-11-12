@@ -39,7 +39,6 @@ module.exports = class TopReporter {
     });
   }
   _handleEvent(event, data) {
-    console.log('got', event)
     switch (event) {
       case events.START: {
         this._collector = new Collector(this, data.envSuites);

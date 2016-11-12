@@ -9,7 +9,6 @@ module.exports = class LogReporter {
     this.log = [];
   }
   onEvent(event, data) {
-    console.log('tests reporter', event)
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
     const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
     switch (event) {

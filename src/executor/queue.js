@@ -1,13 +1,13 @@
 /**
  * Queue - flat sequence of tests.
  * Current index moves test by test executing them with hooks.
- * In case of error in hook, pointer moves to the end of error suite.
+ * In case of error in hook, pointer moves to the end of suite.
  *
  * @type {Queue}
  */
 
 const utils = require('../utils');
-const events = require('../events');
+const Caller = require('./caller');
 
 module.exports = class Queue {
   /**
@@ -22,12 +22,7 @@ module.exports = class Queue {
     this.currentIndex = -1;
     this.currentTest = null;
     this.nextTest = this.tests[0];
-    // stack of started suites (where before hook was called)
     this.suiteStack = [];
-    // stack of called beforeEach
-    this.beforeEachStack = [];
-    this.errorSuite = null;
-    this.error = null;
     this.promised = new utils.Promised();
   }
 
@@ -38,26 +33,53 @@ module.exports = class Queue {
   run(session) {
     return this.promised.call(() => {
       this.session = session;
+      this.caller = new Caller(session);
       this.next();
     });
-  }
-
-  emit(event, data = {}) {
-    this.session.emit(event, data);
   }
 
   /**
    * Process next item in queue
    */
   next() {
-    this.moveToNextTest();
-    if (this.currentTest) {
-      this.executeTest();
-      this.handleHookError();
-      this.next();
-    } else {
-      this.promised.resolve();
-    }
+    return Promise.resolve()
+      .then(() => this.moveToNextTest())
+      .then(() => {
+        if (this.currentTest) {
+          return this.caller.callTest(this.suiteStack, this.currentTest)
+            .then(() => this.handleHookError())
+            .then(() => this.next())
+        } else {
+          this.promised.resolve();
+        }
+      })
+  }
+
+  /**
+   * Moves to next test.
+   * If there is suite change, call needed `before|after` hooks.
+   *
+   */
+  moveToNextTest() {
+    return this.isSuiteChange()
+      ? this.handleSuiteChange()
+      : this.incrementIndex();
+  }
+
+  isSuiteChange() {
+    return !this.currentTest || !this.nextTest || this.currentTest.parent !== this.nextTest.parent;
+  }
+
+  handleSuiteChange() {
+    const commonSuite = this.getCommonSuite();
+    return this.caller.callAfter(this.suiteStack, commonSuite)
+      .then(() => {
+        this.incrementIndex();
+        if (this.currentTest) {
+          return this.caller.callBefore(this.suiteStack, this.currentTest)
+            .then(() => this.handleHookError());
+        }
+      })
   }
 
   /**
@@ -81,10 +103,6 @@ module.exports = class Queue {
     }
   }
 
-  isSuiteChange() {
-    return !this.currentTest || !this.nextTest || this.currentTest.parent !== this.nextTest.parent;
-  }
-
   /**
    * Increments index until suite end.
    * Suite end marker is:
@@ -104,181 +122,12 @@ module.exports = class Queue {
     }
   }
 
-  /**
-   * Moves to next test.
-   * If there is suite change, call needed `before|after` hooks.
-   *
-   */
-  moveToNextTest() {
-    if (this.isSuiteChange()) {
-      this.handleSuiteChange();
-    } else {
-      this.incrementIndex();
-    }
-  }
-
-  handleSuiteChange() {
-    const commonSuite = this.getCommonSuite();
-    this.executeAfter(commonSuite);
-    this.incrementIndex();
-    if (this.currentTest) {
-      this.executeBefore();
-      this.handleHookError();
-    }
-  }
-
   handleHookError() {
-    if (this.errorSuite) {
-      this.incrementIndexUntilSuiteEnd(this.errorSuite);
+    if (this.caller.errorSuite) {
+      this.incrementIndexUntilSuiteEnd(this.caller.errorSuite);
       // all needed `after` hooks will be called in moveToNextTest
-      this.moveToNextTest();
+      return this.moveToNextTest();
     }
-  }
-
-  /**
-   * Executes all `before` hooks for current test
-   * starting from last suite in suiteStack
-   */
-  executeBefore() {
-    const lastSuite = this.suiteStack[this.suiteStack.length - 1];
-    const lastSuiteIndex = this.currentTest.parents.findIndex(suite => suite === lastSuite);
-    for (let i = lastSuiteIndex + 1; i < this.currentTest.parents.length; i++) {
-      const suite = this.currentTest.parents[i];
-      this.suiteStack.push(suite);
-      this.emit(events.SESSION_SUITE_START, {suite});
-      const error = this.executeHooksArray(suite, 'before');
-      if (error) {
-        this.errorSuite = suite;
-        this.error = error;
-        break;
-      }
-    }
-  }
-
-  /**
-   * Executes all `beforeEach` hooks for current test
-   *
-   * @returns {*}
-   */
-  executeBeforeEach() {
-    this.beforeEachStack.length = 0;
-    for (let i = 0; i < this.suiteStack.length; i++) {
-      const suite = this.suiteStack[i];
-      this.beforeEachStack.push(suite);
-      const error = this.executeHooksArray(suite, 'beforeEach');
-      if (error) {
-        this.errorSuite = suite;
-        this.error = error;
-        break;
-      }
-    }
-  }
-
-  /**
-   * Executes:
-   * - `beforeEach` hooks
-   * - `test` itself
-   * - `afterEach` hooks
-   *
-   * @returns {Suite|undefined}
-   */
-  executeTest() {
-    const test = this.currentTest;
-    test.createContext();
-    this.executeBeforeEach();
-    if (!this.errorSuite) {
-      this.emit(events.TEST_START, {test});
-      try {
-        const {fn, context} = test;
-        this.executeFn({fn, context, test});
-        this.emit(events.TEST_END, {test});
-      } catch (error) {
-        this.emit(events.TEST_END, {test, error});
-      }
-    }
-    this.executeAfterEach();
-  }
-
-  /**
-   * Executes all afterEach from stack
-   *
-   * @returns {Suite|undefined}
-   */
-  executeAfterEach() {
-    for (let i = this.beforeEachStack.length - 1; i >= 0; i--) {
-      const suite = this.beforeEachStack[i];
-      const error = this.executeHooksArray(suite, 'afterEach');
-      if (error) {
-        this.errorSuite = suite;
-        this.error = error;
-      }
-    }
-    this.beforeEachStack.length = 0;
-  }
-
-  /**
-   * Executes all `after` hook until stopSuite reached (not including stopSuite!)
-   *
-   * @param {Suite} stopSuite
-   * @returns {*}
-   */
-  executeAfter(stopSuite) {
-    const index = this.suiteStack.findIndex(suite => suite === stopSuite);
-    const suites = this.suiteStack.splice(index + 1);
-    for (let i = suites.length - 1; i >= 0; i--) {
-      const suite = suites[i];
-      let beforeError;
-      if (this.errorSuite && this.errorSuite === suite) {
-        beforeError = this.error;
-        this.errorSuite = null;
-        this.error = null;
-      }
-      const afterError = this.executeHooksArray(suite, 'after');
-      // consider before error more important
-      const error = beforeError || afterError;
-      // errors in after hooks do not influence on queue
-      // so they just reported
-      this.emit(events.SESSION_SUITE_END, {suite, error});
-    }
-  }
-
-  executeHooksArray(suite, hookType) {
-    const hooks = suite[hookType];
-    // context exists only for beforeEach/afterEach hooks
-    const context = ['beforeEach', 'afterEach'].indexOf(hookType) >= 0
-      ? this.currentTest.context
-      : null;
-
-    return hooks.reduce((res, hook, index) => {
-      return res
-        .then(() => {
-          this.emit(events.HOOK_START, {suite, hookType, index});
-          return this.executeFn({fn, suite, hookType, context});
-        })
-        .then(
-          () => this.emit(events.HOOK_END, {suite, hookType, index}),
-          error => {
-            this.emit(events.HOOK_END, {suite, hookType, index, error});
-            return Promise.reject(error);
-          }
-        )
-    }, Promise.resolve());
-    // for (let index = 0; index < hooks.length; index++) {
-    //   const fn = hooks[index];
-    //   this.emit(events.HOOK_START, {suite, hookType, index});
-    //   try {
-    //     this.executeFn({fn, suite, hookType, context});
-    //     this.emit(events.HOOK_END, {suite, hookType, index});
-    //   } catch (error) {
-    //     this.emit(events.HOOK_END, {suite, hookType, index, error});
-    //     return error;
-    //   }
-    // }
-  }
-
-  executeFn(params) {
-    const wrapFn = this.session.createWrapFn(params);
-    return Promise.resolve().then(() => wrapFn());
   }
 
   /**
