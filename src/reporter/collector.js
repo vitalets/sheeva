@@ -33,6 +33,9 @@ module.exports = class Collector {
     const env = suite.env;
     const envStatus = this._envStatus.get(env);
     let counter = envStatus.running.get(suite);
+    if (typeof counter !== 'number') {
+      throw new Error('Got SESSION_SUITE_END before SESSION_SUITE_START');
+    }
     counter--;
     if (counter) {
       envStatus.running.set(suite, counter);

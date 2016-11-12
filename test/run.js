@@ -8,8 +8,8 @@ global.Sheeva = Sheeva;
 global.fn = require('./calls');
 global.run = function (file) {
   const sheeva = new Sheeva({
-    reporters: require('./reporter'),
-    files: file
+    reporters: require('./log-reporter'),
+    files: file,
   });
   const absPath = path.resolve(file);
   delete require.cache[absPath];

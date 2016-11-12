@@ -9,6 +9,7 @@ module.exports = class LogReporter {
     this.log = [];
   }
   onEvent(event, data) {
+    console.log('tests reporter', event)
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
     const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
     switch (event) {
@@ -21,11 +22,11 @@ module.exports = class LogReporter {
         break;
       }
       case events.HOOK_START: {
-        // this.log.push(`${event} ${suiteName} ${data.type} ${data.index}`);
+        // this.log.push(`${event} ${suiteName} ${data.hookType} ${data.index}`);
         break;
       }
       case events.HOOK_END: {
-        this.log.push(`${event} ${suiteName} ${data.type} ${data.index}${errMessage}`);
+        this.log.push(`${event} ${suiteName} ${data.hookType} ${data.index}${errMessage}`);
         break;
       }
       case events.TEST_START: {

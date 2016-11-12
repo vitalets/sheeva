@@ -3,7 +3,7 @@
  */
 
 const events = require('./events');
-const configure = require('./configure');
+const config = require('./config');
 const Reader = require('./reader');
 const Executor = require('./executor');
 const Reporter = require('./reporter');
@@ -12,10 +12,11 @@ module.exports = class Sheeva {
   /**
    * Constructor
    *
-   * @param {Config} config
+   * @param {Config} inConfig
    */
-  constructor(config) {
-    this._config = configure(config);
+  constructor(inConfig) {
+    // todo: use Config class
+    this._config = config(inConfig);
   }
   run() {
     this._envs = this._config.createEnvs();
@@ -32,8 +33,8 @@ module.exports = class Sheeva {
     });
     this._reader.read(this._config.context, this._config.files);
     this._emitStart();
-    this._executor.run(this._reader.envSuites);
-    this._emitEnd();
+    return this._executor.run(this._reader.envSuites)
+      .then(() => this._emitEnd(), e => console.log(e))
   }
   getReporter(index) {
     return this._reporter.get(index);

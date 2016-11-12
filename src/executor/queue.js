@@ -1,11 +1,12 @@
 /**
  * Queue - flat sequence of tests.
- * During executioon pointer moves test by test in normal flow.
- * In case of error in hook, pointer moves to end of suite.
+ * Current index moves test by test executing them with hooks.
+ * In case of error in hook, pointer moves to the end of error suite.
  *
  * @type {Queue}
  */
 
+const utils = require('../utils');
 const events = require('../events');
 
 module.exports = class Queue {
@@ -15,8 +16,9 @@ module.exports = class Queue {
    * @param {Suite} suite
    */
   constructor(suite) {
+    // todo: make private fields
     this.suite = suite;
-    this.tests = flatten(suite);
+    this.tests = flatten(this.suite);
     this.currentIndex = -1;
     this.currentTest = null;
     this.nextTest = this.tests[0];
@@ -24,17 +26,24 @@ module.exports = class Queue {
     this.suiteStack = [];
     // stack of called beforeEach
     this.beforeEachStack = [];
-    this.onEvent = () => {};
     this.errorSuite = null;
     this.error = null;
+    this.promised = new utils.Promised();
   }
 
   isEmpty() {
     return this.tests.length === 0;
   }
 
-  run() {
-    this.next();
+  run(session) {
+    return this.promised.call(() => {
+      this.session = session;
+      this.next();
+    });
+  }
+
+  emit(event, data = {}) {
+    this.session.emit(event, data);
   }
 
   /**
@@ -46,6 +55,8 @@ module.exports = class Queue {
       this.executeTest();
       this.handleHookError();
       this.next();
+    } else {
+      this.promised.resolve();
     }
   }
 
@@ -134,7 +145,7 @@ module.exports = class Queue {
     for (let i = lastSuiteIndex + 1; i < this.currentTest.parents.length; i++) {
       const suite = this.currentTest.parents[i];
       this.suiteStack.push(suite);
-      this.onEvent(events.SESSION_SUITE_START, {suite});
+      this.emit(events.SESSION_SUITE_START, {suite});
       const error = this.executeHooksArray(suite, 'before');
       if (error) {
         this.errorSuite = suite;
@@ -173,14 +184,16 @@ module.exports = class Queue {
    */
   executeTest() {
     const test = this.currentTest;
+    test.createContext();
     this.executeBeforeEach();
     if (!this.errorSuite) {
-      this.onEvent(events.TEST_START, {test});
+      this.emit(events.TEST_START, {test});
       try {
-        this.currentTest.fn();
-        this.onEvent(events.TEST_END, {test});
+        const {fn, context} = test;
+        this.executeFn({fn, context, test});
+        this.emit(events.TEST_END, {test});
       } catch (error) {
-        this.onEvent(events.TEST_END, {test, error});
+        this.emit(events.TEST_END, {test, error});
       }
     }
     this.executeAfterEach();
@@ -225,27 +238,52 @@ module.exports = class Queue {
       const error = beforeError || afterError;
       // errors in after hooks do not influence on queue
       // so they just reported
-      this.onEvent(events.SESSION_SUITE_END, {suite, error});
+      this.emit(events.SESSION_SUITE_END, {suite, error});
     }
   }
 
-  executeHooksArray(suite, type) {
-    const hooks = suite[type];
-    for (let index = 0; index < hooks.length; index++) {
-      const hook = hooks[index];
-      this.onEvent(events.HOOK_START, {suite, type, index});
-      try {
-        hook();
-        this.onEvent(events.HOOK_END, {suite, type, index});
-      } catch (error) {
-        this.onEvent(events.HOOK_END, {suite, type, index, error});
-        return error;
-      }
-    }
+  executeHooksArray(suite, hookType) {
+    const hooks = suite[hookType];
+    // context exists only for beforeEach/afterEach hooks
+    const context = ['beforeEach', 'afterEach'].indexOf(hookType) >= 0
+      ? this.currentTest.context
+      : null;
+
+    return hooks.reduce((res, hook, index) => {
+      return res
+        .then(() => {
+          this.emit(events.HOOK_START, {suite, hookType, index});
+          return this.executeFn({fn, suite, hookType, context});
+        })
+        .then(
+          () => this.emit(events.HOOK_END, {suite, hookType, index}),
+          error => {
+            this.emit(events.HOOK_END, {suite, hookType, index, error});
+            return Promise.reject(error);
+          }
+        )
+    }, Promise.resolve());
+    // for (let index = 0; index < hooks.length; index++) {
+    //   const fn = hooks[index];
+    //   this.emit(events.HOOK_START, {suite, hookType, index});
+    //   try {
+    //     this.executeFn({fn, suite, hookType, context});
+    //     this.emit(events.HOOK_END, {suite, hookType, index});
+    //   } catch (error) {
+    //     this.emit(events.HOOK_END, {suite, hookType, index, error});
+    //     return error;
+    //   }
+    // }
+  }
+
+  executeFn(params) {
+    const wrapFn = this.session.createWrapFn(params);
+    return Promise.resolve().then(() => wrapFn());
   }
 
   /**
    * Finds common parent suite
+   * todo: maybe move to utils
    * todo: optimize for usual cases: 1. sub-suite, 2. same level suite
    *
    * @returns {Suite}

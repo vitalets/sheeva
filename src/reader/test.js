@@ -27,4 +27,7 @@ module.exports = class Test {
     this.parents = parents;
     this.parent = parents[parents.length - 1];
   }
+  createContext() {
+    this.context = {};
+  }
 };

@@ -16,6 +16,7 @@ describe('nesting', () => {
     expect(report, 'to equal', [])
   });
 
+  $only();
   it('should run it within describe', () => {
     const report = run('./test/data/describe-it.js');
     expect(report, 'to equal', [

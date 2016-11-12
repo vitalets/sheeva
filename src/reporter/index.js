@@ -26,7 +26,7 @@ module.exports = class TopReporter {
   }
   onEvent(event, data) {
     data = addTimestamp(data);
-    // todo: use process.nextTick to do main things first
+    // todo: maybe use process.nextTick to do main things first. Check in bench.
     this._handleEvent(event, data);
     this._proxyEvent(event, data);
   }
@@ -39,6 +39,7 @@ module.exports = class TopReporter {
     });
   }
   _handleEvent(event, data) {
+    console.log('got', event)
     switch (event) {
       case events.START: {
         this._collector = new Collector(this, data.envSuites);
