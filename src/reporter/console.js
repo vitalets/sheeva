@@ -21,6 +21,14 @@ module.exports = class ConsoleReporter {
         console.log(`End.`);
         break;
       }
+      case events.ENV_START: {
+        console.log(event, data.env);
+        break;
+      }
+      case events.ENV_END: {
+        console.log(event, data.env);
+        break;
+      }
       case events.SUITE_START: {
         break;
       }

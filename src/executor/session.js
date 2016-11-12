@@ -14,23 +14,32 @@ module.exports = class Session {
   constructor(options) {
     this._reporter = options.reporter;
     this._config = options.config;
-    this.env = options.env;
+    this._env = options.env;
+  }
+
+  get env() {
+    return this._env;
+  }
+
+  get data() {
+    return this._data;
   }
 
   start() {
     return Promise.resolve()
-      .then(() => this._config.createSessionData(this.env))
-      .then(data => this.data = data);
+      .then(() => this._config.createSessionData(this._env))
+      .then(data => this._data = data);
   }
 
   close() {
     return Promise.resolve()
-      .then(() => this._config.clearSessionData(this.data, this))
-      .then(() => this.data = null);
+      .then(() => this._config.clearSessionData(this._data, this))
+      .then(() => this._data = null);
   }
 
   createWrapFn(params) {
     params.session = this;
+    params.env = this._env;
     return this._config.createWrapFn(params);
   }
 
@@ -38,4 +47,5 @@ module.exports = class Session {
     data.session = this;
     this._reporter.onEvent(event, data);
   }
+
 };

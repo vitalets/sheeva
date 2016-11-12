@@ -38,18 +38,13 @@ module.exports = class Executor {
   _nextEnv() {
     const item = this._envIterator.next();
     if (item.done) {
-      return null;
-    }
-    const [env, suites] = item.value;
-    const queues = suites
-      .map(suite => new Queue(suite))
-      .filter(queue => !queue.isEmpty());
-    if (queues.length) {
-      console.log('start env', env)
+      this._queues = null;
     } else {
-      console.log('skip env', env)
+      const [env, suites] = item.value;
+      this._queues = suites
+        .map(suite => new Queue(suite))
+        .filter(queue => !queue.isEmpty());
     }
-    return queues;
   }
 
   _getNextQueue() {
@@ -58,7 +53,7 @@ module.exports = class Executor {
     } else if (this._queues.length) {
       return this._queues.shift();
     } else {
-      this._queues = this._nextEnv();
+      this._nextEnv();
       return this._getNextQueue();
     }
   }

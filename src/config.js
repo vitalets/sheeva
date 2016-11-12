@@ -37,9 +37,10 @@ const defaults = {
    *
    * @returns {Function}
    */
-  createWrapFn: params => {
+  createWrapFn: function (params) {
+    const {fn, session} = params;
     return function () {
-      return params.fn(params.session.data);
+      return fn(session.data);
     };
   }
 };

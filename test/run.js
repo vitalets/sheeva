@@ -10,6 +10,26 @@ global.run = function (file) {
   const sheeva = new Sheeva({
     reporters: require('./log-reporter'),
     files: file,
+    createEnvs: function () {
+      return [
+        {id: 'tests-sync'},
+       // {id: 'tests-async', delay: 1000},
+      ];
+    },
+    createWrapFn: function ({env, fn}) {
+      return function () {
+        if (env.id === 'tests-sync') {
+          return fn();
+        } else {
+          return new Promise(resolve => {
+            setTimeout(() => {
+              fn();
+              resolve();
+            }, env.delay)
+          })
+        }
+      };
+    }
   });
   const absPath = path.resolve(file);
   delete require.cache[absPath];
