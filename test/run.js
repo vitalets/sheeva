@@ -6,12 +6,13 @@ require('./setup');
 const Sheeva = require('../src');
 
 const config = {
+  // concurrency: 2,
   files: './test/specs/*.test.js',
   //files: './test/specs/only.test.js',
   createEnvs: function () {
     return [
       {id: 'tests-sync'},
-      {id: 'tests-async', delay: 50},
+      {id: 'tests-async', delay: 5},
     ];
   },
   createEnvLabel: function (env) {

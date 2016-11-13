@@ -43,7 +43,6 @@ module.exports = class Sheeva {
     const data = {
       envs: this._envs,
       files: this._reader.files,
-      envSuites: this._reader.envSuites,
       config: this._config,
     };
     this._reporter.onEvent(events.START, data);
