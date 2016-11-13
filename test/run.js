@@ -13,8 +13,8 @@ global.run = function (file) {
     files: file,
     createEnvs: function () {
       return [
-        {id: 'tests-sync'},
-       // {id: 'tests-async', delay: 1000},
+        //{id: 'tests-sync'},
+       {id: 'tests-async', delay: 1},
       ];
     },
     createWrapFn: function ({env, fn, test, hookType, suite, hookIndex}) {
@@ -29,10 +29,14 @@ global.run = function (file) {
         if (env.id === 'tests-sync') {
           return fn();
         } else {
-          return new Promise(resolve => {
+          return new Promise((resolve, reject) => {
             setTimeout(() => {
-              fn();
-              resolve();
+              try {
+                fn();
+                resolve();
+              } catch(e) {
+                reject(e);
+              }
             }, env.delay)
           })
         }
