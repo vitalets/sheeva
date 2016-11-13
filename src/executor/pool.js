@@ -38,8 +38,9 @@ module.exports = class Pool {
       const queue = this._getQueue();
       if (queue) {
         this._runOnNewSession(queue)
-          .catch(e => console.log(e))
+          .catch(e => console.log('POOL ERROR', e))
       } else {
+        this._checkDone();
         break;
       }
     }
@@ -51,26 +52,23 @@ module.exports = class Pool {
       if (queue.suite.env === session.env) {
         return this._runOnExistingSession(queue, session);
       } else {
-        return Promise.resolve()
-          .then(() => this._closeSession(session))
+        return this._closeSession(session)
           .then(() => this._runOnNewSession(queue));
       }
     } else {
       return Promise.resolve()
         .then(() => session ? this._closeSession(session) : null)
-        .then(() => this._slots.size === 0 ? this._promised.resolve() : null);
+        .then(() => this._checkDone());
     }
   }
 
   _runOnNewSession(queue) {
-    return Promise.resolve()
-      .then(() => this._createSession(queue.suite.env))
+    return this._createSession(queue.suite.env)
       .then(session => this._runOnExistingSession(queue, session));
   }
 
   _runOnExistingSession(queue, session) {
-    return Promise.resolve()
-      .then(() => queue.run(session))
+    return queue.run(session)
       .then(() => this._processNextQueue(session));
   }
 
@@ -88,5 +86,11 @@ module.exports = class Pool {
   _closeSession(session) {
     return session.close()
       .then(() => this._slots.delete(session));
+  }
+
+  _checkDone() {
+    if (this._slots.size === 0) {
+      this._promised.resolve();
+    }
   }
 };

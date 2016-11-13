@@ -3,7 +3,7 @@ describe('only', () => {
 
   it('should run only test by $only()', () => {
     const report = run('./test/data/only-it.js');
-    expect(report, 'to equal', [
+    return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'SUITE_START suite 1',
       'SUITE_START suite 2',
@@ -16,7 +16,7 @@ describe('only', () => {
 
   it('should run only describe by $only()', () => {
     const report = run('./test/data/only-describe.js');
-    expect(report, 'to equal', [
+    return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'SUITE_START suite 1',
       'SUITE_START suite 2',
@@ -32,7 +32,7 @@ describe('only', () => {
 
   it('should run all only describe and it', () => {
     const report = run('./test/data/only-several.js');
-    expect(report, 'to equal', [
+    return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'SUITE_START suite',
       'TEST_END test 0',

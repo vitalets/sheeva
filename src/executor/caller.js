@@ -64,7 +64,7 @@ module.exports = class Caller {
       .then(() => {
         this._emit(TEST_START, {test});
         const {fn, context} = test;
-        return this._callFn({fn, context, test})
+        return this._callFn({fn, context, test, suite: test.parent})
           .then(
             () => this._emit(TEST_END, {test}),
             error => this._emit(TEST_END, {test, error})
@@ -72,7 +72,11 @@ module.exports = class Caller {
       })
       .then(
         () => this._callAfterEach(test),
-        () => this._callAfterEach(test)
+        error => {
+          return this._callAfterEach(test)
+            // pass through initial error
+            .then(() => Promise.reject(error), () => Promise.reject(error));
+        }
       );
 
     // if (!this.errorSuite) {
@@ -160,7 +164,7 @@ module.exports = class Caller {
         .then(() => {
           const eventData = {suite, hookType, index};
           this._emit(HOOK_START, eventData);
-          return this._callFn({fn, suite, hookType, context})
+          return this._callFn({fn, suite, hookType, context, hookIndex: index})
             .then(
               () => this._emit(HOOK_END, eventData),
               error => {

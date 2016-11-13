@@ -1,12 +1,6 @@
 describe('suite', () => {
-  describe('suite 1', () => {
-
-  });
-  describe('suite 2', () => {
-
-  });
+  describe('suite 1', noop);
+  describe('suite 2', noop);
 });
 
-describe('suite 3', () => {
-
-});
+describe('suite 3', noop);

@@ -1,15 +1,15 @@
 
-before(fn('before 0'));
-before(fn('before 1'));
+before(noop);
+before(noop);
 
-beforeEach(fn('beforeEach 0'));
-beforeEach(fn('beforeEach 1'));
+beforeEach(noop);
+beforeEach(noop);
 
-after(fn('after 0'));
-after(fn('after 1'));
+after(noop);
+after(noop);
 
-afterEach(fn('afterEach 0'));
-afterEach(fn('afterEach 1'));
+afterEach(noop);
+afterEach(noop);
 
-it('test 0', fn('test 0'));
-it('test 1', fn('test 1'));
+it('test 0', noop);
+it('test 1', noop);

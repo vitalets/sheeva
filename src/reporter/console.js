@@ -10,6 +10,7 @@ module.exports = class ConsoleReporter {
 
   }
   onEvent(event, data) {
+    // console.log('console-reporter:', event, data.error)
     switch (event) {
       case events.START: {
         const {files, config, envSuites} = data;
@@ -22,17 +23,27 @@ module.exports = class ConsoleReporter {
         break;
       }
       case events.ENV_START: {
-        console.log(event, data.env);
+        console.log(`${data.label} queues: ${data.queues.length}`);
         break;
       }
       case events.ENV_END: {
         console.log(event, data.env);
         break;
       }
+      case events.SESSION_START: {
+        // console.log(event);
+        break;
+      }
+      case events.SESSION_END: {
+        // console.log(event);
+        break;
+      }
       case events.SUITE_START: {
+        // console.log(event);
         break;
       }
       case events.SUITE_END: {
+        // console.log(event);
         break;
       }
       case events.TEST_END: {

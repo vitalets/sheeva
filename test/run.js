@@ -5,7 +5,8 @@ const Sheeva = require('../src');
 
 global.expect = expect;
 global.Sheeva = Sheeva;
-global.fn = require('./calls');
+global.noop = function () {};
+global.mocks = new Map();
 global.run = function (file) {
   const sheeva = new Sheeva({
     reporters: require('./log-reporter'),
@@ -16,7 +17,14 @@ global.run = function (file) {
        // {id: 'tests-async', delay: 1000},
       ];
     },
-    createWrapFn: function ({env, fn}) {
+    createWrapFn: function ({env, fn, test, hookType, suite, hookIndex}) {
+      const name = test
+        ? test.name
+        : `${suite.parent ? suite.name + ' ' : ''}${hookType} ${hookIndex}`;
+      if (mocks.has(name)) {
+        fn = mocks.get(name);
+        mocks.delete(name);
+      }
       return function () {
         if (env.id === 'tests-sync') {
           return fn();

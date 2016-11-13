@@ -5,6 +5,7 @@
 const Queue = require('./queue');
 const Pool = require('./pool');
 const debug = require('../debug');
+const {ENV_START} = require('../events');
 
 module.exports = class Executor {
   /**
@@ -44,6 +45,10 @@ module.exports = class Executor {
       this._queues = suites
         .map(suite => new Queue(suite))
         .filter(queue => !queue.isEmpty());
+      if (this._queues.length) {
+        const label = this._config.createEnvLabel(env);
+        this._reporter.onEvent(ENV_START, {env, label, queues: this._queues});
+      }
     }
   }
 

@@ -47,7 +47,7 @@ module.exports = class Queue {
       .then(() => {
         if (this.currentTest) {
           return this.caller.callTest(this.suiteStack, this.currentTest)
-            .then(() => this.handleHookError())
+            .catch(() => this.handleHookError())
             .then(() => this.next())
         } else {
           this.promised.resolve();
@@ -77,7 +77,7 @@ module.exports = class Queue {
         this.incrementIndex();
         if (this.currentTest) {
           return this.caller.callBefore(this.suiteStack, this.currentTest)
-            .then(() => this.handleHookError());
+            .catch(() => this.handleHookError());
         }
       })
   }
@@ -123,11 +123,9 @@ module.exports = class Queue {
   }
 
   handleHookError() {
-    if (this.caller.errorSuite) {
-      this.incrementIndexUntilSuiteEnd(this.caller.errorSuite);
-      // all needed `after` hooks will be called in moveToNextTest
-      return this.moveToNextTest();
-    }
+    this.incrementIndexUntilSuiteEnd(this.caller.errorSuite);
+    // all needed `after` hooks will be called in moveToNextTest
+    return this.moveToNextTest();
   }
 
   /**

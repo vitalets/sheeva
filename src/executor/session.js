@@ -2,6 +2,8 @@
  * Session - single concurrent worker for particular env used in queues for run.
  */
 
+const {SESSION_START, SESSION_END} = require('../events');
+
 module.exports = class Session {
   /**
    * Constructor
@@ -15,6 +17,7 @@ module.exports = class Session {
     this._reporter = options.reporter;
     this._config = options.config;
     this._env = options.env;
+    this._data = null;
   }
 
   get env() {
@@ -28,13 +31,19 @@ module.exports = class Session {
   start() {
     return Promise.resolve()
       .then(() => this._config.createSessionData(this._env))
-      .then(data => this._data = data);
+      .then(data => {
+        this._data = data;
+        this._reporter.onEvent(SESSION_START, {session: this});
+      });
   }
 
   close() {
     return Promise.resolve()
       .then(() => this._config.clearSessionData(this._data, this))
-      .then(() => this._data = null);
+      .then(() => {
+        this._data = null;
+        this._reporter.onEvent(SESSION_END, {session: this});
+      });
   }
 
   createWrapFn(params) {

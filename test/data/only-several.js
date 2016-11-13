@@ -1,19 +1,19 @@
 
 describe('suite', () => {
   $only();
-  it('test 0', fn('test 0'));
-  it('test 1', fn('test 1'));
+  it('test 0', noop);
+  it('test 1', noop);
 });
 
 describe('suite 2', () => {
-  it('test 2', fn('test 2'));
+  it('test 2', noop);
   $only();
-  it('test 3', fn('test 3'));
+  it('test 3', noop);
 });
 
 describe('suite 3', () => {
   $only();
   describe('suite 4', () => {
-    it('test 4', fn('test 4'));
+    it('test 4', noop);
   });
 });

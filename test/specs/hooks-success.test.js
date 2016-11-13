@@ -3,7 +3,7 @@ describe('hooks success', () => {
 
   it('should run it and all hooks without describe', () => {
     const report = run('./test/data/hooks-it.js');
-    expect(report, 'to equal', [
+    return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',
       'HOOK_END root before 1',
@@ -25,7 +25,7 @@ describe('hooks success', () => {
 
   it('should run it and all hooks within describe', () => {
     const report = run('./test/data/hooks-describe-it.js');
-    expect(report, 'to equal', [
+    return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',
       'SUITE_START suite',

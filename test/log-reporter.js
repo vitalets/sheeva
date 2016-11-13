@@ -9,6 +9,8 @@ module.exports = class LogReporter {
     this.log = [];
   }
   onEvent(event, data) {
+    //console.log('log-reporter:', new Date(data.timestamp), event)
+    //console.log('log-reporter:', event, data.error)
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
     const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
     switch (event) {

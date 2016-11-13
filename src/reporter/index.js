@@ -19,22 +19,25 @@ module.exports = class TopReporter {
    */
   constructor(options) {
     const reporters = Array.isArray(options.reporters) ? options.reporters : [options.reporters];
-    this._reporters = reporters.map(createReporter);
+    this._reporters = reporters.map(createReporter).filter(Boolean);
   }
   get(index) {
     return this._reporters[index];
   }
   onEvent(event, data) {
     data = addTimestamp(data);
-    // todo: maybe use process.nextTick to do main things first. Check in bench.
+    // todo: maybe use setImmediate/nextTick to do main things first. Check in bench.
     this._handleEvent(event, data);
     this._proxyEvent(event, data);
   }
   _proxyEvent(event, data) {
     this._reporters.forEach(reporter => {
-      if (reporter.onEvent) {
-        // todo: try catch
-        reporter.onEvent(event, data);
+      if (typeof reporter.onEvent === 'function') {
+        try {
+          reporter.onEvent(event, data);
+        } catch(e) {
+          console.log(`Error in reporter ${reporter.constructor.name}`);
+        }
       }
     });
   }
@@ -57,6 +60,10 @@ module.exports = class TopReporter {
 };
 
 function createReporter(Reporter) {
+  if (!Reporter) {
+    return null;
+  }
+
   if (typeof Reporter === 'string') {
     if (builtInReporters.hasOwnProperty(Reporter)) {
       Reporter = builtInReporters[Reporter];
@@ -65,7 +72,12 @@ function createReporter(Reporter) {
       throw new Error(`Reporter not found: ${Reporter}`)
     }
   }
-  return new Reporter();
+
+  if (typeof Reporter === 'function') {
+    return new Reporter();
+  } else {
+    throw new Error(`Reporter should be a class or constructor, got ${typeof Reporter}`);
+  }
 }
 
 function addTimestamp(data) {
