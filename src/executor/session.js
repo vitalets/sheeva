@@ -54,6 +54,7 @@ module.exports = class Session {
 
   emit(event, data = {}) {
     data.session = this;
+    data.env = this._env;
     this._reporter.onEvent(event, data);
   }
 

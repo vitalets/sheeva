@@ -1,8 +1,8 @@
 
 describe('nesting', () => {
 
-  it('should run it without describe', () => {
-    const report = run('./test/data/it.js');
+  it('should run it outside describe', env => {
+    const report = run('./test/data/it.js', env);
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'TEST_END test 0',
@@ -11,9 +11,8 @@ describe('nesting', () => {
     ])
   });
 
-
-  it('should not run describe without it', () => {
-    const report = run('./test/data/empty-describe.js');
+  it('should not run describe without it', env => {
+    const report = run('./test/data/empty-describe.js', env);
     return expect(report, 'to be fulfilled with', []);
   });
 
@@ -21,8 +20,8 @@ describe('nesting', () => {
   // it('should process empty files', () => {
   // });
 
-  it('should run it within describe', () => {
-    const report = run('./test/data/describe-it.js');
+  it('should run it inside describe', env => {
+    const report = run('./test/data/describe-it.js', env);
     return expect(report, 'to be fulfilled with', [
         'SUITE_START root',
         'SUITE_START suite 1',

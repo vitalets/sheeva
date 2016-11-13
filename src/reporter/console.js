@@ -48,6 +48,7 @@ module.exports = class ConsoleReporter {
       }
       case events.TEST_END: {
         if (data && data.error) {
+          console.log(`Env:`,data.env);
           console.log(`FAIL:\n${formatTestError(data)}`);
           processError(data);
         } else {

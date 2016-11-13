@@ -31,6 +31,7 @@ const defaults = {
    * @param {Object} params.session
    * @param {Function} params.fn
    * @param {Object} params.context
+   * @param {Object} params.env
    * @param {Test} [params.test]
    * @param {Test} [params.suite]
    * @param {String} [params.hookType]

@@ -1,8 +1,8 @@
 
 describe('only', () => {
 
-  it('should run only test by $only()', () => {
-    const report = run('./test/data/only-it.js');
+  it('should run only test by $only()', env => {
+    const report = run('./test/data/only-it.js', env);
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'SUITE_START suite 1',
@@ -14,8 +14,8 @@ describe('only', () => {
     ]);
   });
 
-  it('should run only describe by $only()', () => {
-    const report = run('./test/data/only-describe.js');
+  it('should run only describe by $only()', env => {
+    const report = run('./test/data/only-describe.js', env);
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'SUITE_START suite 1',
@@ -30,8 +30,8 @@ describe('only', () => {
     ]);
   });
 
-  it('should run all only describe and it', () => {
-    const report = run('./test/data/only-several.js');
+  it('should run all only describe and it', env => {
+    const report = run('./test/data/only-several.js', env);
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'SUITE_START suite',

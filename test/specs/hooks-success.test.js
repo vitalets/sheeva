@@ -1,8 +1,8 @@
 
 describe('hooks success', () => {
 
-  it('should run it and all hooks without describe', () => {
-    const report = run('./test/data/hooks-it.js');
+  it('should run it and all hooks without describe', env => {
+    const report = run('./test/data/hooks-it.js', env);
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -23,8 +23,8 @@ describe('hooks success', () => {
     ]);
   });
 
-  it('should run it and all hooks within describe', () => {
-    const report = run('./test/data/hooks-describe-it.js');
+  it('should run it and all hooks within describe', env => {
+    const report = run('./test/data/hooks-describe-it.js', env);
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',

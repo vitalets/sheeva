@@ -3,7 +3,8 @@
  */
 
 const events = require('../events');
-const Collector = require('./collector');
+const EnvCollector = require('./env-collector');
+const SuiteCollector = require('./suite-collector');
 
 const builtInReporters = {
   console: require('./console'),
@@ -36,7 +37,7 @@ module.exports = class TopReporter {
         try {
           reporter.onEvent(event, data);
         } catch(e) {
-          console.log(`Error in reporter ${reporter.constructor.name}`);
+          console.log(`Error in reporter ${reporter.constructor.name}`, e);
         }
       }
     });
@@ -44,15 +45,40 @@ module.exports = class TopReporter {
   _handleEvent(event, data) {
     switch (event) {
       case events.START: {
-        this._collector = new Collector(this, data.envSuites);
+        this._suiteCollector = new SuiteCollector(this);
+        this._envCollector = new EnvCollector(this, data.envs);
+        break;
+      }
+      case events.ENV_START: {
+        this._envCollector.handleEnvStart(data);
+        break;
+      }
+      case events.SESSION_START: {
+        this._envCollector.handleSessionStart(data);
+        break;
+      }
+      case events.SESSION_END: {
+        this._envCollector.handleSessionEnd(data);
         break;
       }
       case events.SESSION_SUITE_START: {
-        this._collector.handleSessionSuiteStart(data);
+        this._suiteCollector.handleSessionSuiteStart(data);
         break;
       }
       case events.SESSION_SUITE_END: {
-        this._collector.handleSessionSuiteEnd(data);
+        this._suiteCollector.handleSessionSuiteEnd(data);
+        break;
+      }
+      case events.SUITE_START: {
+        if (!data.suite.parent) {
+          this._envCollector.handleFileSuiteStart(data);
+        }
+        break;
+      }
+      case events.SUITE_END: {
+        if (!data.suite.parent) {
+          this._envCollector.handleFileSuiteEnd(data);
+        }
         break;
       }
     }
