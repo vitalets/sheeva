@@ -1,5 +1,5 @@
 /**
- * Sticks terminal cursor to current positiion and allows to update lines below
+ * Sticks to some line in terminal and allows to update all lines below later
  *
  * @type {StickyCursor}
  */
@@ -10,33 +10,31 @@ const EOL = require('os').EOL;
 module.exports = class StickyCursor {
   constructor () {
     // height of block where we are working now
-    this._height = 0;
-  }
-
-  unstick() {
-    this._down(this._height + 1);
+    this._currentRow = 0;
   }
 
   write(row, str) {
-    this._down(row);
+    this._addLines(row);
+    this._upTo(row);
     process.stdout.write(clc.erase.line);
     process.stdout.write(clc.move.left(clc.windowSize.width));
     process.stdout.write(str);
-    this._up(row);
+    this._returnFrom(row);
   }
 
-  _up(n) {
-    process.stdout.write(clc.move.up(n));
+  _upTo(row) {
+    process.stdout.write(clc.move.up(this._currentRow - row));
   }
 
-  _down(n) {
-    for (let i = 0; i < n; i++) {
-      if (i < this._height) {
-        process.stdout.write(clc.move.down(n));
-      } else {
-        process.stdout.write(EOL);
-        this._height++;
-      }
+  _addLines(row) {
+    for (let i = this._currentRow; i < row + 1; i++) {
+      process.stdout.write(EOL);
+      this._currentRow++;
     }
+  }
+
+  _returnFrom(row) {
+    process.stdout.write(clc.move.down(this._currentRow - row));
+    process.stdout.write(clc.move.left(clc.windowSize.width));
   }
 };

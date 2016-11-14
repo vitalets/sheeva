@@ -3,8 +3,7 @@
  */
 
 const events = require('../events');
-const EnvCollector = require('./env-collector');
-const SuiteCollector = require('./suite-collector');
+const Collector = require('./collector');
 
 const builtInReporters = {
   console: require('./console'),
@@ -45,40 +44,29 @@ module.exports = class TopReporter {
   _handleEvent(event, data) {
     switch (event) {
       case events.START: {
-        this._suiteCollector = new SuiteCollector(this);
-        this._envCollector = new EnvCollector(this, data.envs);
-        break;
-      }
-      case events.ENV_START: {
-        this._envCollector.handleEnvStart(data);
+        this._collector = new Collector(this);
         break;
       }
       case events.SESSION_START: {
-        this._envCollector.handleSessionStart(data);
+        this._collector.handleSessionStart(data);
         break;
       }
       case events.SESSION_END: {
-        this._envCollector.handleSessionEnd(data);
+        this._collector.handleSessionEnd(data);
         break;
       }
       case events.SESSION_SUITE_START: {
-        this._suiteCollector.handleSessionSuiteStart(data);
+        this._collector.handleSessionSuiteStart(data);
         break;
       }
       case events.SESSION_SUITE_END: {
-        this._suiteCollector.handleSessionSuiteEnd(data);
+        this._collector.handleSessionSuiteEnd(data);
         break;
       }
       case events.SUITE_START: {
-        if (!data.suite.parent) {
-          this._envCollector.handleFileSuiteStart(data);
-        }
         break;
       }
       case events.SUITE_END: {
-        if (!data.suite.parent) {
-          this._envCollector.handleFileSuiteEnd(data);
-        }
         break;
       }
     }

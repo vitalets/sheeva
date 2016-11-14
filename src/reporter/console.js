@@ -20,11 +20,11 @@ module.exports = class ConsoleReporter {
         console.log(`Sheeva started.`);
         console.log(`Processed ${num(files.length)} file(s).`);
         console.log(`Running on ${num(envs.length)} env(s) with concurrency = ${num(config.concurrency)}.`);
+        this._cursor = new StickyCursor();
         this._initEnvStat(envs);
         break;
       }
       case events.END: {
-        this._cursor.unstick();
         console.log(`Done.`);
         break;
       }
@@ -32,7 +32,6 @@ module.exports = class ConsoleReporter {
         const stat = this._getStat(data.env);
         stat.label = data.label;
         stat.tests.total = data.testsCount;
-        this._cursor = new StickyCursor();
         this._printEnvTestsStat(stat);
         break;
       }
@@ -79,6 +78,7 @@ module.exports = class ConsoleReporter {
         stat.tests.ended++;
         if (data.error) {
           stat.tests.errors++;
+          //stat.errors.push(data);
           //console.log(`Env:`,data.env);
           //console.log(`FAIL:\n${formatTestError(data)}`);
           //processError(data);
@@ -103,6 +103,7 @@ module.exports = class ConsoleReporter {
           success: 0,
           errors: 0,
         },
+        errors: [],
         sessions: new Map()
       });
     });
@@ -112,7 +113,9 @@ module.exports = class ConsoleReporter {
   }
   _printEnvTestsStat({label, tests}) {
     let line = `${clc.bold(label)}: executed ${num(tests.ended)} of ${num(tests.total)} test(s) `;
-    line += tests.errors ? clc.red(`${tests.errors} ERROR(S)`) : clc.green(`SUCCESS`);
+    line += tests.errors
+      ? clc.red(`${tests.errors} ERROR(S)`)
+      : (tests.success  ? clc.green(`SUCCESS`) : '');
     this._cursor.write(0, line);
   }
   _printEnvSessionStat({index, currentFile, done}) {
@@ -140,6 +143,10 @@ function formatTestError(data) {
     .concat([data.test.name])
     .map((item, i) => ' '.repeat(i * 2) + item)
     .join('\n');
+}
+
+function printErrors(errors) {
+
 }
 
 function num(str) {

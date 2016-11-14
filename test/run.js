@@ -2,11 +2,11 @@
  * Main selftest runner
  */
 
-require('./setup');
+require('./sub-run');
 const Sheeva = require('../src');
 
 const config = {
-  // concurrency: 2,
+  concurrency: 1,
   files: './test/specs/*.test.js',
   //files: './test/specs/only.test.js',
   createEnvs: function () {
