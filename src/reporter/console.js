@@ -30,7 +30,7 @@ module.exports = class ConsoleReporter {
       case events.ENV_START: {
         const stat = this._getStat(data.env);
         stat.label = data.label;
-        stat.total = data.queues.reduce((res, queue) => res + queue.tests.length, 0);
+        stat.total = data.testsCount;
         this._cursor = new StickyCursor();
         this._printEnvStat(stat);
         break;

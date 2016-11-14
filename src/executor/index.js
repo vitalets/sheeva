@@ -46,7 +46,8 @@ module.exports = class Executor {
         .filter(queue => !queue.isEmpty());
       if (this._queues.length) {
         const label = this._config.createEnvLabel(env);
-        this._reporter.onEvent(ENV_START, {env, label, queues: this._queues});
+        const testsCount = this._queues.reduce((res, queue) => res + queue.tests.length, 0);
+        this._reporter.onEvent(ENV_START, {env, label, testsCount, queues: this._queues});
       }
     }
   }
