@@ -12,6 +12,8 @@ module.exports = class ConsoleReporter {
     this._envStat = new Map();
     this._cursor = null;
     this._errors = [];
+    // temp:
+    this._startTime = null;
   }
   onEvent(event, data) {
     // console.log('console-reporter:', event, data.error)
@@ -26,10 +28,12 @@ module.exports = class ConsoleReporter {
         console.log(`Running on ${num(envs.length)} env(s) with concurrency = ${num(config.concurrency)}.`);
         this._cursor = new StickyCursor();
         this._initEnvStat(envs);
+        this._startTime = data.timestamp;
         break;
       }
       case events.END: {
         printErrors(this._errors);
+        console.log(`Time: ${Date.now() - this._startTime} ms`);
         console.log(`Done.`);
         break;
       }
