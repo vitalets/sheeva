@@ -8,7 +8,6 @@ const Suite = require('./suite');
 const api = require('./api');
 const builder = require('./builder');
 const meta = require('./meta');
-const debug = require('../debug');
 
 module.exports = class Reader {
   /**

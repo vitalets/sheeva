@@ -2,7 +2,7 @@
  * Controls concurrency pool of sessions
  */
 
-const utils = require('../utils');
+const Promised = require('../utils/promised');
 const Session = require('./session');
 
 module.exports = class Pool {
@@ -19,7 +19,7 @@ module.exports = class Pool {
     this._config = options.config;
     this._getQueue = options.getQueue;
     this._slots = new Set();
-    this._promised = new utils.Promised();
+    this._promised = new Promised();
   }
 
   /**

@@ -6,7 +6,7 @@
  * @type {Queue}
  */
 
-const utils = require('../utils');
+const Promised = require('../utils/promised');
 const Caller = require('./caller');
 
 module.exports = class Queue {
@@ -23,7 +23,7 @@ module.exports = class Queue {
     this.currentTest = null;
     this.nextTest = this.tests[0];
     this.suiteStack = [];
-    this.promised = new utils.Promised();
+    this.promised = new Promised();
   }
 
   isEmpty() {

@@ -4,7 +4,6 @@
 
 const Queue = require('./queue');
 const Pool = require('./pool');
-const debug = require('../debug');
 const {ENV_START} = require('../events');
 
 module.exports = class Executor {

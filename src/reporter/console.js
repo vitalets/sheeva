@@ -2,26 +2,28 @@
  * Reporter that just put events into log
  */
 
-// const status = require('node-status');
-const {bold, blue, green, red} = require('colors/safe');
+const clc = require('cli-color');
+const StickyCursor = require('../utils/sticky-cursor');
 const events = require('../events');
 
 module.exports = class ConsoleReporter {
   constructor() {
     this._envFiles = new Map();
+    this._cursor = null;
   }
   onEvent(event, data) {
     // console.log('console-reporter:', event, data.error)
     switch (event) {
       case events.START: {
         const {files, config, envs} = data;
+        console.log(`Sheeva started.`);
         console.log(`Processed ${num(files.length)} file(s).`);
         console.log(`Running on ${num(envs.length)} env(s) with concurrency = ${num(config.concurrency)}.`);
         this._initEnvFiles(envs);
         break;
       }
       case events.END: {
-        console.log('');
+        this._cursor.unstick();
         console.log(`Done.`);
         break;
       }
@@ -29,7 +31,7 @@ module.exports = class ConsoleReporter {
         const stat = this._getStat(data.env);
         stat.label = data.label;
         stat.total = data.queues.reduce((res, queue) => res + queue.tests.length, 0);
-        console.log('');
+        this._cursor = new StickyCursor();
         this._printEnvStat(stat);
         break;
       }
@@ -38,7 +40,7 @@ module.exports = class ConsoleReporter {
         break;
       }
       case events.SESSION_START: {
-        // console.log(event);
+        this._cursor.write(1, 'Session start');
         break;
       }
       case events.SESSION_END: {
@@ -87,11 +89,9 @@ module.exports = class ConsoleReporter {
     return this._envFiles.get(env);
   }
   _printEnvStat({label, total, ended, errors}) {
-    let line = `${bold(label)}: executed ${num(ended)} of ${num(total)} test(s) `;
-    line += errors ? red(`${errors} ERROR(S)`) : green(`SUCCESS`);
-
-    //console.log(line);
-    process.stdout.write(`\r${line}`);
+    let line = `${clc.bold(label)}: executed ${num(ended)} of ${num(total)} test(s) `;
+    line += errors ? clc.red(`${errors} ERROR(S)`) : clc.green(`SUCCESS`);
+    this._cursor.write(0, line);
   }
 };
 
@@ -111,7 +111,7 @@ function formatTestError(data) {
 }
 
 function num(str) {
-  return blue.bold(str);
+  return clc.blue.bold(str);
 }
 
 /*
