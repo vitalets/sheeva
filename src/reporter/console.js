@@ -3,12 +3,13 @@
  */
 
 const clc = require('cli-color');
+const path = require('path');
 const StickyCursor = require('../utils/sticky-cursor');
 const events = require('../events');
 
 module.exports = class ConsoleReporter {
   constructor() {
-    this._envFiles = new Map();
+    this._envStat = new Map();
     this._cursor = null;
   }
   onEvent(event, data) {
@@ -19,7 +20,7 @@ module.exports = class ConsoleReporter {
         console.log(`Sheeva started.`);
         console.log(`Processed ${num(files.length)} file(s).`);
         console.log(`Running on ${num(envs.length)} env(s) with concurrency = ${num(config.concurrency)}.`);
-        this._initEnvFiles(envs);
+        this._initEnvStat(envs);
         break;
       }
       case events.END: {
@@ -30,9 +31,9 @@ module.exports = class ConsoleReporter {
       case events.ENV_START: {
         const stat = this._getStat(data.env);
         stat.label = data.label;
-        stat.total = data.testsCount;
+        stat.tests.total = data.testsCount;
         this._cursor = new StickyCursor();
-        this._printEnvStat(stat);
+        this._printEnvTestsStat(stat);
         break;
       }
       case events.ENV_END: {
@@ -40,15 +41,33 @@ module.exports = class ConsoleReporter {
         break;
       }
       case events.SESSION_START: {
-        this._cursor.write(1, 'Session start');
+        const stat = this._getStat(data.env);
+        const sessionStat = {
+          index: stat.sessions.size,
+          currentFile: '',
+          done: false,
+        };
+        stat.sessions.set(data.session, sessionStat);
+        this._printEnvSessionStat(sessionStat);
         break;
       }
       case events.SESSION_END: {
-        // console.log(event);
+        const stat = this._getStat(data.env);
+        const sessionStat = stat.sessions.get(data.session);
+        sessionStat.currentFile = '';
+        sessionStat.done = true;
+        stat.sessions.set(data.session, sessionStat);
+        this._printEnvSessionStat(sessionStat);
         break;
       }
       case events.SUITE_START: {
-        // console.log(event);
+        if (!data.suite.parent) {
+          const stat = this._getStat(data.env);
+          const sessionStat = stat.sessions.get(data.session);
+          sessionStat.currentFile = data.suite.name;
+          stat.sessions.set(data.session, sessionStat);
+          this._printEnvSessionStat(sessionStat);
+        }
         break;
       }
       case events.SUITE_END: {
@@ -57,41 +76,54 @@ module.exports = class ConsoleReporter {
       }
       case events.TEST_END: {
         const stat = this._getStat(data.env);
-        stat.ended++;
+        stat.tests.ended++;
         if (data.error) {
-          stat.errors++;
+          stat.tests.errors++;
           //console.log(`Env:`,data.env);
           //console.log(`FAIL:\n${formatTestError(data)}`);
           //processError(data);
         } else {
-          stat.success++;
+          stat.tests.success++;
         }
-        this._printEnvStat(stat);
+        this._printEnvTestsStat(stat);
         return;
       }
     }
     processError(data);
   }
-  _initEnvFiles(envs) {
+  _initEnvStat(envs) {
     envs.forEach((env, index) => {
-      this._envFiles.set(env, {
+      this._envStat.set(env, {
         index,
         label: '',
-        total: 0,
-        running: 0,
-        ended: 0,
-        success: 0,
-        errors: 0,
+        tests: {
+          total: 0,
+          running: 0,
+          ended: 0,
+          success: 0,
+          errors: 0,
+        },
+        sessions: new Map()
       });
     });
   }
   _getStat(env) {
-    return this._envFiles.get(env);
+    return this._envStat.get(env);
   }
-  _printEnvStat({label, total, ended, errors}) {
-    let line = `${clc.bold(label)}: executed ${num(ended)} of ${num(total)} test(s) `;
-    line += errors ? clc.red(`${errors} ERROR(S)`) : clc.green(`SUCCESS`);
+  _printEnvTestsStat({label, tests}) {
+    let line = `${clc.bold(label)}: executed ${num(tests.ended)} of ${num(tests.total)} test(s) `;
+    line += tests.errors ? clc.red(`${tests.errors} ERROR(S)`) : clc.green(`SUCCESS`);
     this._cursor.write(0, line);
+  }
+  _printEnvSessionStat({index, currentFile, done}) {
+    let line = `Session #${index + 1}: `;
+    if (currentFile) {
+      const filename = path.basename(currentFile);
+      line += `${filename}`;
+    } else {
+      line += done ? `done` : `starting...`;
+    }
+    this._cursor.write(index + 1, line);
   }
 };
 

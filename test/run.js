@@ -12,7 +12,7 @@ const config = {
   createEnvs: function () {
     return [
      // {id: 'tests-sync'},
-      {id: 'tests-async', delay: 10},
+      {id: 'tests-async', delay: 100},
     ];
   },
   createEnvLabel: function (env) {

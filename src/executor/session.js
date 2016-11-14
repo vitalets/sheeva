@@ -33,7 +33,7 @@ module.exports = class Session {
       .then(() => this._config.createSessionData(this._env))
       .then(data => {
         this._data = data;
-        this._reporter.onEvent(SESSION_START, {session: this});
+        this.emit(SESSION_START);
       });
   }
 
@@ -42,7 +42,7 @@ module.exports = class Session {
       .then(() => this._config.clearSessionData(this._data, this))
       .then(() => {
         this._data = null;
-        this._reporter.onEvent(SESSION_END, {session: this});
+        this.emit(SESSION_END);
       });
   }
 
