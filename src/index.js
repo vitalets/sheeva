@@ -34,7 +34,14 @@ module.exports = class Sheeva {
     this._reader.read(this._config.context, this._config.files);
     this._emitStart();
     return this._executor.run(this._reader.envSuites)
-      .then(() => this._emitEnd(), e => console.log(e))
+      .then(
+        () => this._emitEnd(),
+        e => {
+          console.log('Sheeva error!');
+          console.log(e);
+          process.exit(1);
+        }
+      )
   }
   getReporter(index) {
     return this._reporter.get(index);

@@ -5,10 +5,9 @@ const Sheeva = require('../src');
 // globals
 global.expect = expect;
 global.noop = function () {};
-global.mocks = new Map();
 global.run = runSheeva;
 
-function runSheeva(file, env) {
+function runSheeva(file, env, mocks = {}) {
   clearRequireCache(file);
   const sheeva = new Sheeva({
     reporters: require('./log-reporter'),
@@ -18,7 +17,7 @@ function runSheeva(file, env) {
         env,
       ];
     },
-    createWrapFn: createWrapFn,
+    createWrapFn: createWrapFn.bind(null, mocks),
   });
   return sheeva.run()
     .then(() => sheeva.getReporter(0).getLog(env));
@@ -29,13 +28,12 @@ function clearRequireCache(file) {
   delete require.cache[absPath];
 }
 
-function createWrapFn({env, fn, test, hookType, suite, hookIndex}) {
+function createWrapFn(mocks, {env, fn, test, hookType, suite, hookIndex}) {
   const name = test
     ? test.name
     : `${suite.parent ? suite.name + ' ' : ''}${hookType} ${hookIndex}`;
-  if (mocks.has(name)) {
-    fn = mocks.get(name);
-    mocks.delete(name);
+  if (mocks && mocks[name]) {
+    fn = mocks[name];
   }
   return function () {
     if (env.id === 'tests-sync') {

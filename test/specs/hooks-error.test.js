@@ -5,14 +5,8 @@ describe('hooks error', () => {
     throw new Error('err');
   }
 
-  beforeEach(() => {
-    mocks.clear();
-  });
-
-  //$only();
   it('should run all hooks in case of test error', env => {
-    mocks.set('test 0', error);
-    const report = run('./test/data/hooks-it.js', env);
+    const report = run('./test/data/hooks-it.js', env, {'test 0': error});
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -34,8 +28,7 @@ describe('hooks error', () => {
   });
 
   it('should skip suite in case of before error', env => {
-    mocks.set('before 0', error);
-    const report = run('./test/data/hooks-it.js',env);
+    const report = run('./test/data/hooks-it.js', env, {'before 0': error});
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0 err',
@@ -46,8 +39,7 @@ describe('hooks error', () => {
   });
 
   it('should skip suite in case of before second error', env => {
-    mocks.set('before 1', error);
-    const report = run('./test/data/hooks-it.js', env);
+    const report = run('./test/data/hooks-it.js', env, {'before 1': error});
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -59,8 +51,7 @@ describe('hooks error', () => {
   });
 
   it('should skip suite in case of beforeEach error', env => {
-    mocks.set('beforeEach 0', error);
-    const report = run('./test/data/hooks-it.js', env);
+    const report = run('./test/data/hooks-it.js', env, {'beforeEach 0': error});
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -75,8 +66,7 @@ describe('hooks error', () => {
   });
 
   it('should skip suite in case of beforeEach second error', env => {
-    mocks.set('beforeEach 1', error);
-    const report = run('./test/data/hooks-it.js', env);
+    const report = run('./test/data/hooks-it.js', env, {'beforeEach 1': error});
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -92,8 +82,7 @@ describe('hooks error', () => {
   });
 
   it('should skip rest of tests in case of afterEach error', env => {
-    mocks.set('afterEach 0', error);
-    const report = run('./test/data/hooks-it.js', env);
+    const report = run('./test/data/hooks-it.js', env, {'afterEach 0': error});
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -109,8 +98,7 @@ describe('hooks error', () => {
   });
 
   it('should skip rest of tests in case of afterEach second error', env => {
-    mocks.set('afterEach 1', error);
-    const report = run('./test/data/hooks-it.js', env);
+    const report = run('./test/data/hooks-it.js', env, {'afterEach 1': error});
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -127,8 +115,7 @@ describe('hooks error', () => {
   });
 
   it('should run all hooks in case of after error', env => {
-    mocks.set('after 0', error);
-    const report = run('./test/data/hooks-it.js', env);
+    const report = run('./test/data/hooks-it.js', env, {'after 0': error});
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -149,8 +136,7 @@ describe('hooks error', () => {
   });
 
   it('should run all hooks in case of after second error', env => {
-    mocks.set('after 1', error);
-    const report = run('./test/data/hooks-it.js', env);
+    const report = run('./test/data/hooks-it.js', env, {'after 1': error});
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',

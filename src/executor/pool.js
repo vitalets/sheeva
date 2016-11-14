@@ -38,7 +38,7 @@ module.exports = class Pool {
       const queue = this._getQueue();
       if (queue) {
         this._runOnNewSession(queue)
-          .catch(e => console.log('POOL ERROR', e))
+          .catch(e => this._promised.reject(e));
       } else {
         this._checkDone();
         break;

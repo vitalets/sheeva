@@ -34,7 +34,8 @@ module.exports = class Queue {
     return this.promised.call(() => {
       this.session = session;
       this.caller = new Caller(session);
-      this.next();
+      this.next()
+        .catch(e => this.promised.reject(e));
     });
   }
 
@@ -47,8 +48,10 @@ module.exports = class Queue {
       .then(() => {
         if (this.currentTest) {
           return this.caller.callTest(this.suiteStack, this.currentTest)
-            .catch(() => this.handleHookError())
-            .then(() => this.next())
+            .then(
+              () => this.next(),
+              () => this.handleHookError()
+            )
         } else {
           this.promised.resolve();
         }
@@ -86,6 +89,9 @@ module.exports = class Queue {
    * Increments currentIndex and set currentTest / nextTest
    */
   incrementIndex() {
+    if (this.currentIndex === this.tests.length) {
+      throw new Error(`Going out of queue: ${this.suite.name}`);
+    }
     this.currentIndex++;
     this.currentTest = this.nextTest;
     this.nextTest = this.tests[this.currentIndex + 1];
@@ -125,7 +131,8 @@ module.exports = class Queue {
   handleHookError() {
     this.incrementIndexUntilSuiteEnd(this.caller.errorSuite);
     // all needed `after` hooks will be called in moveToNextTest
-    return this.moveToNextTest();
+    //return this.moveToNextTest();
+    return this.next();
   }
 
   /**

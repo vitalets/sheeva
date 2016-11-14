@@ -11,9 +11,13 @@ module.exports = class ConsoleReporter {
   constructor() {
     this._envStat = new Map();
     this._cursor = null;
+    this._errors = [];
   }
   onEvent(event, data) {
     // console.log('console-reporter:', event, data.error)
+    if (data.error) {
+      this._errors.push(data);
+    }
     switch (event) {
       case events.START: {
         const {files, config, envs} = data;
@@ -25,6 +29,7 @@ module.exports = class ConsoleReporter {
         break;
       }
       case events.END: {
+        printErrors(this._errors);
         console.log(`Done.`);
         break;
       }
@@ -78,10 +83,6 @@ module.exports = class ConsoleReporter {
         stat.tests.ended++;
         if (data.error) {
           stat.tests.errors++;
-          //stat.errors.push(data);
-          //console.log(`Env:`,data.env);
-          //console.log(`FAIL:\n${formatTestError(data)}`);
-          //processError(data);
         } else {
           stat.tests.success++;
         }
@@ -89,7 +90,7 @@ module.exports = class ConsoleReporter {
         return;
       }
     }
-    processError(data);
+    // processError(data);
   }
   _initEnvStat(envs) {
     envs.forEach((env, index) => {
@@ -130,23 +131,25 @@ module.exports = class ConsoleReporter {
   }
 };
 
-function processError(data) {
-  const error = data && data.error;
-  if (error) {
-    console.log(error.name === 'UnexpectedError' ? error.message : error);
-  }
-}
+// function processError(data) {
+//   const error = data && data.error;
+//   if (error) {
+//     console.log(error.name === 'UnexpectedError' ? error.message : error);
+//   }
+// }
 
 function formatTestError(data) {
   return []
     .concat(data.test.parents.map(suite => suite.name))
     .concat([data.test.name])
     .map((item, i) => ' '.repeat(i * 2) + item)
+    .concat([data.error.message])
     .join('\n');
 }
 
 function printErrors(errors) {
-
+  console.log(`ERRORS: ${errors.length}`);
+  errors.forEach(data => console.log(data.test ? formatTestError(data) : data.error))
 }
 
 function num(str) {
