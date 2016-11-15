@@ -1,6 +1,8 @@
 /**
- * Collects runtime data about suites and emit
- * SUITE_START and final SUITE_END events
+ * Collects runtime data and emits iitial/final events.
+ * - SUITE_START
+ * - SUITE_END
+ * - ENV_END
  */
 
 const events = require('../events');

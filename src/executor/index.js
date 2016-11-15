@@ -58,6 +58,7 @@ module.exports = class Executor {
     } else if (this._queues.length) {
       return this._queues.shift();
     } else {
+      // dont emit ENV_END here as sessions still finishing queues
       this._nextEnv();
       return this._getNextQueue();
     }

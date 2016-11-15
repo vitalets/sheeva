@@ -41,7 +41,7 @@ module.exports = class ConsoleReporter {
         const stat = this._getStat(data.env);
         stat.label = data.label;
         stat.tests.total = data.testsCount;
-        this._printEnvTestsStat(stat);
+        this._printEnvTestsStat(data.env, stat);
         break;
       }
       case events.ENV_END: {
@@ -56,7 +56,7 @@ module.exports = class ConsoleReporter {
           done: false,
         };
         stat.sessions.set(data.session, sessionStat);
-        this._printEnvSessionStat(sessionStat);
+        this._printEnvSessionStat(data.env, sessionStat);
         break;
       }
       case events.SESSION_END: {
@@ -65,7 +65,7 @@ module.exports = class ConsoleReporter {
         sessionStat.currentFile = '';
         sessionStat.done = true;
         stat.sessions.set(data.session, sessionStat);
-        this._printEnvSessionStat(sessionStat);
+        this._printEnvSessionStat(data.env, sessionStat);
         break;
       }
       case events.SUITE_START: {
@@ -74,7 +74,7 @@ module.exports = class ConsoleReporter {
           const sessionStat = stat.sessions.get(data.session);
           sessionStat.currentFile = data.suite.name;
           stat.sessions.set(data.session, sessionStat);
-          this._printEnvSessionStat(sessionStat);
+          this._printEnvSessionStat(data.env, sessionStat);
         }
         break;
       }
@@ -90,11 +90,10 @@ module.exports = class ConsoleReporter {
         } else {
           stat.tests.success++;
         }
-        this._printEnvTestsStat(stat);
+        this._printEnvTestsStat(data.env, stat);
         return;
       }
     }
-    // processError(data);
   }
   _initEnvStat(envs) {
     envs.forEach((env, index) => {
@@ -116,14 +115,15 @@ module.exports = class ConsoleReporter {
   _getStat(env) {
     return this._envStat.get(env);
   }
-  _printEnvTestsStat({label, tests}) {
+  _printEnvTestsStat(env, {label, tests}) {
     let line = `${clc.bold(label)}: executed ${num(tests.ended)} of ${num(tests.total)} test(s) `;
     line += tests.errors
       ? clc.red(`${tests.errors} ERROR(S)`)
       : (tests.success  ? clc.green(`SUCCESS`) : '');
-    this._cursor.write(0, line);
+    const row = this._getRow(env);
+    this._cursor.write(row, line);
   }
-  _printEnvSessionStat({index, currentFile, done}) {
+  _printEnvSessionStat(env, {index, currentFile, done}) {
     let line = `Session #${index + 1}: `;
     if (currentFile) {
       const filename = path.basename(currentFile);
@@ -131,7 +131,19 @@ module.exports = class ConsoleReporter {
     } else {
       line += done ? `done` : `starting...`;
     }
-    this._cursor.write(index + 1, line);
+    const row = this._getRow(env) + index + 1;
+    this._cursor.write(row, line);
+  }
+  _getRow(env) {
+    let row = 0;
+    for (let key of this._envStat.keys()) {
+      if (key !== env) {
+        row += this._envStat.get(key).sessions.size + 1;
+      } else {
+        break;
+      }
+    }
+    return row;
   }
 };
 

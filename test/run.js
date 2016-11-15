@@ -11,8 +11,9 @@ const config = {
   //files: './test/specs/only.test.js',
   createEnvs: function () {
     return [
-      // {id: 'tests-sync'},
-      {id: 'tests-async', delay: 10},
+      {id: 'tests-sync'},
+      {id: 'tests-async', delay: 30},
+      //{id: 'tests-async2', delay: 40},
     ];
   },
   createEnvLabel: function (env) {
