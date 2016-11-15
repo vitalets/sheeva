@@ -33,7 +33,7 @@ module.exports = class ConsoleReporter {
       }
       case events.END: {
         printErrors(this._errors);
-        console.log(`Time: ${Date.now() - this._startTime} ms`);
+        console.log(`Time: ${clc.cyan(Date.now() - this._startTime)} ms`);
         console.log(`Done.`);
         break;
       }
@@ -53,6 +53,7 @@ module.exports = class ConsoleReporter {
         const sessionStat = {
           index: stat.sessions.size,
           currentFile: '',
+          doneFiles: 0,
           done: false,
         };
         stat.sessions.set(data.session, sessionStat);
@@ -79,7 +80,13 @@ module.exports = class ConsoleReporter {
         break;
       }
       case events.SUITE_END: {
-        // console.log(event);
+        if (!data.suite.parent) {
+          const stat = this._getStat(data.env);
+          const sessionStat = stat.sessions.get(data.session);
+          sessionStat.doneFiles++;
+          stat.sessions.set(data.session, sessionStat);
+          this._printEnvSessionStat(data.env, sessionStat);
+        }
         break;
       }
       case events.TEST_END: {
@@ -123,13 +130,13 @@ module.exports = class ConsoleReporter {
     const row = this._getRow(env);
     this._cursor.write(row, line);
   }
-  _printEnvSessionStat(env, {index, currentFile, done}) {
-    let line = `Session #${index + 1}: `;
+  _printEnvSessionStat(env, {index, currentFile, done, doneFiles}) {
+    let line = clc.magenta(`Session #${index + 1}: `);
     if (currentFile) {
       const filename = path.basename(currentFile);
       line += `${filename}`;
     } else {
-      line += done ? `done` : `starting...`;
+      line += done ? `done ${doneFiles} file(s)` : `starting...`;
     }
     const row = this._getRow(env) + index + 1;
     this._cursor.write(row, line);

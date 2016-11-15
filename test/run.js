@@ -27,5 +27,3 @@ const config = {
 };
 
 new Sheeva(config).run();
-
-
