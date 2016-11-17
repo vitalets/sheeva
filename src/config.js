@@ -6,8 +6,10 @@
  * @type {Config}
  */
 const defaults = {
+  /**
+   * Test files pattern or array of patterns
+   */
   files: '',
-  context: global,
   concurrency: 1,
   reporters: [],
   tags: [],

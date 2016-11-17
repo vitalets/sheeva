@@ -31,7 +31,7 @@ module.exports = class Sheeva {
       reporter: this._reporter,
       config: this._config,
     });
-    this._reader.read(this._config.context, this._config.files);
+    this._reader.read(this._config.files);
     this._emitStart();
     return this._executor.run(this._reader.envSuites)
       .then(

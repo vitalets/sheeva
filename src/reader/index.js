@@ -24,11 +24,11 @@ module.exports = class Reader {
     this._envs.forEach(env => this._envSuites.set(env, []));
     meta.setTags(options.tags);
   }
-  read(context, pattern) {
+  read(pattern) {
     this._files = glob.sync(pattern);
-    exposeApi(context);
+    exposeApi(global);
     this._readFiles();
-    cleanupApi(context);
+    cleanupApi(global);
     if (this._hasOnly()) {
       this._processOnly();
     }

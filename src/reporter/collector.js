@@ -6,7 +6,7 @@
  */
 
 const events = require('../events');
-const Counter = require('../utils/counter');
+const Counter = require('./counter');
 
 module.exports = class SuiteCollector {
   constructor(reporter) {
