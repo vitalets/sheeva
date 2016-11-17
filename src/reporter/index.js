@@ -5,11 +5,6 @@
 const events = require('../events');
 const Collector = require('./collector');
 
-const builtInReporters = {
-  console: require('./console'),
-  json: require('./json'),
-};
-
 module.exports = class TopReporter {
   /**
    * Constructor
@@ -18,8 +13,7 @@ module.exports = class TopReporter {
    * @param {Array} options.reporters
    */
   constructor(options) {
-    const reporters = Array.isArray(options.reporters) ? options.reporters : [options.reporters];
-    this._reporters = reporters.map(createReporter).filter(Boolean);
+    this._reporters = options.reporters.map(createReporter).filter(Boolean);
   }
   get(index) {
     return this._reporters[index];
@@ -73,24 +67,13 @@ module.exports = class TopReporter {
   }
 };
 
-function createReporter(Reporter) {
-  if (!Reporter) {
+function createReporter(reporter) {
+  if (!reporter) {
     return null;
-  }
-
-  if (typeof Reporter === 'string') {
-    if (builtInReporters.hasOwnProperty(Reporter)) {
-      Reporter = builtInReporters[Reporter];
-    } else {
-      // todo: require
-      throw new Error(`Reporter not found: ${Reporter}`)
-    }
-  }
-
-  if (typeof Reporter === 'function') {
-    return new Reporter();
   } else {
-    throw new Error(`Reporter should be a class or constructor, got ${typeof Reporter}`);
+    return typeof reporter === 'function'
+      ? new reporter()
+      : reporter;
   }
 }
 

@@ -9,16 +9,16 @@ const defaults = {
   files: '',
   context: global,
   concurrency: 1,
-  reporters: 'console',
+  reporters: [],
   tags: [],
   splitSuites: false,
   createEnvs: function () {
     return [
-      'defaultEnv'
+      {id: 'defaultEnv'}
     ];
   },
   createEnvLabel: function (env) {
-    return typeof env === 'string' ? env : JSON.stringify(env);
+    return env.id;
   },
   createSessionData: function (env) {
     return {};
@@ -47,5 +47,7 @@ const defaults = {
 };
 
 module.exports = function (config) {
-  return Object.assign({}, defaults, config);
+  const result = Object.assign({}, defaults, config);
+  result.reporters = Array.isArray(result.reporters) ? result.reporters : [result.reporters];
+  return result;
 };

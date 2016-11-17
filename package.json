@@ -1,24 +1,26 @@
 {
   "name": "sheeva",
   "version": "0.1.0",
-  "description": "Multi-hand Automation Test Runner",
+  "description": "Multi-Hand Automation Test Runner",
   "author": {
     "name": "Vitaliy Potapov",
     "email": "noginsk@rambler.ru"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vitalets/sheeva.git"
+  },
   "scripts": {
     "start": "node ./examples/run",
     "test": "node ./test/run",
-    "td": "devtool ./test/run",
+    "devtool": "devtool ./test/run",
     "mocha": "node ./examples/mocha"
   },
   "license": "MIT",
   "dependencies": {
-    "cli-color": "^1.1.0",
     "glob": "^7.1.1"
   },
   "devDependencies": {
-    "devtool": "^2.3.0",
     "eslint": "^3.9.1",
     "mocha": "^3.1.2",
     "treeify": "^1.0.1",

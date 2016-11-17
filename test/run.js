@@ -3,12 +3,14 @@
  */
 
 require('./sub-run');
+const ProgressReporter = require('sheeva-reporter-progress');
 const Sheeva = require('../src');
 
 const config = {
   concurrency: 2,
   files: './test/specs/*.test.js',
   //files: './test/specs/only.test.js',
+  reporters: ProgressReporter,
   createEnvs: function () {
     return [
       {id: 'tests-sync'},
