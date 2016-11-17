@@ -14,6 +14,7 @@ module.exports = class TopReporter {
    */
   constructor(options) {
     this._reporters = options.reporters.map(createReporter).filter(Boolean);
+    this._hasErrors = false;
   }
   get(index) {
     return this._reporters[index];
@@ -36,6 +37,9 @@ module.exports = class TopReporter {
     });
   }
   _handleEvent(event, data) {
+    if (!this._hasErrors && data.error) {
+      this._hasErrors = true;
+    }
     switch (event) {
       case events.START: {
         this._collector = new Collector(this);
@@ -68,9 +72,7 @@ module.exports = class TopReporter {
 };
 
 function createReporter(reporter) {
-  if (!reporter) {
-    return null;
-  } else {
+  if (reporter) {
     return typeof reporter === 'function'
       ? new reporter()
       : reporter;
