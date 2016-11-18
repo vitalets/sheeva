@@ -11,6 +11,7 @@ module.exports = class Suite {
    * @param {Object} options
    * @param {String} options.name
    * @param {Object} options.env
+   * @param {Number} options.originalIndex
    * @param {Boolean} [options.only=false]
    * @param {Boolean} [options.skip=false]
    * @param {Boolean} [options.serial=false]
@@ -23,22 +24,26 @@ module.exports = class Suite {
     this.skip = options.skip;
     this.serial = options.serial;
     this.isFile = options.isFile;
+    this.originalIndex = options.originalIndex;
+    // array of children suites and tests
+    this.children = [];
     this.parents = [];
     this.parent = undefined;
+    // true if suite has .only in nested children
     this.hasOnly = false;
     // hooks
     this.before = [];
     this.beforeEach = [];
     this.after = [];
     this.afterEach = [];
-    this.tests = [];
-    this.suites = [];
   }
-  addSuite(suite) {
-    this._addItem('suites', suite);
-  }
-  addTest(test) {
-    this._addItem('tests', test);
+  addChild(item) {
+    if (item.only && !this.hasOnly) {
+      this._setHasOnly();
+    }
+    this.children.push(item);
+    item.setParents(this.parents.concat([this]));
+    item.originalIndex = this.children.length - 1;
   }
   addHook(type, fn) {
     this[type].push(fn);
@@ -46,13 +51,6 @@ module.exports = class Suite {
   setParents(parents) {
     this.parents = parents;
     this.parent = parents[parents.length - 1];
-  }
-  _addItem(type, item) {
-    if (item.only && !this.hasOnly) {
-      this._setHasOnly();
-    }
-    this[type].push(item);
-    item.setParents(this.parents.concat([this]));
   }
   _setHasOnly() {
     this.hasOnly = true;

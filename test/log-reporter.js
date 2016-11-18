@@ -11,6 +11,7 @@ module.exports = class LogReporter {
   onEvent(event, data) {
     const env = data.env;
     //console.log('log-reporter:', new Date(data.timestamp), event)
+    //console.log('\nlog-reporter:', new Date(data.timestamp), event, data.test && data.test.name, '\n')
     //console.log('log-reporter:', event, data.error)
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
     const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
@@ -37,6 +38,7 @@ module.exports = class LogReporter {
       }
       case events.TEST_END: {
         this._push(env, `${event} ${data.test.name}${errMessage}`);
+        //console.log('\nlog-reporter:', new Date(data.timestamp), data.test.name, '\n')
         break;
       }
     }

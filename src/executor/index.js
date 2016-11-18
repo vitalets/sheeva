@@ -4,6 +4,7 @@
 
 const Queue = require('./queue');
 const Pool = require('./pool');
+const flatten = require('./flatten');
 const {ENV_START} = require('../events');
 
 module.exports = class Executor {
@@ -41,13 +42,9 @@ module.exports = class Executor {
       this._queues = null;
     } else {
       const [env, suites] = item.value;
-      this._queues = suites
-        .map(suite => new Queue(suite))
-        .filter(queue => !queue.isEmpty());
+      this._createQueues(suites);
       if (this._queues.length) {
-        const label = this._config.createEnvLabel(env);
-        const testsCount = this._queues.reduce((res, queue) => res + queue.tests.length, 0);
-        this._reporter.onEvent(ENV_START, {env, label, testsCount, queues: this._queues});
+        this._emitEnvStart(env);
       }
     }
   }
@@ -58,9 +55,21 @@ module.exports = class Executor {
     } else if (this._queues.length) {
       return this._queues.shift();
     } else {
-      // dont emit ENV_END here as sessions still finishing queues
+      // dont emit ENV_END here as sessions are still finishing
       this._nextEnv();
       return this._getNextQueue();
     }
+  }
+
+  _createQueues(suites) {
+    this._queues = flatten(suites)
+      .map(item => new Queue(item.tests))
+      .filter(queue => !queue.isEmpty());
+  }
+
+  _emitEnvStart(env) {
+    const label = this._config.createEnvLabel(env);
+    const testsCount = this._queues.reduce((res, queue) => res + queue.tests.length, 0);
+    this._reporter.onEvent(ENV_START, {env, label, testsCount, queues: this._queues});
   }
 };

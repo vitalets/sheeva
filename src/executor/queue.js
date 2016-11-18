@@ -13,12 +13,12 @@ module.exports = class Queue {
   /**
    * Constructor
    *
-   * @param {Suite} suite
+   * @param {Array} tests
    */
-  constructor(suite) {
+  constructor(tests) {
     // todo: make private fields
-    this.suite = suite;
-    this.tests = flatten(this.suite);
+    this.tests = tests;
+    this.suite = tests.length ? tests[0].parents[0] : null;
     this.currentIndex = -1;
     this.currentTest = null;
     this.nextTest = this.tests[0];
@@ -32,6 +32,7 @@ module.exports = class Queue {
 
   run(session) {
     return this.promised.call(() => {
+      // todo: is it used?
       this.session = session;
       this.caller = new Caller(session);
       this.next()
@@ -163,8 +164,3 @@ module.exports = class Queue {
     return this.currentTest.parent;
   }
 };
-
-function flatten(suite) {
-  const subTests = suite.suites.reduce((res, suite) => res.concat(flatten(suite)), []);
-  return suite.tests.concat(subTests);
-}

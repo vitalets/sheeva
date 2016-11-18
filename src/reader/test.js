@@ -13,6 +13,7 @@ module.exports = class Test {
    * @param {Function} options.fn
    * @param {Boolean} options.only
    * @param {Boolean} options.skip
+   * @param {Number} options.originalIndex
    */
   constructor(options) {
     // assert options
@@ -20,6 +21,7 @@ module.exports = class Test {
     this.fn = options.fn;
     this.only = options.only;
     this.skip = options.skip;
+    this.originalIndex = options.originalIndex;
     this.parents = [];
     this.parent = undefined;
   }

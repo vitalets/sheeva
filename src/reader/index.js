@@ -37,11 +37,12 @@ module.exports = class Reader {
     //debug.printTree(firstSuite);
   }
   _readFiles() {
-    this._files.forEach(file => {
+    this._files.forEach((file, index) => {
       const suites = this._envs.map(env => new Suite({
         name: file,
         isFile: true,
         env,
+        originalIndex: index
       }));
       const fn = () => require(path.resolve(file));
       builder.fillSuites(suites, fn);
@@ -63,7 +64,7 @@ module.exports = class Reader {
   }
   _processOnly() {
     this._envSuites.forEach((suites, env) => {
-      suites = suites.filter(filterOnly);
+      suites = suites.filter(extractOnly);
       this._envSuites.set(env, suites);
     });
   }
@@ -83,12 +84,11 @@ function cleanupApi(context) {
   Object.keys(api).forEach(key => delete context[key]);
 }
 
-function filterOnly(suite) {
+function extractOnly(suite) {
   if (suite.hasOnly) {
-    suite.tests = suite.tests.filter(test => test.only);
-    const onlySubSuites = suite.suites.filter(subSuite => subSuite.only);
-    const hasOnlySubSuites = suite.suites.filter(filterOnly);
-    suite.suites = onlySubSuites.concat(hasOnlySubSuites);
+    const childrenWithOnly = suite.children.filter(child => child.only);
+    const childrenHasOnly = suite.children.filter(extractOnly);
+    suite.children = childrenHasOnly.concat(childrenWithOnly);
     return true;
   } else {
     return false;
