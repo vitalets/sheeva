@@ -2,7 +2,12 @@
  * Session - single concurrent worker for particular env used in queues for run.
  */
 
-const {SESSION_START, SESSION_END} = require('../events');
+const {
+  SESSION_START,
+  SESSION_STARTED,
+  SESSION_ENDING,
+  SESSION_END,
+} = require('../events');
 
 module.exports = class Session {
   /**
@@ -29,15 +34,17 @@ module.exports = class Session {
   }
 
   start() {
+    this.emit(SESSION_START);
     return Promise.resolve()
       .then(() => this._config.createSessionData(this._env))
       .then(data => {
         this._data = data;
-        this.emit(SESSION_START);
+        this.emit(SESSION_STARTED);
       });
   }
 
   close() {
+    this.emit(SESSION_ENDING);
     return Promise.resolve()
       .then(() => this._config.clearSessionData(this._data, this))
       .then(() => {
