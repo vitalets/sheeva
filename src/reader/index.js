@@ -37,12 +37,11 @@ module.exports = class Reader {
     //debug.printTree(firstSuite);
   }
   _readFiles() {
-    this._files.forEach((file, index) => {
+    this._files.forEach(file => {
       const suites = this._envs.map(env => new Suite({
         name: file,
         isFile: true,
-        env,
-        originalIndex: index
+        env
       }));
       const fn = () => require(path.resolve(file));
       builder.fillSuites(suites, fn);

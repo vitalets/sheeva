@@ -11,7 +11,6 @@ module.exports = class Suite {
    * @param {Object} options
    * @param {String} options.name
    * @param {Object} options.env
-   * @param {Number} options.originalIndex
    * @param {Boolean} [options.only=false]
    * @param {Boolean} [options.skip=false]
    * @param {Boolean} [options.serial=false]
@@ -24,7 +23,6 @@ module.exports = class Suite {
     this.skip = options.skip;
     this.serial = options.serial;
     this.isFile = options.isFile;
-    this.originalIndex = options.originalIndex;
     // array of children suites and tests
     this.children = [];
     this.parents = [];
@@ -43,7 +41,6 @@ module.exports = class Suite {
     }
     this.children.push(item);
     item.setParents(this.parents.concat([this]));
-    item.originalIndex = this.children.length - 1;
   }
   addHook(type, fn) {
     this[type].push(fn);
