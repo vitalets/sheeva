@@ -4,11 +4,15 @@
 
 module.exports = class Counter {
   constructor() {
+    this._items = new Map();
+    this.reset();
+  }
+  reset() {
     this.isFirst = true;
     this.isLast = false;
     this.isFirstForId = true;
     this.isLastForId = false;
-    this._items = new Map();
+    this._items.clear();
   }
   handleStartEvent(id) {
     let counter = this._items.get(id) || 0;

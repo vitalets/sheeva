@@ -1,5 +1,5 @@
 /**
- * Manages reporters and events
+ * Proxy events to collector and reporters.
  */
 
 const events = require('../events');
@@ -14,7 +14,7 @@ module.exports = class TopReporter {
    */
   constructor(options) {
     this._reporters = options.reporters.map(createReporter).filter(Boolean);
-    this._hasErrors = false;
+    this._collector = new Collector(this);
   }
   get(index) {
     return this._reporters[index];
@@ -22,8 +22,8 @@ module.exports = class TopReporter {
   onEvent(event, data) {
     data = addTimestamp(data);
     // todo: maybe use setImmediate/nextTick to do main things first. Check in bench.
-    this._handleEvent(event, data);
     this._proxyEvent(event, data);
+    this._collector.handleEvent(event, data);
   }
   _proxyEvent(event, data) {
     this._reporters.forEach(reporter => {
@@ -35,39 +35,6 @@ module.exports = class TopReporter {
         }
       }
     });
-  }
-  _handleEvent(event, data) {
-    if (!this._hasErrors && data.error) {
-      this._hasErrors = true;
-    }
-    switch (event) {
-      case events.START: {
-        this._collector = new Collector(this);
-        break;
-      }
-      case events.SESSION_START: {
-        this._collector.handleSessionStart(data);
-        break;
-      }
-      case events.SESSION_END: {
-        this._collector.handleSessionEnd(data);
-        break;
-      }
-      case events.SESSION_SUITE_START: {
-        this._collector.handleSessionSuiteStart(data);
-        break;
-      }
-      case events.SESSION_SUITE_END: {
-        this._collector.handleSessionSuiteEnd(data);
-        break;
-      }
-      case events.SUITE_START: {
-        break;
-      }
-      case events.SUITE_END: {
-        break;
-      }
-    }
   }
 };
 
