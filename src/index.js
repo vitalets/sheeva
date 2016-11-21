@@ -57,10 +57,10 @@ module.exports = class Sheeva {
       files: this._reader.files,
       config: this._config,
     };
-    this._reporter.onEvent(events.START, data);
+    this._reporter.handleEvent(events.START, data);
   }
   _emitEnd(error) {
-    this._reporter.onEvent(events.END, {error});
+    this._reporter.handleEvent(events.END, {error});
   }
 };
 

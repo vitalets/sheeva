@@ -33,7 +33,7 @@ module.exports = class TopReporter {
   get(index) {
     return this._reporters[index];
   }
-  onEvent(event, data) {
+  handleEvent(event, data) {
     data = addTimestamp(data);
     // todo: maybe use setImmediate/nextTick to do main things first. Check in bench.
     this._proxyEvent(event, data);
@@ -53,9 +53,9 @@ module.exports = class TopReporter {
   }
   _proxyEvent(event, data) {
     this._reporters.forEach(reporter => {
-      if (typeof reporter.onEvent === 'function') {
+      if (typeof reporter.handleEvent === 'function') {
         try {
-          reporter.onEvent(event, data);
+          reporter.handleEvent(event, data);
         } catch(e) {
           console.log(`Error in reporter ${reporter.constructor.name}`, e);
         }

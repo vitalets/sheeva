@@ -26,7 +26,7 @@ module.exports = class SuitesCollector {
     }
   }
   _emit(event, data) {
-    this._reporter.onEvent(event, data);
+    this._reporter.handleEvent(event, data);
   }
   _handleSessionSuiteStart(data) {
     this._suiteCounter.handleStartEvent(data.suite);

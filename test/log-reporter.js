@@ -8,7 +8,7 @@ module.exports = class LogReporter {
   constructor() {
     this._logs = new Map();
   }
-  onEvent(event, data) {
+  handleEvent(event, data) {
     const env = data.env;
     //console.log('log-reporter:', new Date(data.timestamp), event)
     //console.log('\nlog-reporter:', new Date(data.timestamp), event, data.test && data.test.name, '\n')
