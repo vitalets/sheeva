@@ -25,7 +25,9 @@ module.exports = class Sheeva {
       tags: this._config.tags
     });
     this._reporter = new Reporter({
-      reporters: this._config.reporters
+      reporters: this._config.reporters,
+      envs: this._envs,
+      timings: this._config.timings,
     });
     this._executor = new Executor({
       reporter: this._reporter,
@@ -35,11 +37,14 @@ module.exports = class Sheeva {
     this._emitStart();
     return this._executor.run(this._reader.envSuites)
       .then(
-        () => this._emitEnd(),
-        e => {
-          console.log('Sheeva error!');
-          console.log(e);
-          process.exit(1);
+        () => {
+          this._emitEnd();
+          return this._reporter.getResult();
+        },
+        // core error in sheeva
+        error => {
+          this._emitEnd(error);
+          return Promise.reject(error);
         }
       )
   }
@@ -54,8 +59,8 @@ module.exports = class Sheeva {
     };
     this._reporter.onEvent(events.START, data);
   }
-  _emitEnd() {
-    this._reporter.onEvent(events.END);
+  _emitEnd(error) {
+    this._reporter.onEvent(events.END, {error});
   }
 };
 

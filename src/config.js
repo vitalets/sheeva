@@ -10,10 +10,30 @@ const defaults = {
    * Test files pattern or array of patterns
    */
   files: '',
+  /**
+   * Max count of concurent sessions
+   */
   concurrency: 1,
+  /**
+   * Reporters
+   */
   reporters: [],
+  /**
+   * Tags to run
+   */
   tags: [],
+  /**
+   * Whether to split suites for parallelization
+   */
   splitSuites: false,
+  /**
+   *
+   */
+  useTimings: true,
+  /**
+   * Returns environments
+   * @returns {Array}
+   */
   createEnvs: function () {
     return [
       {id: 'defaultEnv'}

@@ -69,6 +69,7 @@ describe('suite 1', function () {
 
     it('test 2', function() {
       console.log('test 2');
+      throw new Error('abc')
     });
     it('test 2.1', function() {
       console.log('test 2.1');

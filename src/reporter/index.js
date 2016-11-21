@@ -3,7 +3,10 @@
  */
 
 const events = require('../events');
-const Collector = require('./collector');
+const SuitesCollector = require('./collectors/suites');
+const TimeCollector = require('./collectors/time');
+const ErrorsCollector = require('./collectors/errors');
+const fs = require('fs');
 
 module.exports = class TopReporter {
   /**
@@ -11,10 +14,21 @@ module.exports = class TopReporter {
    *
    * @param {Object} options
    * @param {Array} options.reporters
+   * @param {Array} options.envs
+   * @param {String|Boolean} options.timings
    */
   constructor(options) {
     this._reporters = options.reporters.map(createReporter).filter(Boolean);
-    this._collector = new Collector(this);
+    this._timings = options.timings;
+    this._envCollectors = new Map();
+    options.envs.forEach(env => {
+      this._envCollectors.set(env, {
+        suites: new SuitesCollector(this),
+        time: new TimeCollector(),
+        errors: new ErrorsCollector(),
+        // envs ?
+      });
+    });
   }
   get(index) {
     return this._reporters[index];
@@ -23,7 +37,19 @@ module.exports = class TopReporter {
     data = addTimestamp(data);
     // todo: maybe use setImmediate/nextTick to do main things first. Check in bench.
     this._proxyEvent(event, data);
-    this._collector.handleEvent(event, data);
+    this._collectEvent(event, data);
+    if (event === events.END && this._timings) {
+      this._saveTimes();
+    }
+  }
+  getResult() {
+    const result = {
+      errors: [],
+    };
+    this._envCollectors.forEach(collectors => {
+      result.errors = result.errors.concat(collectors.errors.errors);
+    });
+    return result;
   }
   _proxyEvent(event, data) {
     this._reporters.forEach(reporter => {
@@ -35,6 +61,19 @@ module.exports = class TopReporter {
         }
       }
     });
+  }
+  _collectEvent(event, data) {
+    if (data.env) {
+      const collectors = this._envCollectors.get(data.env);
+      Object.keys(collectors).forEach(key => collectors[key].handleEvent(event, data));
+    }
+  }
+  _saveTimes() {
+    const result = {};
+    this._envCollectors.forEach((collectors, env) => {
+      result[env.id] = collectors.time.getJson();
+    });
+    fs.writeFileSync(this._timings, JSON.stringify(result, false, 2));
   }
 };
 

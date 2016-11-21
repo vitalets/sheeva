@@ -12,6 +12,7 @@ function runSheeva(file, env, mocks = {}) {
   const sheeva = new Sheeva({
     reporters: require('./log-reporter'),
     files: file,
+    timings: './sheeva.timings.json',
     createEnvs: function () {
       return [
         env,

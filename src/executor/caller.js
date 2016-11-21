@@ -162,7 +162,7 @@ module.exports = class Caller {
     return hooks.reduce((res, fn, index) => {
       return res
         .then(() => {
-          const eventData = {suite, hookType, index};
+          const eventData = {fn, suite, hookType, index};
           this._emit(HOOK_START, eventData);
           return this._callFn({fn, suite, hookType, context, hookIndex: index})
             .then(
