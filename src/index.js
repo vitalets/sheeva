@@ -2,11 +2,11 @@
  * Sheeva
  */
 
-const events = require('./events');
 const config = require('./config');
 const Reader = require('./reader');
 const Executor = require('./executor');
 const Reporter = require('./reporter');
+const {RUNNER_START, RUNNER_END} = require('./events');
 
 module.exports = class Sheeva {
   /**
@@ -57,10 +57,10 @@ module.exports = class Sheeva {
       files: this._reader.files,
       config: this._config,
     };
-    this._reporter.handleEvent(events.START, data);
+    this._reporter.handleEvent(RUNNER_START, data);
   }
   _emitEnd(error) {
-    this._reporter.handleEvent(events.END, {error});
+    this._reporter.handleEvent(RUNNER_END, {error});
   }
 };
 

@@ -38,7 +38,7 @@ module.exports = class TopReporter {
     // todo: maybe use setImmediate/nextTick to do main things first. Check in bench.
     this._proxyEvent(event, data);
     this._collectEvent(event, data);
-    if (event === events.END && this._timings) {
+    if (event === events.RUNNER_END && this._timings) {
       this._saveTimes();
     }
   }
