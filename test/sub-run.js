@@ -1,27 +1,40 @@
 const path = require('path');
 const expect = require('unexpected');
+const fs = require('fs');
 const Sheeva = require('../src');
 
 // globals
 global.expect = expect;
 global.noop = function () {};
-global.run = runSheeva;
+global.error = function () { throw new Error('err'); };
+global.runFile = runFile;
+global.runCode = runCode;
 
-function runSheeva(file, env, mocks = {}) {
+function runFile(file, session, filter) {
   clearRequireCache(file);
   const sheeva = new Sheeva({
     reporters: require('./log-reporter'),
     files: file,
-    timings: './sheeva.timings.json',
+    //timings: './sheeva.timings.json',
     createEnvs: function () {
       return [
-        env,
+        session.env,
       ];
     },
-    createWrapFn: createWrapFn.bind(null, mocks),
+    createWrapFn: createWrapFn,
   });
   return sheeva.run()
-    .then(() => sheeva.getReporter(0).getLog(env));
+    .then(() => sheeva.getReporter(0).getLog(session.env, filter));
+}
+
+function runCode(code, session, filter) {
+  const tempFile = `./test/temp-${session.index}.js`;
+  fs.writeFileSync(tempFile, code);
+  return runFile(tempFile, session, filter)
+    .then(res => {
+      fs.unlinkSync(tempFile);
+      return res;
+    });
 }
 
 function clearRequireCache(file) {
@@ -29,13 +42,8 @@ function clearRequireCache(file) {
   delete require.cache[absPath];
 }
 
-function createWrapFn(mocks, {env, fn, test, hookType, suite, hookIndex}) {
-  const name = test
-    ? test.name
-    : `${suite.parent ? suite.name + ' ' : ''}${hookType} ${hookIndex}`;
-  if (mocks && mocks[name]) {
-    fn = mocks[name];
-  }
+function createWrapFn({env, fn}) {
+  // const name = test ? test.name : getHookName(suite, hookType, hookIndex);
   return function () {
     if (env.id === 'tests-sync') {
       return fn();
@@ -52,4 +60,8 @@ function createWrapFn(mocks, {env, fn, test, hookType, suite, hookIndex}) {
       })
     }
   };
+}
+
+function getHookName(suite, hookType, hookIndex) {
+  return `${suite.parent ? suite.name + ' ' : ''}${hookType} ${hookIndex}`;
 }

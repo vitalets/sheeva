@@ -19,6 +19,7 @@ module.exports = class Pool {
     this._config = options.config;
     this._getQueue = options.getQueue;
     this._slots = new Set();
+    this._sessionsCount = 0;
     this._promised = new Promised();
   }
 
@@ -75,9 +76,11 @@ module.exports = class Pool {
   _createSession(env) {
     const session = new Session({
       env,
+      index: this._sessionsCount,
       reporter: this._reporter,
       config: this._config,
     });
+    this._sessionsCount++;
     this._slots.add(session);
     return session.start()
       .then(() => session);

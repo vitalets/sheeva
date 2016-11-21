@@ -17,11 +17,13 @@ module.exports = class Session {
    * @param {Reporter} options.reporter
    * @param {Object} options.config
    * @param {Object} options.env
+   * @param {Number} options.index
    */
   constructor(options) {
     this._reporter = options.reporter;
     this._config = options.config;
     this._env = options.env;
+    this._index = options.index;
     this._data = null;
   }
 
@@ -31,6 +33,10 @@ module.exports = class Session {
 
   get data() {
     return this._data;
+  }
+
+  get index() {
+    return this._index;
   }
 
   start() {

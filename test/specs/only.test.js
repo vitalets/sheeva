@@ -1,8 +1,25 @@
 
 describe('only', () => {
 
-  it('should run only test by $only()', env => {
-    const report = run('./test/data/only-it.js', env);
+  it('should run only test by $only()', session => {
+    const report = runCode(`
+      describe('suite 1', () => {
+        it('test 0', noop);
+        describe('suite 2', () => {
+          $only();
+          it('test 1', noop);
+          describe('suite 3', () => {
+            it('test 2', noop);
+          });
+        });
+      });
+      
+      describe('suite 4', () => {
+        it('test 4', noop);
+        it('test 5', noop);
+      });
+    `, session);
+
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'SUITE_START suite 1',
@@ -14,8 +31,25 @@ describe('only', () => {
     ]);
   });
 
-  it('should run only describe by $only()', env => {
-    const report = run('./test/data/only-describe.js', env);
+  it('should run only describe by $only()', session => {
+    const report = runCode(`
+      describe('suite 1', () => {
+        it('test 0', noop);
+        $only();
+        describe('suite 2', () => {
+          it('test 1', noop);
+          describe('suite 3', () => {
+            it('test 2', noop);
+          });
+        });
+      });
+      
+      describe('suite 4', () => {
+        it('test 4', noop);
+        it('test 5', noop);
+      });
+    `, session);
+
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'SUITE_START suite 1',
@@ -30,8 +64,28 @@ describe('only', () => {
     ]);
   });
 
-  it('should run all only describe and it', env => {
-    const report = run('./test/data/only-several.js', env);
+  it('should run all only describe and it', session => {
+    const report = runCode(`
+      describe('suite', () => {
+        $only();
+        it('test 0', noop);
+        it('test 1', noop);
+      });
+      
+      describe('suite 2', () => {
+        it('test 2', noop);
+        $only();
+        it('test 3', noop);
+      });
+      
+      describe('suite 3', () => {
+        $only();
+        describe('suite 4', () => {
+          it('test 4', noop);
+        });
+      });
+    `, session);
+
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'SUITE_START suite',

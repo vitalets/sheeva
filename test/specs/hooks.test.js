@@ -1,8 +1,24 @@
 
-describe('hooks success', () => {
+describe('hooks', () => {
 
-  it('should run it and all hooks without describe', env => {
-    const report = run('./test/data/hooks-it.js', env);
+  it('should run it and all hooks without describe', session => {
+    const report = runCode(`
+      before(noop);
+      before(noop);
+      
+      beforeEach(noop);
+      beforeEach(noop);
+      
+      after(noop);
+      after(noop);
+      
+      afterEach(noop);
+      afterEach(noop);
+      
+      it('test 0', noop);
+      it('test 1', noop);
+    `, session);
+
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -23,8 +39,24 @@ describe('hooks success', () => {
     ]);
   });
 
-  it('should run it and all hooks within describe', env => {
-    const report = run('./test/data/hooks-describe-it.js', env);
+  it('should run it and all hooks within describe', session => {
+    const report = runCode(`
+      before(noop);
+      beforeEach(noop);
+      after(noop);
+      afterEach(noop);
+      
+      describe('suite', () => {
+        before(noop);
+        beforeEach(noop);
+        after(noop);
+        afterEach(noop);
+      
+        it('test 0', noop);
+        it('test 1', noop);
+      });
+    `, session);
+
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
       'HOOK_END root before 0',

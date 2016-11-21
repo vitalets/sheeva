@@ -43,15 +43,21 @@ module.exports = class LogReporter {
       }
     }
   }
-  getLog(env) {
-    if (!this._logs.has(env)) {
-      this._logs.set(env, []);
-    }
-    return this._logs.get(env);
+  getLog(env, filter) {
+    return (this._logs.get(env) || []).filter(line => {
+        if (filter && filter.length) {
+          return filter.some(f => line.startsWith(f))
+        } else {
+          return true;
+        }
+    });
   }
   _push(env, str) {
     if (env) {
-      this.getLog(env).push(str);
+      if (!this._logs.has(env)) {
+        this._logs.set(env, []);
+      }
+      this._logs.get(env).push(str);
     } else {
       this._logs.forEach(log => log.push(str))
     }
