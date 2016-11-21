@@ -103,7 +103,7 @@ module.exports = class Queue {
    *
    * @param {Suite} suite
    */
-  incrementIndexUntilSuiteEnd(suite) {
+  incrementIndexToLastTestInSuite(suite) {
     const positionInStack = this.suiteStack.findIndex(s => s === suite);
     while (!this.isSuiteEnd(positionInStack)) {
       this.incrementIndex();
@@ -130,9 +130,8 @@ module.exports = class Queue {
   }
 
   handleHookError() {
-    this.incrementIndexUntilSuiteEnd(this.caller.errorSuite);
-    // all needed `after` hooks will be called in moveToNextTest
-    //return this.moveToNextTest();
+    this.incrementIndexToLastTestInSuite(this.caller.errorSuite);
+    // all needed `after` hooks will be called in this.next()
     return this.next();
   }
 
