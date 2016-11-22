@@ -6,7 +6,6 @@ const Sheeva = require('../src');
 // globals
 global.expect = expect;
 global.noop = function () {};
-global.error = function () { throw new Error('err'); };
 global.runFile = runFile;
 global.runCode = runCode;
 
@@ -31,10 +30,16 @@ function runCode(code, session, filter) {
   const tempFile = `./test/temp-${session.index}.js`;
   fs.writeFileSync(tempFile, code);
   return runFile(tempFile, session, filter)
-    .then(res => {
-      fs.unlinkSync(tempFile);
-      return res;
-    });
+    .then(
+      res => {
+        fs.unlinkSync(tempFile);
+        return res;
+      },
+      e => {
+        fs.unlinkSync(tempFile);
+        return Promise.reject(e);
+      }
+    )
 }
 
 function clearRequireCache(file) {

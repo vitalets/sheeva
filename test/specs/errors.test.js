@@ -1,6 +1,14 @@
 
 describe('errors', () => {
 
+  it('should reject run() promise in case of error in describe', session => {
+    const result = runCode(`
+      throw new Error('err');
+    `, session);
+
+    return expect(result, 'to be rejected with', new Error('err'));
+  });
+
   it('should run all hooks in case of test error', session => {
     const report = runCode(`
       before(noop);
@@ -15,7 +23,7 @@ describe('errors', () => {
       after(noop);
       after(noop);
       
-      it('test 0', error);
+      it('test 0', () => { throw new Error('err') });
       it('test 1', noop);
     `, session);
 
@@ -43,7 +51,7 @@ describe('errors', () => {
 
     it('should skip suite in case of before error', session => {
       const report = runCode(`
-        before(error);
+        before(() => { throw new Error('err') });
         before(noop);
         
         beforeEach(noop);
@@ -71,7 +79,7 @@ describe('errors', () => {
     it('should skip suite in case of before second error', session => {
       const report = runCode(`
         before(noop);
-        before(error);
+        before(() => { throw new Error('err') });
         
         beforeEach(noop);
         beforeEach(noop);
@@ -101,7 +109,7 @@ describe('errors', () => {
         before(noop);
         before(noop);
         
-        beforeEach(error);
+        beforeEach(() => { throw new Error('err') });
         beforeEach(noop);
 
         afterEach(noop);
@@ -133,7 +141,7 @@ describe('errors', () => {
         before(noop);
         
         beforeEach(noop);
-        beforeEach(error);
+        beforeEach(() => { throw new Error('err') });
 
         afterEach(noop);
         afterEach(noop);        
@@ -167,7 +175,7 @@ describe('errors', () => {
         beforeEach(noop);
         beforeEach(noop);
 
-        afterEach(error);
+        afterEach(() => { throw new Error('err') });
         afterEach(noop);        
         
         after(noop);
@@ -200,7 +208,7 @@ describe('errors', () => {
         beforeEach(noop);
         
         afterEach(noop);
-        afterEach(error);
+        afterEach(() => { throw new Error('err') });
                 
         after(noop);
         after(noop);
@@ -235,7 +243,7 @@ describe('errors', () => {
         afterEach(noop);
         afterEach(noop);
         
-        after(error);
+        after(() => { throw new Error('err') });
         after(noop);
        
         it('test 0', noop);
@@ -273,7 +281,7 @@ describe('errors', () => {
         afterEach(noop);
         
         after(noop);
-        after(error);
+        after(() => { throw new Error('err') });
        
         it('test 0', noop);
         it('test 1', noop);

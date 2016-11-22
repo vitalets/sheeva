@@ -19,9 +19,6 @@ const config = {
       //{id: 'tests-async2', delay: 40},
     ];
   },
-  createEnvLabel: function (env) {
-    return env.id;
-  },
   createWrapFn: function ({fn, session}) {
     return function () {
       return fn(session);
