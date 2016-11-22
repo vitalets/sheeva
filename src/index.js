@@ -38,6 +38,15 @@ module.exports = class Sheeva {
   }
   _createEnvs() {
     this._envs = this._config.createEnvs();
+    if (!this._envs.length) {
+      throw new Error('You should provide at lease one env');
+    } else {
+      this._envs.forEach(env => {
+        if (!env || !env.id) {
+          throw new Error('Each env should have unique id property');
+        }
+      });
+    }
   }
   _createReader() {
     this._reader = new Reader({
