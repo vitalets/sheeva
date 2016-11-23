@@ -17,11 +17,30 @@ module.exports = class Pool {
    */
   constructor(options) {
     this._options = options;
+    /**
+     * Flag that last queue of env reached and we are ready for suite split
+     */
     this._isEnvEnd = false;
-    this._canSplit = true;
-    this._noMoreQueues = false;
+    /**
+     * Flag showing that suite splitting is still possible,
+     * otherwise other sessions will not even try
+     */
+    this._isSplitPossible = false;
+    /**
+     * Flag showing that there are no more queues so we wait for current sessions to finish
+     */
+    this._isQueuesEnd = false;
+    /**
+     * Map of slots for sessions that is limited by concurrency value
+     */
     this._slots = new Set();
+    /**
+     * Session counter to assign unique session indexes
+     */
     this._sessionsCount = 0;
+    /**
+     * Main promise returned from run() method
+     */
     this._promised = new Promised();
   }
 
@@ -34,7 +53,7 @@ module.exports = class Pool {
 
   _startNextEnv() {
     this._isEnvEnd = false;
-    this._canSplit = true;
+    this._isSplitPossible = true;
     this._fillSlots();
   }
 
@@ -56,21 +75,28 @@ module.exports = class Pool {
   }
 
   _getNextQueue() {
-    if (this._isEnvEnd) {
-      if (this._options.config.suiteSplit && this._canSplit) {
-        // try split
-        return null;
-      } else {
-        return null;
-      }
+    return this._isEnvEnd
+      ? this._trySplit()
+      : this._getNextQueueFromExecutor();
+  }
+
+  _getNextQueueFromExecutor() {
+    const {queue, isLast} = this._options.getNextQueue();
+    if (queue) {
+      this._isEnvEnd = isLast;
     } else {
-      const {queue, isLast} = this._options.getNextQueue();
-      if (queue) {
-        this._isEnvEnd = isLast;
-      } else {
-        this._noMoreQueues = true;
-      }
-      return queue;
+      this._isQueuesEnd = true;
+    }
+    return queue;
+  }
+
+  _trySplit() {
+    if (this._options.config.suiteSplit && this._isSplitPossible) {
+      // try split
+      return null;
+    } else {
+      // split not possible, just wait for other sessions to end
+      return null;
     }
   }
 
@@ -78,7 +104,7 @@ module.exports = class Pool {
     const queue = this._getNextQueue();
     if (queue) {
       if (queue.suite.env === session.env) {
-        return this._runOnExistingSession(queue, session);
+        return this._runOnExistingSession(session, queue);
       } else {
         return this._closeSession(session)
           .then(() => this._runOnNewSession(queue));
@@ -91,11 +117,11 @@ module.exports = class Pool {
 
   _runOnNewSession(queue) {
     return this._createSession(queue.suite.env)
-      .then(session => this._runOnExistingSession(queue, session));
+      .then(session => this._runOnExistingSession(session, queue));
   }
 
-  _runOnExistingSession(queue, session) {
-    return queue.run(session)
+  _runOnExistingSession(session, queue) {
+    return session.run(queue)
       .then(() => this._processNextQueue(session));
   }
 
@@ -119,7 +145,7 @@ module.exports = class Pool {
 
   _onFreeSlot() {
     if (this._slots.size === 0) {
-      if (this._noMoreQueues) {
+      if (this._isQueuesEnd) {
         this._promised.resolve();
       } else {
         this._startNextEnv();

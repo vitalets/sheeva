@@ -7,7 +7,6 @@
  */
 
 const Promised = require('../utils/promised');
-const Caller = require('./caller');
 
 module.exports = class Queue {
   /**
@@ -30,11 +29,9 @@ module.exports = class Queue {
     return this.tests.length === 0;
   }
 
-  run(session) {
+  run(caller) {
     return this.promised.call(() => {
-      // todo: is it used?
-      this.session = session;
-      this.caller = new Caller(session);
+      this.caller = caller;
       this.next()
         .catch(e => this.promised.reject(e));
     });

@@ -9,6 +9,8 @@ const {
   SESSION_END,
 } = require('../events');
 
+const Caller = require('./caller');
+
 module.exports = class Session {
   /**
    * Constructor
@@ -24,6 +26,7 @@ module.exports = class Session {
     this._config = options.config;
     this._env = options.env;
     this._index = options.index;
+    this._queue = null;
     this._data = null;
   }
 
@@ -39,6 +42,10 @@ module.exports = class Session {
     return this._index;
   }
 
+  get queue() {
+    return this._queue;
+  }
+
   start() {
     this.emit(SESSION_START);
     return Promise.resolve()
@@ -47,6 +54,12 @@ module.exports = class Session {
         this._data = data;
         this.emit(SESSION_STARTED);
       });
+  }
+
+  run(queue) {
+    this._queue = queue;
+    const caller = new Caller(this);
+    return this._queue.run(caller);
   }
 
   close() {
