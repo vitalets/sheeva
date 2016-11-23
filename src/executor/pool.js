@@ -5,6 +5,7 @@
 
 const Promised = require('../utils/promised');
 const Session = require('./session');
+const Splitter = require('./splitter');
 
 module.exports = class Pool {
   /**
@@ -74,9 +75,9 @@ module.exports = class Pool {
     return this._slots.size < this._options.config.concurrency;
   }
 
-  _getNextQueue() {
+  _getNextQueue(session) {
     return this._isEnvEnd
-      ? this._trySplit()
+      ? this._trySplit(session)
       : this._getNextQueueFromExecutor();
   }
 
@@ -90,18 +91,20 @@ module.exports = class Pool {
     return queue;
   }
 
-  _trySplit() {
+  _trySplit(session) {
     if (this._options.config.suiteSplit && this._isSplitPossible) {
-      // try split
-      return null;
-    } else {
-      // split not possible, just wait for other sessions to end
-      return null;
+      const queue = new Splitter(this._slots, session).getQueue();
+      if (queue) {
+        return queue;
+      } else {
+        this._isSplitPossible = false;
+      }
     }
+    // split not possible, just wait for other sessions to end
   }
 
   _processNextQueue(session) {
-    const queue = this._getNextQueue();
+    const queue = this._getNextQueue(session);
     if (queue) {
       if (queue.suite.env === session.env) {
         return this._runOnExistingSession(session, queue);
@@ -116,22 +119,24 @@ module.exports = class Pool {
   }
 
   _runOnNewSession(queue) {
-    return this._createSession(queue.suite.env)
+    return this._createSession(queue)
       .then(session => this._runOnExistingSession(session, queue));
   }
 
   _runOnExistingSession(session, queue) {
-    return session.run(queue)
+    session.queue = queue;
+    return session.run()
       .then(() => this._processNextQueue(session));
   }
 
-  _createSession(env) {
+  _createSession(queue) {
     const session = new Session({
-      env,
+      env: queue.suite.env,
       index: this._sessionsCount,
       reporter: this._options.reporter,
       config: this._options.config,
     });
+    session.queue = queue;
     this._sessionsCount++;
     this._slots.add(session);
     return session.start()
@@ -148,6 +153,7 @@ module.exports = class Pool {
       if (this._isQueuesEnd) {
         this._promised.resolve();
       } else {
+        // todo: emit env end
         this._startNextEnv();
       }
     }

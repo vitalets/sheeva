@@ -29,6 +29,16 @@ module.exports = class Queue {
     return this.tests.length === 0;
   }
 
+  getRemainingCount() {
+    return this.tests.length - this.currentIndex - 1;
+  }
+
+  /**
+   * Runs queue
+   *
+   * @param {Caller} caller
+   * @returns {Promise}
+   */
   run(caller) {
     return this.promised.call(() => {
       this.caller = caller;
@@ -46,10 +56,7 @@ module.exports = class Queue {
       .then(() => {
         if (this.currentTest) {
           return this.caller.callTest(this.suiteStack, this.currentTest)
-            .then(
-              () => this.next(),
-              () => this.handleHookError()
-            )
+            .then(() => this.next(), () => this.handleHookError())
         } else {
           this.promised.resolve();
         }
@@ -87,11 +94,11 @@ module.exports = class Queue {
    * Increments currentIndex and set currentTest / nextTest
    */
   incrementIndex() {
-    if (this.currentIndex === this.tests.length) {
+    if (this.currentIndex > this.tests.length) {
       throw new Error(`Going out of queue: ${this.suite.name}`);
     }
     this.currentIndex++;
-    this.currentTest = this.nextTest;
+    this.currentTest = this.tests[this.currentIndex];
     this.nextTest = this.tests[this.currentIndex + 1];
   }
 
@@ -130,6 +137,16 @@ module.exports = class Queue {
     this.incrementIndexToLastTestInSuite(this.caller.errorSuite);
     // all needed `after` hooks will be called in this.next()
     return this.next();
+  }
+
+  /**
+   * Splits out another queue out of this
+   *
+   * @param {Number} startFromIndex
+   */
+  split(startFromIndex) {
+    const tests = this.tests.splice(startFromIndex);
+    return new Queue(tests);
   }
 
   /**

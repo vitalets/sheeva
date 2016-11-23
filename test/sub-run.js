@@ -14,6 +14,7 @@ function runFile(file, session, filter) {
   const sheeva = new Sheeva({
     reporters: require('./log-reporter'),
     files: file,
+    suiteSplit: false,
     //timings: './sheeva.timings.json',
     createEnvs: function () {
       return [
