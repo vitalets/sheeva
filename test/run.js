@@ -7,7 +7,7 @@ const ProgressReporter = require('sheeva-reporter-progress');
 const Sheeva = require('../src');
 
 const config = {
-  concurrency: 5,
+  concurrency: 2,
   files: './test/specs/*.test.js',
   //files: './test/specs/only.test.js',
   suiteSplit: true,
@@ -19,6 +19,14 @@ const config = {
       {id: 'tests-async', delay: 10},
       //{id: 'tests-async2', delay: 40},
     ];
+  },
+  // session data actually contains sub-run config overwrites
+  createSessionData: function (env) {
+    return {
+      createWrapFn: env.delay === undefined
+        ? createSyncFn
+        : createAsyncFn.bind(null, env.delay)
+    };
   },
   createWrapFn: function ({fn, session}) {
     return function () {
@@ -34,7 +42,21 @@ new Sheeva(config).run()
     process.exit(1);
   });
 
-function isAssertionError(error) {
-  return error.name === 'UnexpectedError';
+function createSyncFn({fn}) {
+  return fn;
 }
 
+function createAsyncFn(delay, {fn}) {
+  return function () {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          fn();
+          resolve();
+        } catch(e) {
+          reject(e);
+        }
+      }, delay)
+    })
+  };
+}

@@ -6,7 +6,7 @@ const events = require('../src/events');
 
 module.exports = class LogReporter {
   constructor() {
-    this._logs = new Map();
+    this._logs = {};
   }
   handleEvent(event, data) {
     const env = data.env;
@@ -43,23 +43,34 @@ module.exports = class LogReporter {
       }
     }
   }
-  getLog(env, filter) {
-    return (this._logs.get(env) || []).filter(line => {
-        if (filter && filter.length) {
-          return filter.some(f => line.startsWith(f))
-        } else {
-          return true;
-        }
-    });
-  }
-  _push(env, str) {
-    if (env) {
-      if (!this._logs.has(env)) {
-        this._logs.set(env, []);
-      }
-      this._logs.get(env).push(str);
+  getLog(filter) {
+    const keys = Object.keys(this._logs);
+    if (keys.length === 0) {
+      return [];
+    } else if (keys.length === 1) {
+      const log = this._logs[keys[0]];
+      return applyFilter(log, filter);
     } else {
-      this._logs.forEach(log => log.push(str))
+      return keys.reduce((res, key) => {
+        res[key] = applyFilter(this._logs[key], filter);
+        return res;
+      }, {});
     }
   }
+  _push(env, str) {
+    this._logs[env.id] = this._logs[env.id] || [];
+    this._logs[env.id].push(str);
+  }
 };
+
+function applyFilter(log, filter) {
+  if (!filter || !filter.length) {
+    return log;
+  } else {
+    return log.filter(line => isLineMatches(line, filter));
+  }
+}
+
+function isLineMatches(line, filter) {
+  return filter.some(str => line.startsWith(str));
+}

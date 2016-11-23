@@ -15,7 +15,7 @@ const defaults = {
    */
   concurrency: 1,
   /**
-   * Allows suite split for parallelization
+   * Allows suite splitting for parallelization
    */
   suiteSplit: true,
   /**
@@ -27,28 +27,39 @@ const defaults = {
    */
   tags: [],
   /**
-   * Whether to split suites for parallelization
-   */
-  splitSuites: false,
-  /**
    *
    */
   useTimings: true,
   /**
-   * Returns environments
-   * @returns {Array}
+   * Creates envs (environments).
+   * Each env should have `id` property.
+   *
+   * @returns {Array<Object>}
    */
   createEnvs: function () {
     return [
       {id: 'defaultEnv'}
     ];
   },
+  /**
+   * Creates one-line env label to be shown in reports
+   *
+   * @param {Object} env
+   * @returns {String}
+   */
   createEnvLabel: function (env) {
     return env.id;
   },
+  /**
+   * Creates data attached to every session in env.
+   * For Webdriver tests it is usually `driver` instance.
+   *
+   * @param {Object} env
+   */
   createSessionData: function (env) {
     return {};
   },
+
   clearSessionData: function (data, session) {
   },
   /**

@@ -22,7 +22,7 @@ describe('sort', () => {
         before(noop);
         it('test 3', noop);
       });
-    `, session, ['TEST_END']);
+    `, {session}, ['TEST_END']);
 
     return expect(report, 'to be fulfilled with', [
       'TEST_END test 2',

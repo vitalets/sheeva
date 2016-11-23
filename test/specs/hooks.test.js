@@ -17,7 +17,7 @@ describe('hooks', () => {
       
       it('test 0', noop);
       it('test 1', noop);
-    `, session);
+    `, {session});
 
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
@@ -55,7 +55,7 @@ describe('hooks', () => {
         it('test 0', noop);
         it('test 1', noop);
       });
-    `, session);
+    `, {session});
 
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',

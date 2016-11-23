@@ -5,7 +5,7 @@ describe('nesting', () => {
     const report = runCode(`
       it('test 0', noop);
       it('test 1', noop);
-    `, session);
+    `, {session});
 
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
@@ -22,7 +22,7 @@ describe('nesting', () => {
         describe('suite 2', noop);
       });
       describe('suite 3', noop);
-    `, session);
+    `, {session});
 
     return expect(report, 'to be fulfilled with', []);
   });
@@ -48,7 +48,7 @@ describe('nesting', () => {
       describe('suite 4', () => {
         it('test 5', noop);
       });
-    `, session);
+    `, {session});
 
     return expect(report, 'to be fulfilled with', [
         'SUITE_START root',

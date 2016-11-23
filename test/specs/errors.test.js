@@ -4,7 +4,7 @@ describe('errors', () => {
   it('should reject run() promise in case of error in describe', session => {
     const result = runCode(`
       throw new Error('err');
-    `, session);
+    `, {session});
 
     return expect(result, 'to be rejected with', new Error('err'));
   });
@@ -25,7 +25,7 @@ describe('errors', () => {
       
       it('test 0', () => { throw new Error('err') });
       it('test 1', noop);
-    `, session);
+    `, {session});
 
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
@@ -65,7 +65,7 @@ describe('errors', () => {
         
         it('test 0', noop);
         it('test 1', noop);
-      `, session);
+      `, {session});
 
       return expect(report, 'to be fulfilled with', [
         'SUITE_START root',
@@ -92,7 +92,7 @@ describe('errors', () => {
         
         it('test 0', noop);
         it('test 1', noop);
-      `, session);
+      `, {session});
 
       return expect(report, 'to be fulfilled with', [
         'SUITE_START root',
@@ -120,7 +120,7 @@ describe('errors', () => {
         
         it('test 0', noop);
         it('test 1', noop);
-      `, session);
+      `, {session});
 
       return expect(report, 'to be fulfilled with', [
         'SUITE_START root',
@@ -151,7 +151,7 @@ describe('errors', () => {
         
         it('test 0', noop);
         it('test 1', noop);
-      `, session);
+      `, {session});
 
       return expect(report, 'to be fulfilled with', [
         'SUITE_START root',
@@ -183,7 +183,7 @@ describe('errors', () => {
         
         it('test 0', noop);
         it('test 1', noop);
-      `, session);
+      `, {session});
 
       return expect(report, 'to be fulfilled with', [
         'SUITE_START root',
@@ -215,7 +215,7 @@ describe('errors', () => {
         
         it('test 0', noop);
         it('test 1', noop);
-      `, session);
+      `, {session});
 
       return expect(report, 'to be fulfilled with', [
         'SUITE_START root',
@@ -248,7 +248,7 @@ describe('errors', () => {
        
         it('test 0', noop);
         it('test 1', noop);
-      `, session);
+      `, {session});
 
       return expect(report, 'to be fulfilled with', [
         'SUITE_START root',
@@ -285,7 +285,7 @@ describe('errors', () => {
        
         it('test 0', noop);
         it('test 1', noop);
-      `, session);
+      `, {session});
 
       return expect(report, 'to be fulfilled with', [
         'SUITE_START root',

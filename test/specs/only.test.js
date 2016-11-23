@@ -18,7 +18,7 @@ describe('only', () => {
         it('test 4', noop);
         it('test 5', noop);
       });
-    `, session);
+    `, {session});
 
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
@@ -48,7 +48,7 @@ describe('only', () => {
         it('test 4', noop);
         it('test 5', noop);
       });
-    `, session);
+    `, {session});
 
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
@@ -84,7 +84,7 @@ describe('only', () => {
           it('test 4', noop);
         });
       });
-    `, session);
+    `, {session});
 
     return expect(report, 'to be fulfilled with', [
       'SUITE_START root',
