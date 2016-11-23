@@ -15,6 +15,10 @@ const defaults = {
    */
   concurrency: 1,
   /**
+   * Allows suite split for parallelization
+   */
+  suiteSplit: true,
+  /**
    * Reporters
    */
   reporters: [],

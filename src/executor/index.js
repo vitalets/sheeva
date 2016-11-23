@@ -1,5 +1,5 @@
 /**
- * Run suites
+ * Run suites: pushes queque per queue into pool
  */
 
 const Queue = require('./queue');
@@ -22,7 +22,7 @@ module.exports = class Executor {
     this._pool = new Pool({
       reporter: this._reporter,
       config: this._config,
-      getQueue: () => this._getNextQueue(),
+      getNextQueue: () => this._getNextQueue(),
     });
   }
 
@@ -51,9 +51,11 @@ module.exports = class Executor {
 
   _getNextQueue() {
     if (!this._queues) {
-      return null;
+      return {};
     } else if (this._queues.length) {
-      return this._queues.shift();
+      const queue = this._queues.shift();
+      const isLast = this._queues.length === 0;
+      return {queue, isLast};
     } else {
       // dont emit ENV_END here as sessions are still finishing
       this._nextEnv();

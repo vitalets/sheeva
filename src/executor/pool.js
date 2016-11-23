@@ -1,5 +1,6 @@
 /**
  * Controls concurrency pool of sessions
+ * currently it does not start next env until current env is fully processed
  */
 
 const Promised = require('../utils/promised');
@@ -12,12 +13,13 @@ module.exports = class Pool {
    * @param {Object} options
    * @param {Reporter} options.reporter
    * @param {Config} options.config
-   * @param {Function} options.getQueue
+   * @param {Function} options.getNextQueue
    */
   constructor(options) {
-    this._reporter = options.reporter;
-    this._config = options.config;
-    this._getQueue = options.getQueue;
+    this._options = options;
+    this._isEnvEnd = false;
+    this._canSplit = true;
+    this._noMoreQueues = false;
     this._slots = new Set();
     this._sessionsCount = 0;
     this._promised = new Promised();
@@ -27,28 +29,53 @@ module.exports = class Pool {
    * Run
    */
   run() {
-    return this._promised.call(() => this._fillSlots());
+    return this._promised.call(() => this._startNextEnv());
   }
 
-  _hasFreeSlots() {
-    return this._slots.size < this._config.concurrency;
+  _startNextEnv() {
+    this._isEnvEnd = false;
+    this._canSplit = true;
+    this._fillSlots();
   }
 
   _fillSlots() {
     while (this._hasFreeSlots()) {
-      const queue = this._getQueue();
+      const queue = this._getNextQueue();
       if (queue) {
         this._runOnNewSession(queue)
           .catch(e => this._promised.reject(e));
       } else {
-        this._checkDone();
+        this._onFreeSlot();
         break;
       }
     }
   }
 
+  _hasFreeSlots() {
+    return this._slots.size < this._options.config.concurrency;
+  }
+
+  _getNextQueue() {
+    if (this._isEnvEnd) {
+      if (this._options.config.suiteSplit && this._canSplit) {
+        // try split
+        return null;
+      } else {
+        return null;
+      }
+    } else {
+      const {queue, isLast} = this._options.getNextQueue();
+      if (queue) {
+        this._isEnvEnd = isLast;
+      } else {
+        this._noMoreQueues = true;
+      }
+      return queue;
+    }
+  }
+
   _processNextQueue(session) {
-    const queue = this._getQueue();
+    const queue = this._getNextQueue();
     if (queue) {
       if (queue.suite.env === session.env) {
         return this._runOnExistingSession(queue, session);
@@ -57,9 +84,8 @@ module.exports = class Pool {
           .then(() => this._runOnNewSession(queue));
       }
     } else {
-      return Promise.resolve()
-        .then(() => session ? this._closeSession(session) : null)
-        .then(() => this._checkDone());
+      return this._closeSession(session)
+        .then(() => this._onFreeSlot());
     }
   }
 
@@ -77,8 +103,8 @@ module.exports = class Pool {
     const session = new Session({
       env,
       index: this._sessionsCount,
-      reporter: this._reporter,
-      config: this._config,
+      reporter: this._options.reporter,
+      config: this._options.config,
     });
     this._sessionsCount++;
     this._slots.add(session);
@@ -91,9 +117,13 @@ module.exports = class Pool {
       .then(() => this._slots.delete(session));
   }
 
-  _checkDone() {
+  _onFreeSlot() {
     if (this._slots.size === 0) {
-      this._promised.resolve();
+      if (this._noMoreQueues) {
+        this._promised.resolve();
+      } else {
+        this._startNextEnv();
+      }
     }
   }
 };
