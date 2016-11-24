@@ -31,7 +31,7 @@ function createConfig(options) {
   return Object.assign({}, {
     concurrency: 1,
     reporters: require('./log-reporter'),
-    suiteSplit: false,
+    splitSuites: false,
     //timings: './sheeva.timings.json',
   }, options.session.data, options.config);
 }

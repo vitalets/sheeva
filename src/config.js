@@ -17,7 +17,7 @@ const defaults = {
   /**
    * Allows suite splitting for parallelization
    */
-  suiteSplit: true,
+  splitSuites: true,
   /**
    * Reporters
    */

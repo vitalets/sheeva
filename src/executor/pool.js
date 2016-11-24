@@ -32,9 +32,9 @@ module.exports = class Pool {
      */
     this._isQueuesEnd = false;
     /**
-     * Map of slots for sessions that is limited by concurrency value
+     * Map of slots for running (session, queue), limited by concurrency
      */
-    this._slots = new Set();
+    this._slots = new Map();
     /**
      * Session counter to assign unique session indexes
      */
@@ -54,6 +54,7 @@ module.exports = class Pool {
 
   _startNextEnv() {
     this._isEnvEnd = false;
+    //todo: maybe remove?
     this._isSplitPossible = true;
     this._fillSlots();
   }
@@ -92,7 +93,7 @@ module.exports = class Pool {
   }
 
   _trySplit(session) {
-    if (this._options.config.suiteSplit && this._isSplitPossible) {
+    if (this._options.config.splitSuites && this._isSplitPossible) {
       const queue = new Splitter(this._slots, session).getQueue();
       if (queue) {
         return queue;
@@ -106,12 +107,10 @@ module.exports = class Pool {
   _processNextQueue(session) {
     const queue = this._getNextQueue(session);
     if (queue) {
-      if (queue.suite.env === session.env) {
-        return this._runOnExistingSession(session, queue);
-      } else {
-        return this._closeSession(session)
+      return queue.suite.env === session.env
+        ? this._runOnExistingSession(session, queue)
+        : this._closeSession(session)
           .then(() => this._runOnNewSession(queue));
-      }
     } else {
       return this._closeSession(session)
         .then(() => this._onFreeSlot());
@@ -124,8 +123,8 @@ module.exports = class Pool {
   }
 
   _runOnExistingSession(session, queue) {
-    session.queue = queue;
-    return session.run()
+    this._slots.set(session, queue);
+    return queue.run(session.caller)
       .then(() => this._processNextQueue(session));
   }
 
@@ -136,9 +135,8 @@ module.exports = class Pool {
       reporter: this._options.reporter,
       config: this._options.config,
     });
-    session.queue = queue;
     this._sessionsCount++;
-    this._slots.add(session);
+    this._slots.set(session, queue);
     return session.start()
       .then(() => session);
   }
