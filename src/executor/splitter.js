@@ -3,16 +3,28 @@
  */
 
 module.exports = class Splitter {
-    constructor(slots, existingSession) {
-      this._slots = slots;
-      // this._existingSession = existingSession;
+    constructor(queues) {
+      this._queues = queues;
+      this._envs = [];
     }
 
-    getQueue() {
-      //console.log('try split')
+    splitForSession(session) {
+      //console.log('splitForSession');
+      this._envs = [session.env];
+      return this._getQueue({isSessionStarted: true});
+    }
+
+    splitForEnvs(envs) {
+      //console.log('splitForEnvs');
+      this._envs = envs;
+      return this._getQueue({isSessionStarted: false});
+    }
+
+    _getQueue({isSessionStarted}) {
+      const queues = this._queues.filter(queue => this._envs.some(env => env === queue.suite.env));
       let maxRemaining = 0;
       let queueToSplit = null;
-      this._slots.forEach(queue => {
+      queues.forEach(queue => {
         const remaining = queue.getRemainingCount();
         //console.log(session.queue.suite.name, remaining);
         if (remaining > maxRemaining) {

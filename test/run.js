@@ -7,7 +7,7 @@ const ProgressReporter = require('sheeva-reporter-progress');
 const Sheeva = require('../src');
 
 const config = {
-  concurrency: 5,
+  concurrency: 19,
   files: './test/specs/*.test.js',
   //files: './test/specs/only.test.js',
   splitSuites: true,
@@ -16,7 +16,8 @@ const config = {
   createEnvs: function () {
     return [
       //{id: 'tests-sync'},
-      {id: 'tests-async', delay: 20},
+      {id: 'tests-async', delay: 40},
+      {id: 'tests-sync'},
       //{id: 'tests-async2', delay: 40},
     ];
   },

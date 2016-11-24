@@ -19,6 +19,14 @@ const defaults = {
    */
   splitSuites: true,
   /**
+   * todo:
+   * Action when test/hook fails:
+   * - stop
+   * - continue-env (default)
+   * - continue-all
+   */
+  onError: 'continue-env',
+  /**
    * Reporters
    */
   reporters: [],

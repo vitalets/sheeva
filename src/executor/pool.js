@@ -4,7 +4,7 @@
  */
 
 const Promised = require('../utils/promised');
-const Session = require('./session');
+const Worker = require('./worker');
 const Splitter = require('./splitter');
 
 module.exports = class Pool {
@@ -19,22 +19,22 @@ module.exports = class Pool {
   constructor(options) {
     this._options = options;
     /**
-     * Flag that last queue of env reached and we are ready for suite split
+     * State of each processed env (is last queue reached, is split possible)
      */
-    this._isEnvEnd = false;
+    this._envStates = new Map();
     /**
      * Flag showing that suite splitting is still possible,
      * otherwise other sessions will not even try
      */
-    this._isSplitPossible = false;
+    //this._isSplitPossible = false;
     /**
      * Flag showing that there are no more queues so we wait for current sessions to finish
      */
-    this._isQueuesEnd = false;
+    //this._isQueuesEnd = false;
     /**
-     * Map of slots for running (session, queue), limited by concurrency
+     * Map of slots for workers, limited by concurrency
      */
-    this._slots = new Map();
+    this._slots = new Set();
     /**
      * Session counter to assign unique session indexes
      */
@@ -49,24 +49,25 @@ module.exports = class Pool {
    * Run
    */
   run() {
-    return this._promised.call(() => this._startNextEnv());
+    return this._promised.call(() => this._fillSlots());
   }
 
-  _startNextEnv() {
-    this._isEnvEnd = false;
-    //todo: maybe remove?
-    this._isSplitPossible = true;
-    this._fillSlots();
-  }
-
+  /**
+   * Run parallel workers in limited slots
+   */
   _fillSlots() {
     while (this._hasFreeSlots()) {
-      const queue = this._getNextQueue();
+      const queue = this._getQueue();
       if (queue) {
-        this._runOnNewSession(queue)
+        const worker = new Worker({
+          reporter: this._options.reporter,
+          config: this._options.config,
+        });
+        this._slots.add(worker);
+        this._onFreeWorker(worker, queue)
           .catch(e => this._promised.reject(e));
       } else {
-        this._onFreeSlot();
+        this._checkDone();
         break;
       }
     }
@@ -76,84 +77,72 @@ module.exports = class Pool {
     return this._slots.size < this._options.config.concurrency;
   }
 
-  _getNextQueue(session) {
-    return this._isEnvEnd
-      ? this._trySplit(session)
-      : this._getNextQueueFromExecutor();
+  _onFreeWorker(worker, queue) {
+    queue = queue || this._getQueue(worker);
+    if (queue) {
+      return worker.run(queue)
+        .then(() => this._onFreeWorker(worker));
+    } else {
+      return worker.close()
+        .then(() => {
+          this._slots.delete(worker);
+          this._checkDone();
+        });
+    }
   }
 
-  _getNextQueueFromExecutor() {
-    const {queue, isLast} = this._options.getNextQueue();
+  _getQueue(worker) {
+    let splittedQueue;
+    if (this._options.config.splitSuites) {
+      const session = worker && worker.session;
+      splittedQueue = session
+        ? this._trySplitForSession(session)
+        : this._trySplitForEnvs();
+    }
+    return splittedQueue || this._getNextQueue();
+  }
+
+  _trySplitForSession(session) {
+    const envState = this._envStates.get(session.env);
+    if (envState.isLastQueue) {
+      return this._getSplitter().splitForSession(session);
+    }
+  }
+
+  _trySplitForEnvs() {
+    const envs = [];
+    // todo: envState.running ?
+    this._envStates.forEach((envState, env) => envState.isLastQueue ? envs.push(env) : null);
+    return this._getSplitter().splitForEnvs(envs);
+  }
+
+  _getSplitter() {
+    const queues = [];
+    this._slots.forEach(worker => worker.queue ? queues.push(worker.queue) : null);
+    return new Splitter(queues);
+  }
+
+  _getNextQueue() {
+    const {queue, isLastQueue} = this._options.getNextQueue();
     if (queue) {
-      this._isEnvEnd = isLast;
-    } else {
-      this._isQueuesEnd = true;
+      this._updateEnvStates(queue, isLastQueue);
     }
     return queue;
   }
 
-  _trySplit(session) {
-    if (this._options.config.splitSuites && this._isSplitPossible) {
-      const queue = new Splitter(this._slots, session).getQueue();
-      if (queue) {
-        return queue;
-      } else {
-        this._isSplitPossible = false;
-      }
-    }
-    // split not possible, just wait for other sessions to end
-  }
-
-  _processNextQueue(session) {
-    const queue = this._getNextQueue(session);
-    if (queue) {
-      return queue.suite.env === session.env
-        ? this._runOnExistingSession(session, queue)
-        : this._closeSession(session)
-          .then(() => this._runOnNewSession(queue));
+  _updateEnvStates(queue, isLastQueue) {
+    const env = queue.suite.env;
+    const envState = this._envStates.get(env);
+    if (envState) {
+      envState.isLastQueue = isLastQueue;
     } else {
-      return this._closeSession(session)
-        .then(() => this._onFreeSlot());
+      this._envStates.set(env, {isLastQueue});
     }
   }
 
-  _runOnNewSession(queue) {
-    return this._createSession(queue)
-      .then(session => this._runOnExistingSession(session, queue));
-  }
-
-  _runOnExistingSession(session, queue) {
-    this._slots.set(session, queue);
-    return queue.run(session.caller)
-      .then(() => this._processNextQueue(session));
-  }
-
-  _createSession(queue) {
-    const session = new Session({
-      env: queue.suite.env,
-      index: this._sessionsCount,
-      reporter: this._options.reporter,
-      config: this._options.config,
-    });
-    this._sessionsCount++;
-    this._slots.set(session, queue);
-    return session.start()
-      .then(() => session);
-  }
-
-  _closeSession(session) {
-    return session.close()
-      .then(() => this._slots.delete(session));
-  }
-
-  _onFreeSlot() {
+  _checkDone() {
     if (this._slots.size === 0) {
-      if (this._isQueuesEnd) {
-        this._promised.resolve();
-      } else {
-        // todo: emit env end
-        this._startNextEnv();
-      }
+      this._promised.resolve();
     }
   }
 };
