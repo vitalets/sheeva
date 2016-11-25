@@ -24,8 +24,9 @@ module.exports = class Reader {
     this._envs.forEach(env => this._envSuites.set(env, []));
     meta.setTags(options.tags);
   }
-  read(pattern) {
-    this._files = glob.sync(pattern);
+  read(patterns) {
+    patterns = Array.isArray(patterns) ? patterns : [patterns];
+    this._files = patterns.reduce((res, pattern) => res.concat(glob.sync(pattern)), []);
     exposeApi(global);
     this._readFiles();
     cleanupApi(global);

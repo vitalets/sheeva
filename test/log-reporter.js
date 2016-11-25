@@ -6,71 +6,122 @@ const events = require('../src/events');
 
 module.exports = class LogReporter {
   constructor() {
+    /*
+      env1: {
+        session1: [
+          SESSION_START,
+          SUITE_START,
+          ...
+        ],
+        session2: [
+          SESSION_START,
+          SUITE_START,
+          ...
+        ],
+      },
+      env2: {
+        ...
+      }
+    */
     this._logs = {};
   }
   handleEvent(event, data) {
-    const env = data.env;
+    const log = this._getLog(data);
+    //console.log('log-reporter:', event)
     //console.log('log-reporter:', new Date(data.timestamp), event)
     //console.log('\nlog-reporter:', new Date(data.timestamp), event, data.test && data.test.name, '\n')
     //console.log('log-reporter:', event, data.error)
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
     const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
     switch (event) {
+
+      // case events.RUNNER_START: {
+      //   this._push(env, `${event} ${data.session.index}`);
+      //   break;
+      // }
+      // case events.RUNNER_END: {
+      //   this._push(env, `${event} ${data.session.index}`);
+      //   break;
+      // }
+
+      case events.SESSION_START: {
+        log.push(`${event} ${data.session.index}`);
+        break;
+      }
+      case events.SESSION_END: {
+        log.push(`${event} ${data.session.index}`);
+        break;
+      }
       case events.SUITE_START: {
-        this._push(env, `${event} ${suiteName}`);
+        log.push(`${event} ${suiteName}`);
         break;
       }
       case events.SUITE_END: {
-        this._push(env, `${event} ${suiteName}${errMessage}`);
+        log.push(`${event} ${suiteName}${errMessage}`);
         break;
       }
       case events.HOOK_START: {
-        // this.log.push(`${event} ${suiteName} ${data.hookType} ${data.index}`);
+        log.push(`${event} ${suiteName} ${data.hookType} ${data.index}`);
         break;
       }
       case events.HOOK_END: {
-        this._push(env, `${event} ${suiteName} ${data.hookType} ${data.index}${errMessage}`);
+        log.push(`${event} ${suiteName} ${data.hookType} ${data.index}${errMessage}`);
         break;
       }
       case events.TEST_START: {
-        // this.log.push(`${event} ${data.test.name}`);
+        log.push(`${event} ${data.test.name}`);
         break;
       }
       case events.TEST_END: {
-        this._push(env, `${event} ${data.test.name}${errMessage}`);
-        //console.log('\nlog-reporter:', new Date(data.timestamp), data.test.name, '\n')
+        log.push(`${event} ${data.test.name}${errMessage}`);
         break;
       }
     }
   }
-  getLog(filter) {
-    const keys = Object.keys(this._logs);
-    if (keys.length === 0) {
-      return [];
-    } else if (keys.length === 1) {
-      const log = this._logs[keys[0]];
-      return applyFilter(log, filter);
-    } else {
-      return keys.reduce((res, key) => {
-        res[key] = applyFilter(this._logs[key], filter);
-        return res;
-      }, {});
+  getResult(filter) {
+    if (!filter.include && !filter.exclude) {
+      // default filter
+      filter.exclude = ['HOOK_START', 'TEST_START'];
     }
+    return processSingleKey(this._logs, envData => {
+      return processSingleKey(envData, log => applyFilter(log, filter))
+    });
   }
-  _push(env, str) {
-    this._logs[env.id] = this._logs[env.id] || [];
-    this._logs[env.id].push(str);
+  _getLog({env, session}) {
+    if (!env || !session) {
+      return [];
+    }
+    this._logs[env.id] = this._logs[env.id] || {};
+    const sessionName = `session${session.index}`;
+    this._logs[env.id][sessionName] = this._logs[env.id][sessionName] || [];
+    return this._logs[env.id][sessionName];
   }
 };
 
-function applyFilter(log, filter) {
-  if (!filter || !filter.length) {
-    return log;
+/**
+ * If object contains 1 key, return it's value processed by fn
+ * Otherwise process all props with fn and return original obj
+ */
+function processSingleKey(obj, fn) {
+  const keys = Object.keys(obj);
+  if (keys.length === 1) {
+    return fn(obj[keys[0]]);
   } else {
-    return log.filter(line => isLineMatches(line, filter));
+    keys.forEach(key => obj[key] = fn(obj[key]));
+    return obj;
   }
 }
 
-function isLineMatches(line, filter) {
-  return filter.some(str => line.startsWith(str));
+function applyFilter(log, filter) {
+  if (filter.include) {
+    log = log.filter(line => {
+      return filter.include.some(str => line.startsWith(str));
+    });
+  }
+  if (filter.exclude) {
+    log = log.filter(line => {
+      return filter.exclude.every(str => !line.startsWith(str));
+    });
+  }
+  return log;
 }

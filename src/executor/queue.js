@@ -142,10 +142,10 @@ module.exports = class Queue {
   /**
    * Splits out another queue out of this
    *
-   * @param {Number} startFromIndex
+   * @param {Number} fromIndex
    */
-  split(startFromIndex) {
-    const tests = this.tests.splice(startFromIndex);
+  split(fromIndex) {
+    const tests = this.tests.splice(fromIndex);
     return new Queue(tests);
   }
 

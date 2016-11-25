@@ -1,7 +1,11 @@
 describe('sort', () => {
 
-  it('should move suite with before/after hooks first', session => {
-    const report = runCode(`
+  beforeEach(context => {
+    context.include = ['TEST_END'];
+  });
+
+  it('should move suite with before/after hooks first', run => {
+    const report = run(`
       describe('suite 1', () => {
         it('test 0', noop);
       });
@@ -22,7 +26,7 @@ describe('sort', () => {
         before(noop);
         it('test 3', noop);
       });
-    `, {session}, ['TEST_END']);
+    `);
 
     return expect(report, 'to be fulfilled with', [
       'TEST_END test 2',

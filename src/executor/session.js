@@ -26,8 +26,10 @@ module.exports = class Session {
     this._config = options.config;
     this._env = options.env;
     this._index = options.index;
+    this._started = false;
     this._caller = new Caller(this);
     this._data = null;
+    this._queue = null;
   }
 
   get env() {
@@ -42,8 +44,19 @@ module.exports = class Session {
     return this._index;
   }
 
-  get caller() {
-    return this._caller;
+  get queue() {
+    return this._queue;
+  }
+
+  get started() {
+    return this._started;
+  }
+
+  run(queue) {
+    this._queue = queue;
+    return Promise.resolve()
+      .then(() => this._started ? null : this.start())
+      .then(() => queue.run(this._caller))
   }
 
   start() {
@@ -52,6 +65,7 @@ module.exports = class Session {
       .then(() => this._config.createSessionData(this._env))
       .then(data => {
         this._data = data;
+        this._started = true;
         this.emit(SESSION_STARTED);
       });
   }

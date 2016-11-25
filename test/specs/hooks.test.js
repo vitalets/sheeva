@@ -1,8 +1,7 @@
-
 describe('hooks', () => {
 
-  it('should run it and all hooks without describe', session => {
-    const report = runCode(`
+  it('should run it and all hooks without describe', run => {
+    const report = run(`
       before(noop);
       before(noop);
       
@@ -17,9 +16,10 @@ describe('hooks', () => {
       
       it('test 0', noop);
       it('test 1', noop);
-    `, {session});
+    `);
 
     return expect(report, 'to be fulfilled with', [
+      'SESSION_START 1',
       'SUITE_START root',
       'HOOK_END root before 0',
       'HOOK_END root before 1',
@@ -36,11 +36,12 @@ describe('hooks', () => {
       'HOOK_END root after 0',
       'HOOK_END root after 1',
       'SUITE_END root',
+      'SESSION_END 1'
     ]);
   });
 
-  it('should run it and all hooks within describe', session => {
-    const report = runCode(`
+  it('should run it and all hooks within describe', run => {
+    const report = run(`
       before(noop);
       beforeEach(noop);
       after(noop);
@@ -55,9 +56,10 @@ describe('hooks', () => {
         it('test 0', noop);
         it('test 1', noop);
       });
-    `, {session});
+    `);
 
     return expect(report, 'to be fulfilled with', [
+      'SESSION_START 1',
       'SUITE_START root',
       'HOOK_END root before 0',
       'SUITE_START suite',
@@ -76,6 +78,7 @@ describe('hooks', () => {
       'SUITE_END suite',
       'HOOK_END root after 0',
       'SUITE_END root',
+      'SESSION_END 1',
     ]);
   });
 

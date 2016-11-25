@@ -1,8 +1,8 @@
 
 describe('only', () => {
 
-  it('should run only test by $only()', session => {
-    const report = runCode(`
+  it('should run only test by $only()', run => {
+    const report = run(`
       describe('suite 1', () => {
         it('test 0', noop);
         describe('suite 2', () => {
@@ -18,21 +18,23 @@ describe('only', () => {
         it('test 4', noop);
         it('test 5', noop);
       });
-    `, {session});
+    `);
 
     return expect(report, 'to be fulfilled with', [
+      'SESSION_START 1',
       'SUITE_START root',
       'SUITE_START suite 1',
       'SUITE_START suite 2',
       'TEST_END test 1',
       'SUITE_END suite 2',
       'SUITE_END suite 1',
-      'SUITE_END root'
+      'SUITE_END root',
+      'SESSION_END 1',
     ]);
   });
 
-  it('should run only describe by $only()', session => {
-    const report = runCode(`
+  it('should run only describe by $only()', run => {
+    const report = run(`
       describe('suite 1', () => {
         it('test 0', noop);
         $only();
@@ -48,9 +50,10 @@ describe('only', () => {
         it('test 4', noop);
         it('test 5', noop);
       });
-    `, {session});
+    `);
 
     return expect(report, 'to be fulfilled with', [
+      'SESSION_START 1',
       'SUITE_START root',
       'SUITE_START suite 1',
       'SUITE_START suite 2',
@@ -60,12 +63,13 @@ describe('only', () => {
       'SUITE_END suite 3',
       'SUITE_END suite 2',
       'SUITE_END suite 1',
-      'SUITE_END root'
+      'SUITE_END root',
+      'SESSION_END 1',
     ]);
   });
 
-  it('should run all only describe and it', session => {
-    const report = runCode(`
+  it('should run all only describe and it', run => {
+    const report = run(`
       describe('suite', () => {
         $only();
         it('test 0', noop);
@@ -84,9 +88,10 @@ describe('only', () => {
           it('test 4', noop);
         });
       });
-    `, {session});
+    `);
 
     return expect(report, 'to be fulfilled with', [
+      'SESSION_START 1',
       'SUITE_START root',
       'SUITE_START suite',
       'TEST_END test 0',
@@ -99,7 +104,8 @@ describe('only', () => {
       'TEST_END test 4',
       'SUITE_END suite 4',
       'SUITE_END suite 3',
-      'SUITE_END root'
+      'SUITE_END root',
+      'SESSION_END 1',
     ]);
   });
 

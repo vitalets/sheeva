@@ -28,9 +28,9 @@ module.exports = class Sheeva {
       this._reader.read(this._config.files);
       this._emitStart();
       return this._executor.run(this._reader.envSuites)
-        .then(() => this._finishSuccess(), e => this._finishError(e));
+        .then(() => this._successEnd(), e => this._errorEnd(e));
     } catch (e) {
-      return this._finishError(e);
+      return this._errorEnd(e);
     }
   }
   getReporter(index) {
@@ -67,11 +67,11 @@ module.exports = class Sheeva {
       config: this._config,
     });
   }
-  _finishSuccess() {
+  _successEnd() {
     this._emitEnd();
     return this._reporter.getResult();
   }
-  _finishError(e) {
+  _errorEnd(e) {
     if (this._startEventEmitted) {
       this._emitEnd(e);
     }
