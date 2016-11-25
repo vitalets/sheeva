@@ -10,7 +10,7 @@ const config = {
   concurrency: 5,
   files: './test/specs/*.test.js',
   //files: './test/specs/only.test.js',
-  splitSuites: true,
+  splitSuites: false,
   reporters: ProgressReporter,
   //reporters: require('./debug-reporter'),
   createEnvs: function () {

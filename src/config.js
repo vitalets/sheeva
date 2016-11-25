@@ -11,13 +11,17 @@ const defaults = {
    */
   files: '',
   /**
-   * Max count of concurent sessions
+   * Max number of concurrent sessions
    */
   concurrency: 1,
   /**
    * Allows suite splitting for parallelization
    */
   splitSuites: true,
+  /**
+   * Do not start next env until current is done
+   */
+  waitEnvDone: true,
   /**
    * todo:
    * Action when test/hook fails:
