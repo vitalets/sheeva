@@ -41,10 +41,12 @@ module.exports = class Sheeva {
     if (!this._envs.length) {
       throw new Error('You should provide at lease one env');
     } else {
+      const envIds = new Set();
       this._envs.forEach(env => {
-        if (!env || !env.id) {
+        if (!env || !env.id || envIds.has(env.id)) {
           throw new Error('Each env should have unique id property');
         }
+        envIds.add(env.id);
       });
     }
   }
