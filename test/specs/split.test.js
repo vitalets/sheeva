@@ -1,6 +1,6 @@
 describe('split suites', () => {
 
-  it('should run 2 files in parallel sessions', run => {
+  it('should split suites on 2 parallel sessions', run => {
     const config = {concurrency: 2, splitSuites: true};
     const report = run([`
       describe('suite 1', () => {
