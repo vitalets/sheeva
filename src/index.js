@@ -85,6 +85,7 @@ module.exports = class Sheeva {
       envs: this._envs,
       envLabels: envLabels,
       files: this._reader.files,
+      hasOnly: this._reader.hasOnly,
       config: this._config,
     };
     this._reporter.handleEvent(RUNNER_START, data);

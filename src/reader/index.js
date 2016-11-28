@@ -22,7 +22,17 @@ module.exports = class Reader {
     // map that contains env => array of suites
     this._envSuites = new Map();
     this._envs.forEach(env => this._envSuites.set(env, []));
+    this._hasOnly = false;
     meta.setTags(options.tags);
+  }
+  get files() {
+    return this._files;
+  }
+  get envSuites() {
+    return this._envSuites;
+  }
+  get hasOnly() {
+    return this._hasOnly;
   }
   read(patterns) {
     patterns = Array.isArray(patterns) ? patterns : [patterns];
@@ -30,9 +40,8 @@ module.exports = class Reader {
     exposeApi(global);
     this._readFiles();
     cleanupApi(global);
-    if (this._hasOnly()) {
-      this._processOnly();
-    }
+    this._processOnly();
+
     // debug
     //const firstSuite = this._envSuites.values().next().value[0];
     //debug.printTree(firstSuite);
@@ -53,26 +62,26 @@ module.exports = class Reader {
     const envSuites = this._envSuites.get(suite.env);
     envSuites.push(suite);
   }
-  _hasOnly() {
+  _processOnly() {
+    if (this._detectOnly()) {
+      this._filterOnly();
+    }
+  }
+  _detectOnly() {
     for (let suites of this._envSuites.values()) {
       const hasOnly = suites.some(suite => suite.hasOnly);
       if (hasOnly) {
-        return true;
+        this._hasOnly = true;
+        break;
       }
     }
-    return false;
+    return this._hasOnly;
   }
-  _processOnly() {
+  _filterOnly() {
     this._envSuites.forEach((suites, env) => {
       suites = suites.filter(extractOnly);
       this._envSuites.set(env, suites);
     });
-  }
-  get files() {
-    return this._files;
-  }
-  get envSuites() {
-    return this._envSuites;
   }
 };
 
