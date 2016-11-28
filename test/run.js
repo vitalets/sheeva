@@ -3,7 +3,6 @@
  */
 
 require('./sub-run');
-const ProgressReporter = require('sheeva-reporter-progress');
 const Sheeva = require('../src');
 
 const config = {
@@ -12,17 +11,17 @@ const config = {
   //files: './test/specs/only.test.js',
   //splitSuites: false,
   splitSuites: true,
-  reporters: ProgressReporter,
+  reporters: require('sheeva-reporter-progress'),
   //reporters: require('./debug-reporter'),
   createEnvs: function () {
     return [
-      //{id: 'tests-sync'},
+      {id: 'tests-sync'},
       {id: 'tests-async', delay: 10},
-      {id: 'tests-async1', delay: 10},
+     // {id: 'tests-async1', delay: 10},
       //{id: 'tests-async2', delay: 30},
       //{id: 'tests-async3', delay: 50},
       //{id: 'tests-sync'},
-     // {id: 'tests-async4', delay: 100},
+      //{id: 'tests-async4', delay: 100},
     ];
   },
   // session data actually contains sub-run config overwrites
@@ -51,14 +50,7 @@ const config = {
   _main: true,
 };
 
-const sheeva = new Sheeva(config);
-sheeva.run()
-  //.then(() => sheeva.getReporter(0).getLog ? console.log(sheeva.getReporter(0).getLog()) : '')
-  .catch(e => {
-    console.log('Sheeva error!');
-    console.log(e);
-    process.exit(1);
-  });
+new Sheeva(config).run();
 
 function createSyncFn({fn}) {
   return fn;

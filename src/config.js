@@ -15,13 +15,16 @@ const defaults = {
    */
   concurrency: 1,
   /**
-   * Allows suite splitting for parallelization
+   * How envs are executed per pool of sessions:
+   * - `fullEnvFirst`: run all available sessions of first env, then run on second env, etc
+   * - `fullEnvFirstDone`: run all available sessions of first env and wait until it's done, then run on second env, etc
+   * - `allEnvsParallel`: run all envs in parallel (not supported yet)
+   */
+  concurrencyMode: 'fullEnvFirst',
+  /**
+   * Allows suite splitting between parallel sessions
    */
   splitSuites: true,
-  /**
-   * Do not start next env until current is done
-   */
-  waitEnvDone: true,
   /**
    * todo:
    * Action when test/hook fails:
@@ -39,7 +42,7 @@ const defaults = {
    */
   tags: [],
   /**
-   *
+   * todo:
    */
   useTimings: true,
   /**

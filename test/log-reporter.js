@@ -7,6 +7,8 @@ const events = require('../src/events');
 module.exports = class LogReporter {
   constructor() {
     /*
+      treeLog:
+
       env1: {
         session1: [
           SESSION_START,
@@ -23,78 +25,106 @@ module.exports = class LogReporter {
         ...
       }
     */
-    this._logs = {};
+    this._flatLog = [];
+    this._treeLog = {};
   }
   handleEvent(event, data) {
-    const log = this._getLog(data);
-    //console.log('log-reporter:', event)
+    //console.log('\n\n\n\n\nlog-reporter:', event)
     //console.log('log-reporter:', new Date(data.timestamp), event)
     //console.log('\nlog-reporter:', new Date(data.timestamp), event, data.test && data.test.name, '\n')
     //console.log('log-reporter:', event, data.error)
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
     const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
     switch (event) {
+      case events.RUNNER_START: {
+        this._add(data, `${event}`);
+        break;
+      }
+      case events.RUNNER_END: {
+        this._add(data, `${event}`);
+        break;
+      }
 
-      // case events.RUNNER_START: {
-      //   this._push(env, `${event} ${data.session.index}`);
-      //   break;
-      // }
-      // case events.RUNNER_END: {
-      //   this._push(env, `${event} ${data.session.index}`);
-      //   break;
-      // }
+      case events.ENV_START: {
+        this._add(data, `${event} ${data.env.id}`);
+        break;
+      }
+      case events.ENV_END: {
+        this._add(data, `${event} ${data.env.id}`);
+        break;
+      }
 
       case events.SESSION_START: {
-        log.push(`${event} ${data.session.index}`);
+        this._add(data, `${event} ${data.session.index}`);
         break;
       }
       case events.SESSION_END: {
-        log.push(`${event} ${data.session.index}`);
+        this._add(data, `${event} ${data.session.index}`);
         break;
       }
       case events.SUITE_START: {
-        log.push(`${event} ${suiteName}`);
+        this._add(data, `${event} ${suiteName}`);
         break;
       }
       case events.SUITE_END: {
-        log.push(`${event} ${suiteName}${errMessage}`);
+        this._add(data, `${event} ${suiteName}${errMessage}`);
         break;
       }
       case events.HOOK_START: {
-        log.push(`${event} ${suiteName} ${data.hookType} ${data.index}`);
+        this._add(data, `${event} ${suiteName} ${data.hookType} ${data.index}`);
         break;
       }
       case events.HOOK_END: {
-        log.push(`${event} ${suiteName} ${data.hookType} ${data.index}${errMessage}`);
+        this._add(data, `${event} ${suiteName} ${data.hookType} ${data.index}${errMessage}`);
         break;
       }
       case events.TEST_START: {
-        log.push(`${event} ${data.test.name}`);
+        this._add(data, `${event} ${data.test.name}`);
         break;
       }
       case events.TEST_END: {
-        log.push(`${event} ${data.test.name}${errMessage}`);
+        this._add(data, `${event} ${data.test.name}${errMessage}`);
         break;
       }
     }
   }
+
+  /**
+   *
+   * @param {Object} filter
+   * @param {Array} [filter.include]
+   * @param {Array} [filter.exclude]
+   * @param {Boolean} [filter.flat]
+   */
   getResult(filter) {
     if (!filter.include && !filter.exclude) {
       // default filter
-      filter.exclude = ['HOOK_START', 'TEST_START'];
+      filter.exclude = ['RUNNER_', 'ENV_', 'HOOK_START', 'TEST_START'];
     }
-    return processSingleKey(this._logs, envData => {
-      return processSingleKey(envData, log => applyFilter(log, filter))
-    });
+
+    const envs = Object.keys(this._treeLog);
+    const flat = envs.length === 0 || (envs.length === 1 && Object.keys(this._treeLog[envs[0]]).length <= 1);
+
+    if (flat) {
+      return applyFilter(this._flatLog, filter);
+    } else {
+      Object.keys(this._treeLog).forEach(envId => {
+        Object.keys(this._treeLog[envId]).forEach(sessionName => {
+          this._treeLog[envId][sessionName] = applyFilter(this._treeLog[envId][sessionName], filter);
+        })
+      });
+      return this._treeLog;
+    }
   }
-  _getLog({env, session}) {
-    if (!env || !session) {
-      return [];
+  _add({session}, str) {
+    this._flatLog.push(str);
+    if (session) {
+      const env = session.env;
+      this._treeLog[env.id] = this._treeLog[env.id] || {};
+      const sessionName = `session${session.index}`;
+      this._treeLog[env.id][sessionName] = this._treeLog[env.id][sessionName] || [];
+      this._treeLog[env.id][sessionName].push(str);
     }
-    this._logs[env.id] = this._logs[env.id] || {};
-    const sessionName = `session${session.index}`;
-    this._logs[env.id][sessionName] = this._logs[env.id][sessionName] || [];
-    return this._logs[env.id][sessionName];
   }
 };
 

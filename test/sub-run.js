@@ -34,7 +34,7 @@ function createConfig(options) {
     reporters: require('./log-reporter'),
     splitSuites: false,
     createEnvs: function () {
-      return [{id: 'default'}];
+      return [{id: 'env1'}];
     },
     //timings: './sheeva.timings.json',
   }, options.session.data, options.config);

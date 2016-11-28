@@ -54,8 +54,8 @@ module.exports = class Executor {
       return {};
     } else if (this._queues.length) {
       const queue = this._queues.shift();
-      const isLast = this._queues.length === 0;
-      return {queue, isLast};
+      const isLastQueueInEnv = this._queues.length === 0;
+      return {queue, isLastQueueInEnv};
     } else {
       // dont emit ENV_END here as sessions are still finishing
       this._nextEnv();

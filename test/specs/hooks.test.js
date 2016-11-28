@@ -36,7 +36,7 @@ describe('hooks', () => {
       'HOOK_END root after 0',
       'HOOK_END root after 1',
       'SUITE_END root',
-      'SESSION_END 1'
+      'SESSION_END 1',
     ]);
   });
 

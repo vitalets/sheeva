@@ -1,6 +1,10 @@
 
 describe('nesting', () => {
 
+  beforeEach(context => {
+    context.exclude = ['HOOK_START', 'TEST_START'];
+  });
+
   it('should run it outside describe', run => {
     const report = run(`
       it('test 0', noop);
@@ -8,12 +12,16 @@ describe('nesting', () => {
     `);
 
     return expect(report, 'to be fulfilled with', [
+      'RUNNER_START',
+      'ENV_START env1',
       'SESSION_START 1',
       'SUITE_START root',
       'TEST_END test 0',
       'TEST_END test 1',
       'SUITE_END root',
       'SESSION_END 1',
+      'ENV_END env1',
+      'RUNNER_END',
     ])
   });
 
@@ -26,12 +34,19 @@ describe('nesting', () => {
       describe('suite 3', noop);
     `);
 
-    return expect(report, 'to be fulfilled with', {});
+    return expect(report, 'to be fulfilled with', [
+      'RUNNER_START',
+      'RUNNER_END',
+    ]);
   });
 
-  // todo:
-  // it('should process empty files', () => {
-  // });
+  it('should process empty files', run => {
+    const report = run(``);
+    return expect(report, 'to be fulfilled with', [
+      'RUNNER_START',
+      'RUNNER_END',
+    ]);
+  });
 
   it('should run it inside describe', run => {
     const report = run(`
@@ -53,25 +68,29 @@ describe('nesting', () => {
     `);
 
     return expect(report, 'to be fulfilled with', [
-        'SESSION_START 1',
-        'SUITE_START root',
-        'SUITE_START suite 1',
-        'TEST_END test 0',
-        'TEST_END test 1',
-        'SUITE_START suite 2',
-        'TEST_END test 2',
-        'SUITE_END suite 2',
-        'SUITE_START suite 3',
-        'TEST_END test 3',
-        'SUITE_END suite 3',
-        'TEST_END test 4',
-        'SUITE_END suite 1',
-        'SUITE_START suite 4',
-        'TEST_END test 5',
-        'SUITE_END suite 4',
-        'SUITE_END root',
-        'SESSION_END 1',
-      ])
+      'RUNNER_START',
+      'ENV_START env1',
+      'SESSION_START 1',
+      'SUITE_START root',
+      'SUITE_START suite 1',
+      'TEST_END test 0',
+      'TEST_END test 1',
+      'SUITE_START suite 2',
+      'TEST_END test 2',
+      'SUITE_END suite 2',
+      'SUITE_START suite 3',
+      'TEST_END test 3',
+      'SUITE_END suite 3',
+      'TEST_END test 4',
+      'SUITE_END suite 1',
+      'SUITE_START suite 4',
+      'TEST_END test 5',
+      'SUITE_END suite 4',
+      'SUITE_END root',
+      'SESSION_END 1',
+      'ENV_END env1',
+      'RUNNER_END',
+    ])
   });
 
 });

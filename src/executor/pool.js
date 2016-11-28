@@ -6,6 +6,7 @@
 const Promised = require('../utils/promised');
 const Session = require('./session');
 const Splitter = require('./splitter');
+const {ENV_END} = require('../events');
 
 module.exports = class Pool {
   /**
@@ -25,7 +26,7 @@ module.exports = class Pool {
     /**
      * Flag showing that there are no more queues so we wait for current sessions to finish
      */
-    //this._isQueuesEnd = false;
+    this._noMoreQueues = false;
     /**
      * Slots for running sessions, limited by concurrency
      */
@@ -52,7 +53,8 @@ module.exports = class Pool {
    */
   _fillSlots() {
     while (this._hasFreeSlots()) {
-      if (!this._onFreeSlot()) {
+      const job = this._handleFreeSlot();
+      if (!job) {
         break;
       }
     }
@@ -62,65 +64,81 @@ module.exports = class Pool {
     return this._slots.size < this._options.config.concurrency;
   }
 
-  _onFreeSlot(queue) {
+  _handleFreeSlot(queue) {
     queue = queue || this._trySplitForSlot() || this._getNextQueue();
     if (queue) {
-      const session = this._createSession(queue.suite.env);
-      this._slots.add(session);
-      return this._runQueue(session, queue)
-        .catch(e => this._promised.reject(e))
+      return this._runOnNewSession(queue)
     } else {
       this._checkDone();
     }
   }
 
-  _onFreeSession(session) {
+  _handleFreeSession(session) {
     let queue;
 
     queue = this._trySplitForSession(session);
     if (queue) {
-      return this._runQueue(session, queue);
+      return this._runOnExistingSession(session, queue);
     }
 
     queue = this._getNextQueue();
     if (queue && queue.suite.env === session.env) {
-      return this._runQueue(session, queue);
+      return this._runOnExistingSession(session, queue);
     }
 
     return session.close()
       .then(() => {
         this._slots.delete(session);
-        this._onFreeSlot(queue);
+        this._checkEnvDone(session.env);
+        this._handleFreeSlot(queue);
       });
   }
 
-  _runQueue(session, queue) {
+  _runOnNewSession(queue) {
+    const session = this._createSession(queue.suite.env);
+    this._slots.add(session);
+    return this._runOnExistingSession(session, queue)
+      .catch(e => this._promised.reject(e))
+  }
+
+  _runOnExistingSession(session, queue) {
     return session.run(queue)
-      .then(() => this._onFreeSession(session));
+      .then(() => this._handleFreeSession(session));
   }
 
   _getNextQueue() {
-    const {queue, isLast} = this._options.getNextQueue();
+    const {queue, isLastQueueInEnv} = this._options.getNextQueue();
     if (queue) {
-      this._updateEnvState(queue, isLast);
+      this._updateEnvState(queue, isLastQueueInEnv);
+    } else {
+      this._noMoreQueues = true;
     }
     return queue;
   }
 
-  _updateEnvState(queue, isLast) {
+  _updateEnvState(queue, isLastQueueInEnv) {
     const env = queue.suite.env;
     let envState = this._envStates.get(env);
     if (!envState) {
       envState = {
-        splitForSession: false,
-        splitForSlot: false,
+        ended: false,
       };
       this._envStates.set(env, envState);
     }
-    envState.splitForSession = isLast;
-    envState.splitForSlot = isLast;
+    if (isLastQueueInEnv) {
+      Object.assign(envState, {
+        lastQueueReached: true,
+        splitForSession: true,
+        splitForSlot: true,
+      });
+    }
   }
 
+  /**
+   * Tries split running sessions for particular free session (same env)
+   *
+   * @param {Session} session
+   */
   _trySplitForSession(session) {
     if (!this._options.config.splitSuites) {
       return;
@@ -139,12 +157,19 @@ module.exports = class Pool {
     }
   }
 
+  /**
+   * 1. Finds all envs that reached end and can be splitted.
+   * 2. Finds the worst session and and tries split it to empty slot.
+   */
   _trySplitForSlot() {
     if (!this._options.config.splitSuites) {
       return;
     }
     const envs = [];
     this._envStates.forEach((envState, env) => envState.splitForSlot ? envs.push(env) : null);
+    if (!envs.length) {
+      return;
+    }
     const queue = this._getSplitter().trySplit({envs, isSessionStarted: false});
     if (queue) {
       return queue;
@@ -168,9 +193,24 @@ module.exports = class Pool {
     });
   }
 
+  _checkEnvDone(env) {
+    for (let session of this._slots.values()) {
+      if (session.env === env) {
+        return false;
+      }
+    }
+    const envState = this._envStates.get(env);
+    envState.ended = true;
+    this._options.reporter.handleEvent(ENV_END, {env});
+  }
+
   _checkDone() {
     if (this._slots.size === 0) {
-      this._promised.resolve();
+      if (this._noMoreQueues) {
+        this._promised.resolve();
+      } else {
+
+      }
     }
   }
 };
