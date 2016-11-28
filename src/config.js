@@ -72,9 +72,18 @@ const defaults = {
     return {};
   },
 
-  clearSessionData: function (data, session) {
+  /**
+   * Removes previously created session data
+   *
+   * @param {*} data
+   * @param {Session} session
+   */
+  removeSessionData: function (data, session) {
   },
   /**
+   * Returns function that will wrap every hook and test function.
+   * This convenient way to pass needed arguments in test function.
+   * By default session.data is passed as parameter.
    *
    * @param {Object} params
    * @param {Object} params.session

@@ -16,11 +16,11 @@ const config = {
   //reporters: require('./debug-reporter'),
   createEnvs: function () {
     return [
-      {id: 'tests-sync'},
+      //{id: 'tests-sync'},
       {id: 'tests-async', delay: 10},
-      //{id: 'tests-async1', delay: 30},
+      {id: 'tests-async1', delay: 10},
       //{id: 'tests-async2', delay: 30},
-      {id: 'tests-async3', delay: 50},
+      //{id: 'tests-async3', delay: 50},
       //{id: 'tests-sync'},
      // {id: 'tests-async4', delay: 100},
     ];

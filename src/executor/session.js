@@ -73,7 +73,7 @@ module.exports = class Session {
   close() {
     this.emit(SESSION_ENDING);
     return Promise.resolve()
-      .then(() => this._config.clearSessionData(this._data, this))
+      .then(() => this._config.removeSessionData(this._data, this))
       .then(() => {
         this._data = null;
         this.emit(SESSION_END);
