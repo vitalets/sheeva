@@ -1,6 +1,5 @@
 describe('split suites', () => {
 
-  $only()
   it('should run 2 files in parallel sessions', run => {
     const config = {concurrency: 2, splitSuites: true};
     const report = run([`

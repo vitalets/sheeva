@@ -78,8 +78,10 @@ module.exports = class Sheeva {
     return Promise.reject(e);
   }
   _emitStart() {
+    const envLabels = new Map(this._envs.map(env => [env, this._config.createEnvLabel(env)]));
     const data = {
       envs: this._envs,
+      envLabels: envLabels,
       files: this._reader.files,
       config: this._config,
     };

@@ -10,14 +10,19 @@ const config = {
   concurrency: 5,
   files: './test/specs/*.test.js',
   //files: './test/specs/only.test.js',
-  splitSuites: false,
+  //splitSuites: false,
+  splitSuites: true,
   reporters: ProgressReporter,
   //reporters: require('./debug-reporter'),
   createEnvs: function () {
     return [
-      //{id: 'tests-sync'},
+      {id: 'tests-sync'},
       {id: 'tests-async', delay: 10},
-     // {id: 'tests-async2', delay: 40},
+      //{id: 'tests-async1', delay: 30},
+      //{id: 'tests-async2', delay: 30},
+      {id: 'tests-async3', delay: 50},
+      //{id: 'tests-sync'},
+     // {id: 'tests-async4', delay: 100},
     ];
   },
   // session data actually contains sub-run config overwrites
