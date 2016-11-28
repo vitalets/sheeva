@@ -54,11 +54,7 @@ module.exports = class TopReporter {
   _proxyEvent(event, data) {
     this._reporters.forEach(reporter => {
       if (typeof reporter.handleEvent === 'function') {
-        try {
-          reporter.handleEvent(event, data);
-        } catch(e) {
-          console.log(`Error in reporter ${reporter.constructor.name}`, e);
-        }
+        reporter.handleEvent(event, data);
       }
     });
   }
