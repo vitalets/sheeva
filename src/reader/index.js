@@ -19,10 +19,7 @@ module.exports = class Reader {
    * @param {Array} [options.tags]
    */
   constructor(options) {
-    this._envs = options.envs;
-    // map that contains env => array of suites
-    this._envSuites = new Map();
-    this._envs.forEach(env => this._envSuites.set(env, []));
+    this._envSuites = new Map(options.envs.map(env => [env, []]));
     this._only = new Only();
     meta.setTags(options.tags);
   }
