@@ -33,7 +33,7 @@ module.exports = class Reader {
     return this._envSuites;
   }
   get hasOnly() {
-    return this._hasOnly;
+    return this._only.found;
   }
   read(patterns) {
     this._setFiles(patterns);
@@ -47,20 +47,17 @@ module.exports = class Reader {
     this._files = patterns.reduce((res, pattern) => res.concat(glob.sync(pattern)), []);
   }
   _readFiles() {
-    this._files.forEach(file => {
-      const suites = this._envs.map(env => new Suite({
-        name: file,
-        isFile: true,
-        env
-      }));
-      const fn = () => loadFile(file);
-      builder.fillSuites(suites, fn);
-      suites.forEach(this._addSuiteToEnv, this);
-    });
+    this._files.forEach(file => this._readFile(file));
   }
-  _addSuiteToEnv(suite) {
-    const envSuites = this._envSuites.get(suite.env);
-    envSuites.push(suite);
+  _readFile(file) {
+    const suites = [];
+    this._envSuites.forEach((envSuites, env) => {
+      const rootSuite = new Suite({name: file, isFile: true, env});
+      envSuites.push(rootSuite);
+      suites.push(rootSuite);
+    });
+    const fn = () => loadFile(file);
+    builder.fillSuites(suites, fn);
   }
 };
 

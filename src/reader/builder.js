@@ -15,6 +15,13 @@ let currentSuites = [];
  */
 let subSuites = null;
 
+/**
+ * Fills array of empty suites from executing fn.
+ * Suites are array as they belong to different envs.
+ *
+ * @param {Array<Suite>} suites
+ * @param {Function} fn
+ */
 exports.fillSuites = function fillSuites(suites, fn) {
   currentSuites = suites;
   subSuites = new Map();
