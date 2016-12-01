@@ -27,7 +27,7 @@ module.exports = class Sheeva {
       this._createExecuter();
       this._reader.read(this._config.files);
       this._emitStart();
-      return this._executor.run(this._reader.envSuites)
+      return this._executor.run(this._reader.envTests)
         .then(() => this._successEnd(), e => this._errorEnd(e));
     } catch (e) {
       return this._errorEnd(e);
@@ -85,6 +85,7 @@ module.exports = class Sheeva {
       envs: this._envs,
       envLabels: envLabels,
       files: this._reader.files,
+      envTests: this._reader.envTests,
       hasOnly: this._reader.hasOnly,
       config: this._config,
     };

@@ -1,5 +1,5 @@
 /**
- * Looks for `only` and filter tests
+ * Looks for `only` and filter tests (envSuites)
  */
 
 module.exports = class Only {

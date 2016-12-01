@@ -4,7 +4,6 @@
 
 const Queue = require('./queue');
 const Pool = require('./pool');
-const flatten = require('./flatten');
 const {ENV_START} = require('../events');
 
 module.exports = class Executor {
@@ -29,10 +28,10 @@ module.exports = class Executor {
   /**
    * Run
    *
-   * @param {Map} envSuites
+   * @param {Map} envTests
    */
-  run(envSuites) {
-    this._envIterator = envSuites.entries();
+  run(envTests) {
+    this._envIterator = envTests.entries();
     return this._pool.run();
   }
 
@@ -41,8 +40,8 @@ module.exports = class Executor {
     if (item.done) {
       this._queues = null;
     } else {
-      const [env, suites] = item.value;
-      this._createQueues(suites);
+      const [env, testsArr] = item.value;
+      this._createQueues(testsArr);
       if (this._queues.length) {
         this._emitEnvStart(env);
       }
@@ -63,10 +62,8 @@ module.exports = class Executor {
     }
   }
 
-  _createQueues(suites) {
-    this._queues = flatten(suites)
-      .map(item => new Queue(item.tests))
-      .filter(queue => !queue.isEmpty());
+  _createQueues(testsArr) {
+    this._queues = testsArr.map(tests => new Queue(tests)).filter(queue => !queue.isEmpty());
   }
 
   _emitEnvStart(env) {

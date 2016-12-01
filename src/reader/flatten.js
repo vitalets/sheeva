@@ -1,5 +1,5 @@
 /**
- * Flattens suite tree into flat aray of tests and makes sorting.
+ * Flattens suite tree into flat array of tests and makes sorting.
  * The output is suitable for creating Queue instances.
  */
 
@@ -14,9 +14,17 @@
  * @returns {Array<{tests, baCount}>}
  */
 module.exports = function (suites) {
-  return suites.map(flattenSuite).sort(sorter);
+  return suites.map(flattenSuite)
+    .sort(sorter)
+    .map(item => item.tests);
 };
 
+/**
+ * Recursivly flatten children of single suite
+ *
+ * @param {Suite} suite
+ * @returns {Object<{tests, baCount}>}
+ */
 function flattenSuite(suite) {
   const items = suite.children.map(child => {
     return child.children

@@ -9,6 +9,7 @@ const api = require('./api');
 const builder = require('./builder');
 const meta = require('./meta');
 const Only = require('./only');
+const flatten = require('./flatten');
 
 module.exports = class Reader {
   /**
@@ -19,7 +20,10 @@ module.exports = class Reader {
    * @param {Array} [options.tags]
    */
   constructor(options) {
+    // map of env --> suites structure
     this._envSuites = new Map(options.envs.map(env => [env, []]));
+    // map of env --> array of <array of tests>
+    this._envTests = new Map();
     this._only = new Only();
     meta.setTags(options.tags);
   }
@@ -29,6 +33,9 @@ module.exports = class Reader {
   get envSuites() {
     return this._envSuites;
   }
+  get envTests() {
+    return this._envTests;
+  }
   get hasOnly() {
     return this._only.found;
   }
@@ -37,7 +44,8 @@ module.exports = class Reader {
     exposeApi(global);
     this._readFiles();
     cleanupApi(global);
-    this._only.process(this._envSuites);
+    this._processOnly();
+    this._flatten();
   }
   _setFiles(patterns) {
     patterns = Array.isArray(patterns) ? patterns : [patterns];
@@ -55,6 +63,14 @@ module.exports = class Reader {
     });
     const fn = () => loadFile(file);
     builder.fillSuites(suites, fn);
+  }
+  _processOnly() {
+    this._only.process(this._envSuites);
+  }
+  _flatten() {
+    this._envSuites.forEach((suites, env) => {
+      this._envTests.set(env, flatten(suites));
+    });
   }
 };
 
