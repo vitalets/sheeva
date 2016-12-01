@@ -53,7 +53,7 @@ module.exports = class Reader {
         isFile: true,
         env
       }));
-      const fn = () => require(path.resolve(file));
+      const fn = () => loadFile(file);
       builder.fillSuites(suites, fn);
       suites.forEach(this._addSuiteToEnv, this);
     });
@@ -63,6 +63,11 @@ module.exports = class Reader {
     envSuites.push(suite);
   }
 };
+
+// todo: move to separate module for browser
+function loadFile(file) {
+  require(path.resolve(file));
+}
 
 function exposeApi(context) {
   Object.keys(api).forEach(key => context[key] = api[key]);
