@@ -1,6 +1,7 @@
 /**
- * Controls concurrency pool of sessions
- * currently it does not start next env until current env is fully processed
+ * Controls concurrency pool of sessions: create and remove sessions for queues
+ *
+ * @type {Pool}
  */
 
 const Promised = require('../utils/promised');
@@ -24,6 +25,10 @@ module.exports = class Pool {
      */
     this._envStates = new Map();
     /**
+     * Splitter
+     */
+    this._splitter = new Splitter(this, this._options.config.splitSuites);
+    /**
      * Flag showing that there are no more queues so we wait for current sessions to finish
      */
     this._noMoreQueues = false;
@@ -39,6 +44,14 @@ module.exports = class Pool {
      * Main promise returned from run() method
      */
     this._promised = new Promised();
+  }
+
+  get envStates() {
+    return this._envStates;
+  }
+
+  get slots() {
+    return this._slots;
   }
 
   /**
@@ -65,7 +78,7 @@ module.exports = class Pool {
   }
 
   _handleFreeSlot(queue) {
-    queue = queue || this._trySplitForSlot() || this._getNextQueue();
+    queue = queue || this._splitter.trySplitForSlot() || this._getNextQueue();
     if (queue) {
       return this._runOnNewSession(queue)
     } else {
@@ -76,7 +89,7 @@ module.exports = class Pool {
   _handleFreeSession(session) {
     let queue;
 
-    queue = this._trySplitForSession(session);
+    queue = this._splitter.trySplitForSession(session);
     if (queue) {
       return this._runOnExistingSession(session, queue);
     }
@@ -132,56 +145,6 @@ module.exports = class Pool {
         splitForSlot: true,
       });
     }
-  }
-
-  /**
-   * Tries split running sessions for particular free session (same env)
-   *
-   * @param {Session} session
-   */
-  _trySplitForSession(session) {
-    if (!this._options.config.splitSuites) {
-      return;
-    }
-    const envState = this._envStates.get(session.env);
-    if (envState.splitForSession) {
-      const queue = this._getSplitter().trySplit({envs: [session.env], isSessionStarted: session.started});
-      if (queue) {
-        return queue;
-      } else {
-        envState.splitForSession = false;
-        // if split is impossible for running session, it's for sure impossible for new session
-        // as it requires time for session start
-        envState.splitForSlot = false;
-      }
-    }
-  }
-
-  /**
-   * 1. Finds all envs that reached end and can be splitted.
-   * 2. Finds the worst session and and tries split it to empty slot.
-   */
-  _trySplitForSlot() {
-    if (!this._options.config.splitSuites) {
-      return;
-    }
-    const envs = [];
-    this._envStates.forEach((envState, env) => envState.splitForSlot ? envs.push(env) : null);
-    if (!envs.length) {
-      return;
-    }
-    const queue = this._getSplitter().trySplit({envs, isSessionStarted: false});
-    if (queue) {
-      return queue;
-    } else {
-      envs.forEach(env => this._envStates.get(env).splitForSlot = false);
-    }
-  }
-
-  _getSplitter() {
-    const queues = [];
-    this._slots.forEach(session => session.queue ? queues.push(session.queue) : null);
-    return new Splitter(queues);
   }
 
   _createSession(env) {

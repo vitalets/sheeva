@@ -17,6 +17,7 @@ module.exports = class Executor {
   constructor(options) {
     this._reporter = options.reporter;
     this._config = options.config;
+    this._envTests = null;
     this._queues = [];
     this._pool = new Pool({
       reporter: this._reporter,
@@ -31,6 +32,8 @@ module.exports = class Executor {
    * @param {Map} envTests
    */
   run(envTests) {
+    // todo:
+    //this._envTests = envTests;
     this._envIterator = envTests.entries();
     return this._pool.run();
   }
