@@ -1,7 +1,7 @@
 const Mocha = require('mocha');
 
 const mocha = new Mocha();
-mocha.addFile('./examples/mocha/test1.js');
+mocha.addFile('./examples/mocha/test2.js');
 
 const runner = mocha.run(function(failures){
   console.log('mocha failures:', failures);
