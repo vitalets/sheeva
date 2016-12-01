@@ -15,15 +15,15 @@ Their requirements to runner are:
    Skip or run particular test in particular environment.
    
 * **Concurrency limit**  
-   Run on predefined number of concurrent sessions.
+   Run on pre-defined number of concurrent sessions.
    
 * **Nested groups**   
    Create nested test groups with common before/after hooks to reduce boilerplate code.
 
-* **Smart tests split**  
-   Automatically allocate tests between parallel sessions to have minimal execution time.
+* **Smart tests splitting**  
+   Smart algorithm for splitting tests between parallel sessions to have minimal execution time.
    
-* **Retries**  
+* **Progressive retries**  
    Give test a chance to re-run if it tightly depends on extra conditions (e.g. network state).
    
 * **Tags**   
