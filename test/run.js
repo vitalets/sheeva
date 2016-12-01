@@ -27,23 +27,17 @@ const config = {
   // session data actually contains sub-run config overwrites
   createSessionData: function (env) {
     return {
-      createWrapFn: env.delay === undefined
-        ? createSyncFn
-        : createAsyncFn.bind(null, env.delay)
+      callTestHookFn: env.delay === undefined ? callSync : callAsync.bind(null, env.delay)
     };
   },
-  createWrapFn: function ({fn, session, context, hookType}) {
+  callTestHookFn: function ({fn, session, context, hookType}) {
     if (hookType) {
-      return function () {
-        return fn(context);
-      };
+      return fn(context);
     }
     const run = function (code, options) {
       return global.runCode(code, Object.assign({session}, context, options));
     };
-    return function () {
-      return fn(run);
-    };
+    return fn(run);
   },
   // just for debug:
   // this._options.config._main && console.log(123);
@@ -52,21 +46,19 @@ const config = {
 
 new Sheeva(config).run();
 
-function createSyncFn({fn}) {
-  return fn;
+function callSync({fn}) {
+  return fn();
 }
 
-function createAsyncFn(delay, {fn}) {
-  return function () {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        try {
-          fn();
-          resolve();
-        } catch(e) {
-          reject(e);
-        }
-      }, delay)
-    })
-  };
+function callAsync(delay, {fn}) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      try {
+        fn();
+        resolve();
+      } catch(e) {
+        reject(e);
+      }
+    }, delay)
+  });
 }

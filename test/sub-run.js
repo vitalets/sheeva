@@ -36,7 +36,6 @@ function createConfig(options) {
     createEnvs: function () {
       return [{id: 'env1'}];
     },
-    //timings: './sheeva.timings.json',
   }, options.session.data, options.config);
 }
 

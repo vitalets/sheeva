@@ -12,8 +12,15 @@ const {
 } = require('../events');
 
 module.exports = class Caller {
-  constructor(session) {
-    this._session = session;
+  /**
+   * Constructor
+   *
+   * @param {Object} options
+   * @param {Object} options.session
+   * @param {Object} options.config
+   */
+  constructor(options) {
+    this._options = options;
     this._beforeEachStack = [];
     this._errorSuite = null;
     this._error = null;
@@ -177,8 +184,12 @@ module.exports = class Caller {
   }
 
   _callFn(params) {
-    const wrapFn = this._session.createWrapFn(params);
-    return Promise.resolve().then(() => wrapFn())
+    Object.assign(params, {
+      session: this._options.session,
+      env: this._options.session.env,
+    });
+    return Promise.resolve()
+      .then(() => this._options.config.callTestHookFn(params));
   }
 
   /**
@@ -209,6 +220,6 @@ module.exports = class Caller {
   }
 
   _emit(event, data = {}) {
-    this._session.emit(event, data);
+    this._options.session.emit(event, data);
   }
 };

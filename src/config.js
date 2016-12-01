@@ -84,8 +84,8 @@ const defaults = {
   removeSessionData: function (data, session) {
   },
   /**
-   * Returns function that will wrap every hook and test function.
-   * This convenient way to pass needed arguments in test function.
+   * Function that actually calls each test and hook.
+   * This convenient way to setup arguments passed inside your tests.
    * By default session.data is passed as parameter.
    *
    * @param {Object} params
@@ -99,11 +99,9 @@ const defaults = {
    *
    * @returns {Function}
    */
-  createWrapFn: function (params) {
+  callTestHookFn: function (params) {
     const {fn, session} = params;
-    return function () {
-      return fn(session.data);
-    };
+    return fn(session.data);
   }
 };
 

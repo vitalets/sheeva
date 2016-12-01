@@ -1,5 +1,6 @@
 /**
- * Session - single concurrent worker for particular env used in queues for run.
+ * Session - single concurrent worker for particular env.
+ * Runs queues of tests.
  */
 
 const {
@@ -27,7 +28,10 @@ module.exports = class Session {
     this._env = options.env;
     this._index = options.index;
     this._started = false;
-    this._caller = new Caller(this);
+    this._caller = new Caller({
+      config: options.config,
+      session: this,
+    });
     this._data = null;
     this._queue = null;
   }
@@ -78,12 +82,6 @@ module.exports = class Session {
         this._data = null;
         this.emit(SESSION_END);
       });
-  }
-
-  createWrapFn(params) {
-    params.session = this;
-    params.env = this._env;
-    return this._config.createWrapFn(params);
   }
 
   emit(event, data = {}) {
