@@ -100,8 +100,7 @@ const defaults = {
    * @returns {Function}
    */
   callTestHookFn: function (params) {
-    const {fn, session} = params;
-    return fn(session.data);
+    return params.fn(params.session.data, params.context);
   }
 };
 

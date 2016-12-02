@@ -6,6 +6,7 @@
     "name": "Vitaliy Potapov",
     "email": "noginsk@rambler.ru"
   },
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/vitalets/sheeva.git"
