@@ -36,7 +36,7 @@ function createConfig(options) {
     createEnvs: function () {
       return [{id: 'env1'}];
     },
-  }, options.session.data, options.config);
+  }, options.session.config, options.config);
 }
 
 function createTempFiles(code, session) {

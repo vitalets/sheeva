@@ -16,7 +16,7 @@ const config = {
   createEnvs: function () {
     return [
       {id: 'tests-sync'},
-      {id: 'tests-async', delay: 10},
+      {id: 'tests-async', delay: 20},
      // {id: 'tests-async1', delay: 10},
       //{id: 'tests-async2', delay: 30},
       //{id: 'tests-async3', delay: 50},
@@ -24,10 +24,12 @@ const config = {
       //{id: 'tests-async4', delay: 100},
     ];
   },
-  // session data actually contains sub-run config overwrites
-  createSessionData: function (env) {
-    return {
-      callTestHookFn: env.delay === undefined ? callSync : callAsync.bind(null, env.delay)
+  // session contains sub-run config overwrites
+  startSession: function (env, session) {
+    session.config = {
+      callTestHookFn: env.delay === undefined
+        ? callSync
+        : callAsync.bind(null, env.delay)
     };
   },
   callTestHookFn: function ({fn, session, context, hookType}) {
