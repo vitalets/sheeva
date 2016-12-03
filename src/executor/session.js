@@ -32,16 +32,11 @@ module.exports = class Session {
       config: options.config,
       session: this,
     });
-    this._data = null;
     this._queue = null;
   }
 
   get env() {
     return this._env;
-  }
-
-  get data() {
-    return this._data;
   }
 
   get index() {
@@ -66,9 +61,8 @@ module.exports = class Session {
   start() {
     this.emit(SESSION_START);
     return Promise.resolve()
-      .then(() => this._config.createSessionData(this._env))
-      .then(data => {
-        this._data = data;
+      .then(() => this._config.startSession(this._env, this))
+      .then(() => {
         this._started = true;
         this.emit(SESSION_STARTED);
       });
@@ -77,11 +71,8 @@ module.exports = class Session {
   close() {
     this.emit(SESSION_ENDING);
     return Promise.resolve()
-      .then(() => this._config.removeSessionData(this._data, this))
-      .then(() => {
-        this._data = null;
-        this.emit(SESSION_END);
-      });
+      .then(() => this._config.endSession(this))
+      .then(() => this.emit(SESSION_END));
   }
 
   emit(event, data = {}) {

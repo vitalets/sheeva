@@ -10,10 +10,12 @@ const defaults = {
    * Test files pattern or array of patterns
    */
   files: '',
+
   /**
    * Max number of concurrent sessions
    */
   concurrency: 1,
+
   /**
    * How envs are executed per pool of sessions:
    * - `fullEnvFirst`: run all available sessions of first env, then run on second env, etc
@@ -21,10 +23,12 @@ const defaults = {
    * - `allEnvsParallel`: run all envs in parallel (not supported yet)
    */
   concurrencyMode: 'fullEnvFirst',
+
   /**
    * Allows suite splitting between parallel sessions
    */
   splitSuites: true,
+
   /**
    * todo:
    * Action when test/hook fails:
@@ -33,18 +37,22 @@ const defaults = {
    * - continue-all
    */
   onError: 'continue-env',
+
   /**
    * Reporters
    */
   reporters: [],
+
   /**
    * Tags to run
    */
   tags: [],
+
   /**
    * todo:
    */
   useTimings: true,
+
   /**
    * Creates envs (environments).
    * Each env should have `id` property.
@@ -56,6 +64,7 @@ const defaults = {
       {id: 'defaultEnv'}
     ];
   },
+
   /**
    * Creates one-line env label to be shown in reports
    *
@@ -65,28 +74,31 @@ const defaults = {
   createEnvLabel: function (env) {
     return env.id;
   },
-  /**
-   * Creates data attached to every session in env.
-   * For Webdriver tests it is usually `driver` instance.
-   *
-   * @param {Object} env
-   */
-  createSessionData: function (env) {
-    return {};
-  },
 
   /**
-   * Removes previously created session data
+   * Attache any data to session.
+   * For Webdriver tests it is usually a `driver` instance.
    *
-   * @param {*} data
+   * @param {Object} env
    * @param {Session} session
+   * @returns {Promise}
    */
-  removeSessionData: function (data, session) {
-  },
+  startSession: function (env, session) { },
+
+  /**
+   * Cleanup session data.
+   * For Webdriver tests it is usually a `session.driver.quit()`
+   *
+   * @param {Session} session
+   * @returns {Promise}
+   */
+  endSession: function (session) { },
+
   /**
    * Function that actually calls each test and hook.
-   * This convenient way to setup arguments passed inside your tests.
-   * By default session.data is passed as parameter.
+   * This convenient way to passed needed arguments in your tests.
+   * By default session and context are passed.
+   * For Webdriver tests it is usually a `session.driver` instance.
    *
    * @param {Object} params
    * @param {Object} params.session
@@ -100,7 +112,7 @@ const defaults = {
    * @returns {Function}
    */
   callTestHookFn: function (params) {
-    return params.fn(params.session.data, params.context);
+    return params.fn(params.session, params.context);
   }
 };
 
