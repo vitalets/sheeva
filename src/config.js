@@ -61,7 +61,7 @@ const defaults = {
    */
   createEnvs: function () {
     return [
-      {id: 'defaultEnv'}
+      {id: 'default-env'}
     ];
   },
 
