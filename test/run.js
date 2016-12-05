@@ -48,15 +48,15 @@ const config = {
 
 new Sheeva(config).run();
 
-function callSync({fn}) {
-  return fn();
+function callSync({fn, session, context}) {
+  return fn(session, context);
 }
 
-function callAsync(delay, {fn}) {
+function callAsync(delay, {fn, session, context}) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       try {
-        fn();
+        fn(session, context);
         resolve();
       } catch(e) {
         reject(e);
