@@ -5,11 +5,8 @@ module.exports = class Promised {
   call(fn) {
     return new Promise((resolve, reject) => {
       this.resolve = resolve;
-      this.reject = e => {
-        reject(e);
-        return Promise.reject(e);
-      };
-      return fn();
+      this.reject = reject;
+      fn();
     });
   }
 };

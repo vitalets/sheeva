@@ -111,7 +111,7 @@ module.exports = class Pool {
     const session = this._createSession(queue.suite.env);
     this._slots.add(session);
     return this._runOnExistingSession(session, queue)
-      .catch(e => this._promised.reject(e))
+      .catch(e => this._terminate(e));
   }
 
   _runOnExistingSession(session, queue) {
@@ -154,6 +154,26 @@ module.exports = class Pool {
       reporter: this._options.reporter,
       config: this._options.config,
     });
+  }
+
+  _terminate(error) {
+    return this._closeAllSessions()
+      .then(
+        () => this._promised.reject(error),
+        () => this._promised.reject(error)
+      );
+  }
+
+  /**
+   * Closes all sessions and ignore other errors in favor of first runner error
+   */
+  _closeAllSessions() {
+    const tasks = [];
+    this._slots.forEach(session => {
+      const task = session.close().catch();
+      tasks.push(task);
+    });
+    return Promise.all(tasks);
   }
 
   _checkEnvDone(env) {
