@@ -15,23 +15,26 @@ module.exports = class Sheeva {
    * @param {Config} inConfig
    */
   constructor(inConfig) {
-    // todo: use Config class
     this._config = config(inConfig);
     this._startEventEmitted = false;
+    this._startRunnerCalled = false;
   }
   run() {
-    try {
-      this._createEnvs();
-      this._createReader();
-      this._createReporter();
-      this._createExecuter();
-      this._reader.read(this._config.files);
-      this._emitStart();
-      return this._executor.run(this._reader.envTests)
-        .then(() => this._successEnd(), e => this._errorEnd(e));
-    } catch (e) {
-      return this._errorEnd(e);
-    }
+    return Promise.resolve()
+      .then(() => {
+        this._createEnvs();
+        this._createReader();
+        this._createReporter();
+        this._createExecuter();
+        this._reader.read(this._config.files);
+        this._emitStart();
+        return this._startRunner();
+      })
+      .then(() => this._executor.run(this._reader.envTests))
+      .then(
+        () => this._endRunner(),
+        e => this._endRunner(e || new Error('Empty rejection'))
+      )
   }
   getReporter(index) {
     return this._reporter.get(index);
@@ -69,15 +72,23 @@ module.exports = class Sheeva {
       config: this._config,
     });
   }
-  _successEnd() {
-    this._emitEnd();
-    return this._reporter.getResult();
+  _startRunner() {
+    this._startRunnerCalled = true;
+    return Promise.resolve()
+      .then(() => this._config.startRunner(this._config))
   }
-  _errorEnd(e) {
-    if (this._startEventEmitted) {
-      this._emitEnd(e);
-    }
-    return Promise.reject(e);
+  _endRunner(runnerError) {
+    return Promise.resolve()
+      .then(() => this._startRunnerCalled ? this._config.endRunner(this._config) : null)
+      .then(() => {
+        if (this._startEventEmitted) {
+          this._emitEnd(runnerError);
+        }
+        return runnerError
+          ? Promise.reject(runnerError)
+          : this._reporter.getResult();
+      })
+      .catch(() => Promise.reject(runnerError))
   }
   _emitStart() {
     const envLabels = new Map(this._envs.map(env => [env, this._config.createEnvLabel(env)]));

@@ -76,7 +76,7 @@ const defaults = {
   },
 
   /**
-   * Attache any data to session.
+   * Attach any data to session.
    * For Webdriver tests it is usually a `driver` instance.
    *
    * @param {Object} env
@@ -113,7 +113,25 @@ const defaults = {
    */
   callTestHookFn: function (params) {
     return params.fn(params.session, params.context);
-  }
+  },
+
+  /**
+   * Start runner hook
+   * For Webdriver tests it may be starting local selenium server
+   *
+   * @param {Config} config
+   * @returns {Promise}
+   */
+  startRunner: function (config) { },
+
+  /**
+   * End runner hook
+   * For Webdriver tests it may be stopping local selenium server
+   *
+   * @param {Config} config
+   * @returns {Promise}
+   */
+  endRunner: function (config) { },
 };
 
 module.exports = function (config) {
