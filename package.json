@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "node ./examples/run",
-    "test": "node ./test/run",
+    "test": "node src/cli --config test/sheeva.config.js",
     "devtool": "devtool ./test/run",
     "mocha": "node ./examples/mocha"
   },

@@ -3,9 +3,8 @@
  */
 
 require('./sub-run');
-const Sheeva = require('../src');
 
-const config = {
+module.exports = {
   concurrency: 5,
   files: './test/specs/*.test.js',
   //files: './test/specs/only.test.js',
@@ -45,8 +44,6 @@ const config = {
   // this._options.config._main && console.log(123);
   _main: true,
 };
-
-new Sheeva(config).run();
 
 function callSync({fn, session, context}) {
   return fn(session, context);
