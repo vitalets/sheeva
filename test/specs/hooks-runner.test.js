@@ -1,4 +1,4 @@
-describe('runner hooks', () => {
+describe('hooks runner', () => {
 
   it('should call sync startRunner', run => {
     let a = 0;
@@ -102,7 +102,7 @@ describe('runner hooks', () => {
     })
   });
 
-  it('should not call startRunner / endRunner in case of error occurs before', run => {
+  it('should not call startRunner / endRunner in case of error in createEnvs', run => {
     let a = 0;
     let b = 0;
     const config = {
@@ -116,7 +116,8 @@ describe('runner hooks', () => {
       });
       `], {config});
 
-    return result.catch(() => {
+    return result.catch(e => {
+      expect(e.message, 'to equal', 'err');
       expect(a, 'to equal', 0);
       expect(b, 'to equal', 0);
     })
@@ -125,7 +126,7 @@ describe('runner hooks', () => {
   it('should call endRunner even if startRunner has error', run => {
     let b = 0;
     const config = {
-      startRunner: () => { throw new Error('err') },
+      startRunner: () => Promise.resolve().then(() => { throw new Error('err') }),
       endRunner: () => Promise.resolve().then(() => b++),
     };
     const result = run([`
@@ -134,7 +135,8 @@ describe('runner hooks', () => {
       });
       `], {config});
 
-    return result.catch(() => {
+    return result.catch(e => {
+      expect(e.message, 'to equal', 'err');
       expect(b, 'to equal', 1);
     })
   });

@@ -19,13 +19,10 @@ function run() {
     config.files = program.args;
   }
 
-  new Sheeva(config).run().then(success, fail);
+  new Sheeva(config).run().then(res => exit(res.errors.length), () => exit(1));
 }
 
-function success(result) {
-  process.exit(result && result.errors || 1);
-}
-
-function fail() {
-  process.exit(1);
+function exit(exitCode) {
+  // use process on exit to allow finish pending operations
+  process.on('exit', () => process.exit(exitCode));
 }

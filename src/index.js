@@ -16,7 +16,6 @@ module.exports = class Sheeva {
    */
   constructor(inConfig) {
     this._config = config(inConfig);
-    this._startEventEmitted = false;
     this._startRunnerCalled = false;
   }
   run() {
@@ -81,14 +80,12 @@ module.exports = class Sheeva {
     return Promise.resolve()
       .then(() => this._startRunnerCalled ? this._config.endRunner(this._config) : null)
       .then(() => {
-        if (this._startEventEmitted) {
-          this._emitEnd(runnerError);
-        }
-        return runnerError
-          ? Promise.reject(runnerError)
-          : this._reporter.getResult();
-      })
-      .catch(() => Promise.reject(runnerError))
+        this._emitEnd(runnerError);
+        return runnerError ? Promise.reject(runnerError) : this._reporter.getResult();
+      }, e => {
+        this._emitEnd(runnerError || e);
+        return Promise.reject(runnerError || e);
+      });
   }
   _emitStart() {
     const envLabels = new Map(this._envs.map(env => [env, this._config.createEnvLabel(env)]));
@@ -101,10 +98,11 @@ module.exports = class Sheeva {
       config: this._config,
     };
     this._reporter.handleEvent(RUNNER_START, data);
-    this._startEventEmitted = true;
   }
   _emitEnd(error) {
-    this._reporter.handleEvent(RUNNER_END, {error});
+    if (this._reporter) {
+      this._reporter.handleEvent(RUNNER_END, {error});
+    }
   }
 };
 

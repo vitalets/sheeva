@@ -15,7 +15,7 @@ module.exports = {
   createEnvs: function () {
     return [
       {id: 'tests-sync'},
-      {id: 'tests-async', delay: 20},
+      //{id: 'tests-async', delay: 20},
      // {id: 'tests-async1', delay: 10},
       //{id: 'tests-async2', delay: 30},
       //{id: 'tests-async3', delay: 50},

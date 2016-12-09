@@ -41,7 +41,7 @@ module.exports = class LogReporter {
         break;
       }
       case events.RUNNER_END: {
-        this._add(data, `${event}`);
+        this._add(data, `${event}${errMessage}`);
         break;
       }
 

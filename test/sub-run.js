@@ -25,7 +25,16 @@ function runCode(code, options) {
   const sheeva = new Sheeva(config);
   return sheeva.run()
     .then(() => sheeva.getReporter(0).getResult(options))
-    .then(res => cleanUp(tempFiles, res), e => cleanUp(tempFiles, Promise.reject(e)))
+    .then(res => {
+      cleanUp(tempFiles);
+      return res;
+    }, e => {
+      try {
+        e.report = sheeva.getReporter(0).getResult(options);
+      } catch (err) { }
+      cleanUp(tempFiles);
+      return Promise.reject(e);
+    });
 }
 
 function createConfig(options) {
@@ -51,9 +60,8 @@ function createTempFiles(code, session) {
   return tempFiles;
 }
 
-function cleanUp(tempFiles, res) {
+function cleanUp(tempFiles) {
   tempFiles.forEach(fs.unlinkSync);
-  return res;
 }
 
 function clearRequireCache(file) {
