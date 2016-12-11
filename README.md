@@ -1,5 +1,27 @@
 # Sheeva
-Multi-Hand Automation Test Runner
+Multi-Hand Automation Test Runner.
+
+**Main features:**  
+* Parallelization per browser or per mobile device, per suite and even per particular test
+* Flexible annotations for conditional test run, re-tries, nested groups, timeouts and tags
+* [Mocha](https://mochajs.org)-like syntax compatible with 
+[Selenium-webdriver](https://www.npmjs.com/package/selenium-webdriver), 
+[Webdriverio](http://webdriver.io) and other testing frameworks
+
+Learn more in [Why special runner?](#) section.
+
+## Contents
+ * [Demo](#demo)
+ * [Install](#)
+ * [Getting started](#)
+ * [Configuration](#)
+ * [API](#)
+   * [Tests](#)
+   * [Annotations](#)
+ * [Examples](#)
+ * [Why special runner?](#whyspecialrunner)
+
+## Demo
 
 ## Why special runner?
 Automation tests are different from unit tests.
