@@ -15,7 +15,7 @@
   "scripts": {
     "start": "node ./examples/run",
     "test": "node src/cli --config test/sheeva.config.js",
-    "devtool": "devtool ./test/run",
+    "devtool": "devtool src/cli --config test/sheeva.config.js",
     "mocha": "node ./examples/mocha"
   },
   "license": "MIT",

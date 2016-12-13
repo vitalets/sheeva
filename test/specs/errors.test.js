@@ -6,7 +6,7 @@ describe('errors', () => {
       throw new Error('err');
     `);
 
-    return expect(result, 'to be rejected with', new Error('err'));
+    return expect(result, 'when rejected', 'to have message', 'err');
   });
 
   it('should run all hooks in case of test error', run => {
