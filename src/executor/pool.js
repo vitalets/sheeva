@@ -74,7 +74,7 @@ module.exports = class Pool {
   }
 
   _hasFreeSlots() {
-    return this._slots.size < this._options.config.concurrency;
+    return !this._options.config.concurrency || this._slots.size < this._options.config.concurrency;
   }
 
   _handleFreeSlot(queue) {
