@@ -22,7 +22,7 @@ module.exports = class Reader {
   constructor(options) {
     // map of env --> suites structure
     this._envSuites = new Map(options.envs.map(env => [env, []]));
-    // map of env --> array of <array of tests>
+    // map of env --> array of <array of <flat array of tests> >
     this._envTests = new Map();
     this._only = new Only();
     meta.setTags(options.tags);
