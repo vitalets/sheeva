@@ -5,11 +5,11 @@
 /**
  * @type {Config}
  */
-const defaults = {
+exports.defaults = {
   /**
    * Test files pattern or array of patterns
    */
-  files: '',
+  files: [],
 
   /**
    * Max number of concurrent sessions
@@ -25,9 +25,9 @@ const defaults = {
   concurrencyMode: 'fullEnvFirst',
 
   /**
-   * Allows suite splitting between parallel sessions
+   * Allows split of suites between parallel sessions
    */
-  splitSuites: true,
+  splitSuites: false,
 
   /**
    * todo:
@@ -134,8 +134,8 @@ const defaults = {
   endRunner: function (config) { },
 };
 
-module.exports = function (config) {
-  const result = Object.assign({}, defaults, config);
+exports.parse = function (config) {
+  const result = Object.assign({}, exports.defaults, config);
   result.reporters = Array.isArray(result.reporters) ? result.reporters : [result.reporters];
   return result;
 };

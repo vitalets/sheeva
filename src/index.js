@@ -15,7 +15,7 @@ module.exports = class Sheeva {
    * @param {Config} inConfig
    */
   constructor(inConfig) {
-    this._config = config(inConfig);
+    this._config = config.parse(inConfig);
     this._startRunnerCalled = false;
   }
   run() {
