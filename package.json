@@ -27,6 +27,7 @@
     "unexpected": "^10.20.0"
   },
   "devDependencies": {
+    "escape-string-regexp": "^1.0.5",
     "eslint": "^3.9.1",
     "mocha": "^3.1.2",
     "treeify": "^1.0.1",

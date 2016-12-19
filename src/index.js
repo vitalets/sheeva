@@ -32,7 +32,10 @@ module.exports = class Sheeva {
     this._createReader();
     this._createReporter();
     this._createExecutor();
-    return this._reader.read(this._config.files);
+    this._reader.read(this._config.files);
+    if (this._reader.hasOnly && this._config.noOnly) {
+      this._throwNoOnlyError();
+    }
   }
   _execute() {
     return this._executor.run(this._reader.envTests);
@@ -102,6 +105,13 @@ module.exports = class Sheeva {
     if (this._reporter) {
       this._reporter.handleEvent(RUNNER_END, {error});
     }
+  }
+  _throwNoOnlyError() {
+    const files = [];
+    this._reader.envSuites.forEach(suites => {
+      suites.forEach(suite => files.indexOf(suite.name) === -1 ? files.push(suite.name) : null);
+    });
+    throw new Error(`ONLY is disallowed but found in ${files.length} file(s):\n ${files.join('\n')}`);
   }
 };
 

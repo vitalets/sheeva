@@ -54,6 +54,12 @@ exports.defaults = {
   useTimings: true,
 
   /**
+   * Disallow $only() tests.
+   * Useful for pre-push hook.
+   */
+  noOnly: false,
+
+  /**
    * Creates envs (environments).
    * Each env should have `id` property.
    *

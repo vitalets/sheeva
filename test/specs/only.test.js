@@ -1,4 +1,6 @@
 
+const escapeRe = require('escape-string-regexp');
+
 describe('only', () => {
 
   it('should run only test by $only()', run => {
@@ -107,6 +109,20 @@ describe('only', () => {
       'SUITE_END root',
       'SESSION_END 1',
     ]);
+  });
+
+  it('should throw error if $only disallowed by config noOnly flag', run => {
+    const config = {noOnly: true};
+    const report = run(`
+      describe('suite', () => {
+        $only();
+        it('test 0', noop);
+      });
+    `, {config});
+
+    return expect(report, 'to be rejected with', {
+      message: new RegExp('^' + escapeRe('ONLY is disallowed but found in 1 file(s):\n ./test/temp')),
+    });
   });
 
 });
