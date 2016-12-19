@@ -16,7 +16,6 @@ module.exports = class Sheeva {
    */
   constructor(inConfig) {
     this._config = config.parse(inConfig);
-    this._startRunnerCalled = false;
   }
   run() {
     return Promise.resolve()
@@ -73,13 +72,12 @@ module.exports = class Sheeva {
   }
   _startRunner() {
     this._emitStart();
-    this._startRunnerCalled = true;
     return Promise.resolve()
       .then(() => this._config.startRunner(this._config))
   }
   _endRunner(runnerError) {
     return Promise.resolve()
-      .then(() => this._startRunnerCalled ? this._config.endRunner(this._config) : null)
+      .then(() => this._config.endRunner(this._config))
       .then(() => {
         this._emitEnd(runnerError);
         return runnerError ? Promise.reject(runnerError) : this._reporter.getResult();

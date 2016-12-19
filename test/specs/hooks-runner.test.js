@@ -102,7 +102,7 @@ describe('hooks runner', () => {
     })
   });
 
-  it('should not call startRunner / endRunner in case of error in createEnvs', run => {
+  it('should not call startRunner, but call endRunner in case of error in createEnvs', run => {
     let a = 0;
     let b = 0;
     const config = {
@@ -119,7 +119,7 @@ describe('hooks runner', () => {
     return result.catch(e => {
       expect(e.message, 'to equal', 'err');
       expect(a, 'to equal', 0);
-      expect(b, 'to equal', 0);
+      expect(b, 'to equal', 1);
     })
   });
 
