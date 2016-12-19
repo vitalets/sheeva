@@ -54,8 +54,7 @@ exports.defaults = {
   useTimings: true,
 
   /**
-   * Disallow $only() tests.
-   * Useful for pre-push hook.
+   * Disallow ONLY tests. Useful for pre-commit / pre-push hooks.
    */
   noOnly: false,
 

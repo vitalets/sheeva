@@ -14,6 +14,7 @@ program
   .option('--concurrency <number>', 'number of concurrent sessions')
   .option('--reporters <string>', 'comma separated reporters')
   .option('--split-suites', 'allows split of suites between parallel sessions')
+  .option('--no-only', 'disallow ONLY tests. Useful for pre-commit / pre-push hooks')
   .parse(process.argv);
 
 run();
@@ -42,6 +43,8 @@ function tryReadConfigFile() {
 }
 
 function applyFlags(inConfig) {
+  // see https://github.com/tj/commander.js/issues/238
+  program.noOnly = !program.only;
   Object.keys(config.defaults).forEach(key => {
     if (typeof config.defaults[key] !== 'function' && program[key] !== undefined) {
       inConfig[key] = Array.isArray(config.defaults[key])
