@@ -20,23 +20,23 @@ module.exports = class Sheeva {
   }
   run() {
     return Promise.resolve()
-      .then(() => {
-        this._createEnvs();
-        this._createReader();
-        this._createReporter();
-        this._createExecuter();
-        this._reader.read(this._config.files);
-        this._emitStart();
-        return this._startRunner();
-      })
-      .then(() => this._executor.run(this._reader.envTests))
-      .then(
-        () => this._endRunner(),
-        e => this._endRunner(e || new Error('Empty rejection'))
-      )
+      .then(() => this._read())
+      .then(() => this._startRunner())
+      .then(() => this._execute())
+      .then(() => this._endRunner(), e => this._endRunner(e || new Error('Empty rejection')));
   }
   getReporter(index) {
     return this._reporter.get(index);
+  }
+  _read() {
+    this._createEnvs();
+    this._createReader();
+    this._createReporter();
+    this._createExecutor();
+    return this._reader.read(this._config.files);
+  }
+  _execute() {
+    return this._executor.run(this._reader.envTests);
   }
   _createEnvs() {
     this._envs = this._config.createEnvs();
@@ -65,13 +65,14 @@ module.exports = class Sheeva {
       timings: this._config.timings,
     });
   }
-  _createExecuter() {
+  _createExecutor() {
     this._executor = new Executor({
       reporter: this._reporter,
       config: this._config,
     });
   }
   _startRunner() {
+    this._emitStart();
     this._startRunnerCalled = true;
     return Promise.resolve()
       .then(() => this._config.startRunner(this._config))
