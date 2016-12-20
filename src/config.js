@@ -59,6 +59,11 @@ exports.defaults = {
   noOnly: false,
 
   /**
+   * Run env with particular id
+   */
+  env: '',
+
+  /**
    * Creates envs (environments).
    * Each env should have `id` property.
    *

@@ -42,8 +42,14 @@ module.exports = class Sheeva {
   }
   _createEnvs() {
     this._envs = this._config.createEnvs();
+    if (!Array.isArray(this._envs)) {
+      throw new Error('createEnvs should return array');
+    }
+    if (this._config.env) {
+      this._envs = this._envs.filter(env => this._config.env === env.id);
+    }
     if (!this._envs.length) {
-      throw new Error('You should provide at lease one env');
+      throw new Error('You should provide at least one env');
     } else {
       const envIds = new Set();
       this._envs.forEach(env => {
