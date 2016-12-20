@@ -36,7 +36,7 @@
   },
   "config": {
     "ghooks": {
-      "pre-push": "npm test -- --no-only"
+      "pre-commit": "npm test -- --no-only"
     }
   }
 }
