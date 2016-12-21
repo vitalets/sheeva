@@ -3,7 +3,7 @@
 const path = require('path');
 const program = require('commander');
 const Sheeva = require('.');
-const config = require('./config');
+const defaults = require('./config/defaults');
 
 const DEFAULT_CONFIG = './sheeva.config.js';
 
@@ -46,9 +46,9 @@ function tryReadConfigFile() {
 function applyFlags(inConfig) {
   // see https://github.com/tj/commander.js/issues/238
   program.noOnly = !program.only;
-  Object.keys(config.defaults).forEach(key => {
-    if (typeof config.defaults[key] !== 'function' && program[key] !== undefined) {
-      inConfig[key] = Array.isArray(config.defaults[key])
+  Object.keys(defaults).forEach(key => {
+    if (typeof defaults[key] !== 'function' && program[key] !== undefined) {
+      inConfig[key] = Array.isArray(defaults[key])
         ? program[key].split(',')
         : program[key];
     }

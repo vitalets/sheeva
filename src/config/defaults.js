@@ -1,11 +1,11 @@
 /**
- * Check config and apply defaults
+ * Default config values
  */
 
 /**
  * @type {Config}
  */
-exports.defaults = {
+module.exports = {
   /**
    * Test files pattern or array of patterns
    */
@@ -142,10 +142,4 @@ exports.defaults = {
    * @returns {Promise}
    */
   endRunner: function (config) { },
-};
-
-exports.parse = function (config) {
-  const result = Object.assign({}, exports.defaults, config);
-  result.reporters = Array.isArray(result.reporters) ? result.reporters : [result.reporters];
-  return result;
 };

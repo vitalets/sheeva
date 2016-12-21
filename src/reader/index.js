@@ -17,39 +17,42 @@ module.exports = class Reader {
    *
    * @param {Object} options
    * @param {Array} options.envs
-   * @param {Array} [options.tags]
+   * @param {Config} options.config
    */
   constructor(options) {
     // map of env --> suites tree structure
     this._envSuites = new Map(options.envs.map(env => [env, []]));
     // map of env --> array of <array of <flat array of tests> >
     this._envTests = new Map();
-    this._only = new Only();
-    meta.setTags(options.tags);
+    this._files = [];
+    this._only = null;
+    this._config = options.config;
+    meta.setTags(this._config.tags);
   }
   get files() {
     return this._files;
   }
-  get envSuites() {
-    return this._envSuites;
-  }
   get envTests() {
     return this._envTests;
   }
-  get hasOnly() {
-    return this._only.found;
+  /**
+   * Array of files where ONLY found
+   *
+   * @returns {Array<String>}
+   */
+  get onlyFiles() {
+    return this._only.files;
   }
-  read(patterns) {
-    this._setFiles(patterns);
+  read() {
+    this._expandPatterns();
     exposeApi(global);
     this._readFiles();
     cleanupApi(global);
     this._processOnly();
     this._flatten();
   }
-  _setFiles(patterns) {
-    patterns = Array.isArray(patterns) ? patterns : [patterns];
-    this._files = patterns.reduce((res, pattern) => res.concat(glob.sync(pattern)), []);
+  _expandPatterns() {
+    this._files = this._config.files.reduce((res, pattern) => res.concat(glob.sync(pattern)), []);
   }
   _readFiles() {
     this._files.forEach(file => this._readFile(file));
@@ -65,7 +68,12 @@ module.exports = class Reader {
     builder.fillSuites(suites, fn);
   }
   _processOnly() {
-    this._only.process(this._envSuites);
+    this._only = new Only(this._envSuites).process();
+    if (this._only.files.length && this._config.noOnly) {
+      const filesCount = this._only.files.length;
+      const filesList = this._only.files.join('\n');
+      throw new Error(`ONLY is disallowed but found in ${filesCount} file(s):\n ${filesList}`);
+    }
   }
   _flatten() {
     this._envSuites.forEach((suites, env) => {

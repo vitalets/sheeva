@@ -3,32 +3,37 @@
  */
 
 module.exports = class Only {
-  constructor() {
-    this._found = false;
+  constructor(envSuites) {
+    this._envSuites = envSuites;
+    this._files = [];
   }
-  get found() {
-    return this._found;
+  get files() {
+    return this._files;
   }
-  process(envSuites) {
-    if (this._detectOnly(envSuites)) {
-      this._filter(envSuites);
+  process() {
+    if (this._hasOnly()) {
+      this._filter();
     }
+    return this;
   }
-  _detectOnly(envSuites) {
-    for (let suites of envSuites.values()) {
+  _hasOnly() {
+    for (let suites of this._envSuites.values()) {
       const hasOnly = suites.some(suite => suite.hasOnly);
       if (hasOnly) {
-        this._found = true;
-        break;
+        return true;
       }
     }
-    return this._found;
+    return false;
   }
-  _filter(envSuites) {
-    envSuites.forEach((suites, env) => {
+  _filter() {
+    this._envSuites.forEach((suites, env) => {
       suites = suites.filter(extractOnly);
-      envSuites.set(env, suites);
+      this._envSuites.set(env, suites);
+      this._addToFiles(suites);
     });
+  }
+  _addToFiles(suites) {
+    suites.forEach(suite => this._files.indexOf(suite.name) === -1 ? this._files.push(suite.name) : null);
   }
 };
 
