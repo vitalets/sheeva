@@ -14,6 +14,7 @@ module.exports = {
   //reporters: require('./debug-reporter'),
   createEnvs: function () {
     return [
+      //{id: 'tests-async0', delay: 50},
       {id: 'tests-sync'},
       {id: 'tests-async', delay: 10},
      // {id: 'tests-async1', delay: 10},
