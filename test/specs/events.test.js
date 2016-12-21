@@ -13,7 +13,7 @@ describe('events', () => {
       });
       `]);
 
-      return expect(result, 'to be fulfilled with', [
+      return expectResolve(result, [
         'RUNNER_START',
         'RUNNER_END',
       ]);
@@ -30,12 +30,12 @@ describe('events', () => {
       });
       `], {config});
 
-      return result.catch(e => {
-        expect(e.message, 'to equal', 'err');
-        expect(e.report, 'to equal', [
+      return expectReject(result, {
+        message: 'err',
+        report: [
           'RUNNER_START',
           'RUNNER_END err',
-        ]);
+        ]
       });
     });
 

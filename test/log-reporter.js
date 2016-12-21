@@ -108,12 +108,14 @@ module.exports = class LogReporter {
     if (flat) {
       return applyFilter(this._flatLog, filter);
     } else {
-      Object.keys(this._treeLog).forEach(envId => {
-        Object.keys(this._treeLog[envId]).forEach(sessionName => {
-          this._treeLog[envId][sessionName] = applyFilter(this._treeLog[envId][sessionName], filter);
+      const treeLog = this._treeLog;
+      this._treeLog = {};
+      Object.keys(treeLog).forEach(envId => {
+        Object.keys(treeLog[envId]).forEach(sessionName => {
+          treeLog[envId][sessionName] = applyFilter(treeLog[envId][sessionName], filter);
         })
       });
-      return this._treeLog;
+      return treeLog;
     }
   }
   _add({session}, str) {
@@ -143,15 +145,16 @@ function processSingleKey(obj, fn) {
 }
 
 function applyFilter(log, filter) {
+  let res = log.slice();
   if (filter.include) {
-    log = log.filter(line => {
+    res = res.filter(line => {
       return filter.include.some(str => line.startsWith(str));
     });
   }
   if (filter.exclude) {
-    log = log.filter(line => {
+    res = res.filter(line => {
       return filter.exclude.every(str => !line.startsWith(str));
     });
   }
-  return log;
+  return res;
 }

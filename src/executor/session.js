@@ -28,6 +28,7 @@ module.exports = class Session {
     this._env = options.env;
     this._index = options.index;
     this._started = false;
+    this._closing = false;
     this._caller = new Caller({
       config: options.config,
       session: this,
@@ -59,6 +60,9 @@ module.exports = class Session {
   }
 
   start() {
+    if (this._started) {
+      throw new Error(`Session ${this._index} already started`);
+    }
     this.emit(SESSION_START);
     return Promise.resolve()
       .then(() => this._config.startSession(this._env, this))
@@ -69,10 +73,15 @@ module.exports = class Session {
   }
 
   close() {
-    this.emit(SESSION_ENDING);
-    return Promise.resolve()
-      .then(() => this._config.endSession(this))
-      .then(() => this.emit(SESSION_END));
+    if (!this._closing) {
+      this._closing = true;
+      this.emit(SESSION_ENDING);
+      return Promise.resolve()
+        .then(() => this._config.endSession(this))
+        .then(() => this.emit(SESSION_END));
+    } else {
+      return Promise.resolve();
+    }
   }
 
   emit(event, data = {}) {

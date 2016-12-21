@@ -11,9 +11,8 @@ describe('hooks runner', () => {
       });
       `], {config});
 
-    return result.then(() => {
-      expect(a, 'to equal', 1);
-    })
+    return expectResolve(result)
+      .then(() => expect(a, 'to equal', 1))
   });
 
   it('should call async startRunner', run => {
@@ -27,9 +26,8 @@ describe('hooks runner', () => {
       });
       `], {config});
 
-    return result.then(() => {
-      expect(a, 'to equal', 1);
-    })
+    return expectResolve(result)
+      .then(() => expect(a, 'to equal', 1))
   });
 
   it('should call sync endRunner', run => {
@@ -43,7 +41,7 @@ describe('hooks runner', () => {
       });
       `], {config});
 
-    return result.then(() => {
+    return expectResolve(result).then(() => {
       expect(a, 'to equal', 1);
     })
   });
@@ -59,9 +57,8 @@ describe('hooks runner', () => {
       });
       `], {config});
 
-    return result.then(() => {
-      expect(a, 'to equal', 1);
-    })
+    return expectResolve(result)
+      .then(() => expect(a, 'to equal', 1))
   });
 
   it('should call startRunner / endRunner in success test', run => {
@@ -77,7 +74,7 @@ describe('hooks runner', () => {
       });
       `], {config});
 
-    return result.then(() => {
+    return expectResolve(result).then(() => {
       expect(a, 'to equal', 1);
       expect(b, 'to equal', 1);
     })
@@ -96,7 +93,7 @@ describe('hooks runner', () => {
       });
       `], {config});
 
-    return result.then(() => {
+    return expectResolve(result).then(() => {
       expect(a, 'to equal', 1);
       expect(b, 'to equal', 1);
     })
@@ -116,11 +113,11 @@ describe('hooks runner', () => {
       });
       `], {config});
 
-    return result.catch(e => {
-      expect(e.message, 'to equal', 'err');
-      expect(a, 'to equal', 0);
-      expect(b, 'to equal', 1);
-    })
+    return expectReject(result, { message: 'err'})
+      .then(() => {
+        expect(a, 'to equal', 0);
+        expect(b, 'to equal', 1);
+      });
   });
 
   it('should call endRunner even if startRunner has error', run => {
@@ -135,10 +132,8 @@ describe('hooks runner', () => {
       });
       `], {config});
 
-    return result.catch(e => {
-      expect(e.message, 'to equal', 'err');
-      expect(b, 'to equal', 1);
-    })
+    return expectReject(result, { message: 'err'})
+      .then(() => expect(b, 'to equal', 1));
   });
 
 });

@@ -17,7 +17,7 @@ describe('concurrency', () => {
       });
       `], {config});
 
-    return expect(report, 'to be fulfilled with', {
+    return expectResolve(report, {
         env1: {
           session1: ['TEST_END test 1'],
           session2: ['TEST_END test 2']
@@ -43,13 +43,14 @@ describe('concurrency', () => {
       });
       `], {config});
 
-    return report.then(res => expect(res, 'to equal', {
+    return expectResolve(report, {
       env1: {
         session1: [ 'TEST_END test 1' ],
         session2: [ 'TEST_END test 2' ],
         session3: [ 'TEST_END test 3', 'TEST_END test 4' ]
       }
-    }));
+    });
+
   });
 
 });

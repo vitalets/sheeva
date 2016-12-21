@@ -2,7 +2,7 @@ describe('split suites', () => {
 
   it('should split suites on 2 parallel sessions with needed hooks', run => {
     const config = {concurrency: 2, splitSuites: true};
-    const report = run([`
+    const result = run([`
       describe('suite 1', () => {
         before(noop);
         beforeEach(noop);
@@ -14,7 +14,7 @@ describe('split suites', () => {
       });
       `], {config});
 
-    return expect(report, 'to be fulfilled with', {
+    return expectResolve(result, {
         env1: {
           session1: [
             'SESSION_START 1',
@@ -52,7 +52,7 @@ describe('split suites', () => {
 
   it('should not split suites if disabled in config', run => {
     const config = {concurrency: 2, splitSuites: false};
-    const report = run([`
+    const result = run([`
       describe('suite 1', () => {
         it('test 1', noop);
         it('test 2', noop);
@@ -60,7 +60,7 @@ describe('split suites', () => {
       });
       `], {config});
 
-    return expect(report, 'to be fulfilled with', [
+    return expectResolve(result, [
       'SESSION_START 1',
       'SUITE_START root',
       'SUITE_START suite 1',
@@ -75,8 +75,7 @@ describe('split suites', () => {
 
   it('should split suites on 3 parallel sessions', run => {
     const config = {concurrency: 3, splitSuites: true};
-    const include = ['TEST_END'];
-    const report = run([`
+    const result = run([`
       describe('suite 1', () => {
         it('test 1', noop);
         it('test 2', noop);
@@ -85,10 +84,10 @@ describe('split suites', () => {
         it('test 5', noop);
         it('test 6', noop);
       });
-      `], {config, include});
+      `], {config, include: ['TEST_END']});
 
-    // todo: something goes wrong
-    return expect(report, 'to be fulfilled with', {
+      // todo: something goes wrong because split not equal
+      return expectResolve(result, {
         env1: {
           session1: [
             'TEST_END test 1',

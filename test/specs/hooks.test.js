@@ -18,7 +18,7 @@ describe('hooks', () => {
       it('test 1', noop);
     `);
 
-    return expect(report, 'to be fulfilled with', [
+    return expectResolve(report, [
       'SESSION_START 1',
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -58,7 +58,7 @@ describe('hooks', () => {
       });
     `);
 
-    return expect(report, 'to be fulfilled with', [
+    return expectResolve(report, [
       'SESSION_START 1',
       'SUITE_START root',
       'HOOK_END root before 0',

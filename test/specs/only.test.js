@@ -4,7 +4,7 @@ const escapeRe = require('escape-string-regexp');
 describe('only', () => {
 
   it('should run only test by $only()', run => {
-    const report = run(`
+    const result = run(`
       describe('suite 1', () => {
         it('test 0', noop);
         describe('suite 2', () => {
@@ -22,7 +22,7 @@ describe('only', () => {
       });
     `);
 
-    return expect(report, 'to be fulfilled with', [
+    return expectResolve(result, [
       'SESSION_START 1',
       'SUITE_START root',
       'SUITE_START suite 1',
@@ -36,7 +36,7 @@ describe('only', () => {
   });
 
   it('should run only describe by $only()', run => {
-    const report = run(`
+    const result = run(`
       describe('suite 1', () => {
         it('test 0', noop);
         $only();
@@ -54,7 +54,7 @@ describe('only', () => {
       });
     `);
 
-    return expect(report, 'to be fulfilled with', [
+    return expectResolve(result, [
       'SESSION_START 1',
       'SUITE_START root',
       'SUITE_START suite 1',
@@ -71,7 +71,7 @@ describe('only', () => {
   });
 
   it('should run all only describe and it', run => {
-    const report = run(`
+    const result = run(`
       describe('suite', () => {
         $only();
         it('test 0', noop);
@@ -92,7 +92,7 @@ describe('only', () => {
       });
     `);
 
-    return expect(report, 'to be fulfilled with', [
+    return expectResolve(result, [
       'SESSION_START 1',
       'SUITE_START root',
       'SUITE_START suite',
@@ -113,14 +113,14 @@ describe('only', () => {
 
   it('should throw error if $only disallowed by config noOnly flag', run => {
     const config = {noOnly: true};
-    const report = run(`
+    const result = run(`
       describe('suite', () => {
         $only();
         it('test 0', noop);
       });
     `, {config});
 
-    return expect(report, 'to be rejected with', {
+    return expectReject(result, {
       message: new RegExp('^' + escapeRe('ONLY is disallowed but found in 1 file(s):\n ./test/temp')),
     });
   });

@@ -6,12 +6,12 @@ describe('nesting', () => {
   });
 
   it('should run it outside describe', run => {
-    const report = run(`
+    const result = run(`
       it('test 0', noop);
       it('test 1', noop);
     `);
 
-    return expect(report, 'to be fulfilled with', [
+    return expectResolve(result, [
       'RUNNER_START',
       'ENV_START env1',
       'SESSION_START 1',
@@ -26,7 +26,7 @@ describe('nesting', () => {
   });
 
   it('should not run describe without it', run => {
-    const report = run(`
+    const result = run(`
       describe('suite', () => {
         describe('suite 1', noop);
         describe('suite 2', noop);
@@ -34,22 +34,22 @@ describe('nesting', () => {
       describe('suite 3', noop);
     `);
 
-    return expect(report, 'to be fulfilled with', [
+    return expectResolve(result, [
       'RUNNER_START',
       'RUNNER_END',
     ]);
   });
 
   it('should process empty files', run => {
-    const report = run(``);
-    return expect(report, 'to be fulfilled with', [
+    const result = run(``);
+    return expectResolve(result, [
       'RUNNER_START',
       'RUNNER_END',
     ]);
   });
 
   it('should run it inside describe', run => {
-    const report = run(`
+    const result = run(`
       describe('suite 1', () => {
         it('test 0', noop);
         it('test 1', noop);
@@ -67,7 +67,7 @@ describe('nesting', () => {
       });
     `);
 
-    return expect(report, 'to be fulfilled with', [
+    return expectResolve(result, [
       'RUNNER_START',
       'ENV_START env1',
       'SESSION_START 1',

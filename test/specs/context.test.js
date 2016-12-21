@@ -45,7 +45,7 @@ describe('context', () => {
       });
     `);
 
-    return expect(report, 'to be fulfilled with', [
+    return expectResolve(report, [
       'HOOK_END suite 1 beforeEach 0',
       'HOOK_END suite 1 beforeEach 1',
       'TEST_END test 1',
@@ -73,7 +73,7 @@ describe('context', () => {
       });
     `);
 
-    return expect(report, 'to be fulfilled with', [
+    return expectResolve(report, [
       'HOOK_END suite 1 before 0',
       'TEST_END test 1',
       'HOOK_END suite 1 after 0',

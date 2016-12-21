@@ -19,7 +19,7 @@ describe('envs', () => {
         });
       `, {config});
 
-    return expect(report, 'to be fulfilled with',  {
+    return expectResolve(report, {
         env1: {
           session1: [
             'SESSION_START 1',
@@ -50,7 +50,7 @@ describe('envs', () => {
         });
       `, {config});
 
-    return expect(report, 'to be rejected with', {
+    return expectReject(report, {
       message: 'You should provide at least one env'
     });
   });
@@ -71,7 +71,7 @@ describe('envs', () => {
         });
       `, {config});
 
-    return expect(report, 'to be fulfilled with value exhaustively satisfying', [
+    return expectResolve(report, [
       'SESSION_START 1',
       'TEST_END test 0',
       'SESSION_END 1'

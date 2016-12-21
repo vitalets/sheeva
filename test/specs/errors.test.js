@@ -6,7 +6,9 @@ describe('errors', () => {
       throw new Error('err');
     `);
 
-    return expect(result, 'when rejected', 'to have message', 'err');
+    return expectReject(result, {
+      message: 'err'
+    });
   });
 
   it('should run all hooks in case of test error', run => {
@@ -27,7 +29,7 @@ describe('errors', () => {
       it('test 1', noop);
     `);
 
-    return expect(report, 'to be fulfilled with', [
+    return expectResolve(report, [
       'SESSION_START 1',
       'SUITE_START root',
       'HOOK_END root before 0',
@@ -69,7 +71,7 @@ describe('errors', () => {
         it('test 1', noop);
       `);
 
-      return expect(report, 'to be fulfilled with', [
+      return expectResolve(report, [
         'SESSION_START 1',
         'SUITE_START root',
         'HOOK_END root before 0 err',
@@ -98,7 +100,7 @@ describe('errors', () => {
         it('test 1', noop);
       `);
 
-      return expect(report, 'to be fulfilled with', [
+      return expectResolve(report, [
         'SESSION_START 1',
         'SUITE_START root',
         'HOOK_END root before 0',
@@ -128,7 +130,7 @@ describe('errors', () => {
         it('test 1', noop);
       `);
 
-      return expect(report, 'to be fulfilled with', [
+      return expectResolve(report, [
         'SESSION_START 1',
         'SUITE_START root',
         'HOOK_END root before 0',
@@ -161,7 +163,7 @@ describe('errors', () => {
         it('test 1', noop);
       `);
 
-      return expect(report, 'to be fulfilled with', [
+      return expectResolve(report, [
         'SESSION_START 1',
         'SUITE_START root',
         'HOOK_END root before 0',
@@ -195,7 +197,7 @@ describe('errors', () => {
         it('test 1', noop);
       `);
 
-      return expect(report, 'to be fulfilled with', [
+      return expectResolve(report, [
         'SESSION_START 1',
         'SUITE_START root',
         'HOOK_END root before 0',
@@ -229,7 +231,7 @@ describe('errors', () => {
         it('test 1', noop);
       `);
 
-      return expect(report, 'to be fulfilled with', [
+      return expectResolve(report, [
         'SESSION_START 1',
         'SUITE_START root',
         'HOOK_END root before 0',
@@ -264,7 +266,7 @@ describe('errors', () => {
         it('test 1', noop);
       `);
 
-      return expect(report, 'to be fulfilled with', [
+      return expectResolve(report, [
         'SESSION_START 1',
         'SUITE_START root',
         'HOOK_END root before 0',
@@ -303,7 +305,7 @@ describe('errors', () => {
         it('test 1', noop);
       `);
 
-      return expect(report, 'to be fulfilled with', [
+      return expectResolve(report, [
         'SESSION_START 1',
         'SUITE_START root',
         'HOOK_END root before 0',

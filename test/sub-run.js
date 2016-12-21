@@ -7,6 +7,16 @@ const Sheeva = require('../src');
 global.expect = expect;
 global.noop = function () {};
 global.runCode = runCode;
+global.expectResolve = function (promise, value) {
+  return value === undefined
+    ? expect(promise, 'to be fulfilled')
+    : expect(promise, 'to be fulfilled with value exhaustively satisfying', value);
+};
+global.expectReject = function (promise, value) {
+  return value === undefined
+    ? expect(promise, 'to be rejected')
+    : expect(promise, 'to be rejected with error exhaustively satisfying', value);
+};
 
 /**
  *
@@ -30,7 +40,9 @@ function runCode(code, options) {
       return res;
     }, e => {
       try {
-        e.report = sheeva.getReporter(0).getResult(options);
+        Object.defineProperty(e, 'report', {
+          value: sheeva.getReporter(0).getResult(options)
+        });
       } catch (err) { }
       cleanUp(tempFiles);
       return Promise.reject(e);

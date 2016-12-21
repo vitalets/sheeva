@@ -5,7 +5,7 @@ describe('sort', () => {
   });
 
   it('should move suite with before/after hooks first', run => {
-    const report = run(`
+    const result = run(`
       describe('suite 1', () => {
         it('test 0', noop);
       });
@@ -28,7 +28,7 @@ describe('sort', () => {
       });
     `);
 
-    return expect(report, 'to be fulfilled with', [
+    return expectResolve(result, [
       'TEST_END test 2',
       'TEST_END test 1',
       'TEST_END test 3',

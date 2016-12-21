@@ -170,6 +170,8 @@ module.exports = class Pool {
   _closeAllSessions() {
     const tasks = [];
     this._slots.forEach(session => {
+      // ignore error while closing session to keep original error
+      // try close all sessions even if they were not started for better clean up
       const task = session.close().catch();
       tasks.push(task);
     });
