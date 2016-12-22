@@ -26,7 +26,7 @@ module.exports = class Sheeva {
       .then(() => this._endRunner(), e => this._endRunner(e || new Error('Empty rejection')));
   }
   getReporter(index) {
-    return this._reporter.get(index);
+    return this._reporter && this._reporter.get(index);
   }
   _init() {
     this._config = config.parse(this._inConfig);

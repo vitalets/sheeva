@@ -21,10 +21,27 @@ program
 run();
 
 function run() {
-  const inConfig = tryReadConfigFile();
-  applyFlags(inConfig);
-  new Sheeva(inConfig).run()
-    .then(res => exit(res.errors.length), () => exit(1));
+  const inConfig = applyFlags(tryReadConfigFile());
+  const sheeva = new Sheeva(inConfig);
+  sheeva
+    .run()
+    .then(res => success(res), e => fail(sheeva, e));
+}
+
+function success(res) {
+  exit(res.errors.length);
+}
+
+function fail(sheeva, e) {
+  // if there is no reporter show sheeva error in console
+  try {
+    if (!sheeva.getReporter(0)) {
+      console.error(e);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+  exit(1);
 }
 
 function exit(exitCode) {
@@ -56,4 +73,5 @@ function applyFlags(inConfig) {
   if (program.args.length) {
     inConfig.files = program.args;
   }
+  return inConfig;
 }
