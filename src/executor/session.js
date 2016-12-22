@@ -12,6 +12,14 @@ const {
 
 const Caller = require('./caller');
 
+const STATE = {
+  CREATED: 'created',
+  STARTING: 'starting',
+  STARTED: 'started',
+  ENDING: 'ending',
+  ENDED: 'ended',
+};
+
 module.exports = class Session {
   /**
    * Constructor
@@ -27,8 +35,7 @@ module.exports = class Session {
     this._config = options.config;
     this._env = options.env;
     this._index = options.index;
-    this._started = false;
-    this._closing = false;
+    this._state = STATE.CREATED;
     this._caller = new Caller({
       config: options.config,
       session: this,
@@ -49,36 +56,41 @@ module.exports = class Session {
   }
 
   get started() {
-    return this._started;
+    return this._state === STATE.STARTED;
   }
 
   run(queue) {
     this._queue = queue;
     return Promise.resolve()
-      .then(() => this._started ? null : this.start())
+      .then(() => this.started ? null : this.start())
       .then(() => queue.run(this._caller))
   }
 
   start() {
-    if (this._started) {
-      throw new Error(`Session ${this._index} already started`);
+    if (this._state !== STATE.CREATED) {
+      throw new Error(`Can not start session ${this._index} as it is already in ${this._state} state`);
     }
     this.emit(SESSION_START);
+    this._state = STATE.STARTING;
     return Promise.resolve()
       .then(() => this._config.startSession(this._env, this))
       .then(() => {
-        this._started = true;
+        this._state = STATE.STARTED;
         this.emit(SESSION_STARTED);
       });
   }
 
-  close() {
-    if (!this._closing) {
-      this._closing = true;
+  end() {
+    // try end session even if it in starting state for better cleanup
+    if (this._state === STATE.STARTING || this._state === STATE.STARTED) {
+      this._state = STATE.ENDING;
       this.emit(SESSION_ENDING);
       return Promise.resolve()
         .then(() => this._config.endSession(this))
-        .then(() => this.emit(SESSION_END));
+        .then(() => {
+          this._state = STATE.ENDED;
+          this.emit(SESSION_END);
+        });
     } else {
       return Promise.resolve();
     }

@@ -81,4 +81,28 @@ describe('hooks session', () => {
 
   });
 
+  it('should not call endSession in startSession was not called', run => {
+    let a = 0;
+    let b = 0;
+    const config = {
+      startSession: () => a++,
+      endSession: () => b++,
+      createEnvs: () => { throw new Error('err') }
+    };
+    const result = run([`
+      describe('suite 1', () => {
+        it('test 1', noop);
+      });
+      `], {config, include: ['SESSION']});
+
+    return expectReject(result, {
+      message: 'err'
+    })
+    .then(() => {
+      expect(a, 'to equal', 0);
+      expect(b, 'to equal', 0);
+    });
+
+  });
+
 });

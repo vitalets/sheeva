@@ -99,7 +99,7 @@ module.exports = class Pool {
       return this._runOnExistingSession(session, queue);
     }
 
-    return session.close()
+    return session.end()
       .then(() => {
         this._slots.delete(session);
         this._checkEnvDone(session.env);
@@ -172,7 +172,7 @@ module.exports = class Pool {
     this._slots.forEach(session => {
       // ignore error while closing session to keep original error
       // try close all sessions even if they were not started for better clean up
-      const task = session.close().catch();
+      const task = session.end().catch();
       tasks.push(task);
     });
     return Promise.all(tasks);
