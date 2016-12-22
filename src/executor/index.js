@@ -66,7 +66,7 @@ module.exports = class Executor {
   }
 
   _createQueues(testsArr) {
-    this._queues = testsArr.map(tests => new Queue(tests)).filter(queue => !queue.isEmpty());
+    this._queues = testsArr.map(tests => new Queue(tests));
   }
 
   _emitEnvStart(env) {

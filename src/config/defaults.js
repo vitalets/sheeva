@@ -17,6 +17,7 @@ module.exports = {
   concurrency: 1,
 
   /**
+   * todo:
    * How envs are executed per pool of sessions:
    * - `fullEnvFirst`: run all available sessions of first env, then run on second env, etc
    * - `fullEnvFirstDone`: run all available sessions of first env and wait until it's done, then run on second env, etc
@@ -28,6 +29,11 @@ module.exports = {
    * Allows split of suites between parallel sessions
    */
   splitSuites: false,
+
+  /**
+   * Start new session per each file
+   */
+  newSessionPerFile: false,
 
   /**
    * todo:

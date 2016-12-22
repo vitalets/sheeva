@@ -1,10 +1,10 @@
-describe('sort', () => {
+describe('flatten', () => {
 
   beforeEach(context => {
     context.include = ['TEST_END'];
   });
 
-  it('should move suite with before/after hooks first', run => {
+  it('should move suite with max before/after hooks first', run => {
     const result = run(`
       describe('suite 1', () => {
         it('test 0', noop);

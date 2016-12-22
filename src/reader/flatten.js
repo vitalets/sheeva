@@ -15,24 +15,27 @@
  */
 module.exports = function (suites) {
   return suites.map(flattenSuite)
+    .filter(item => item.tests.length > 0)
     .sort(sorter)
     .map(item => item.tests);
 };
 
 /**
- * Recursivly flatten children of single suite
+ * Recursively flatten children of single suite
  *
  * @param {Suite} suite
  * @returns {Object<{tests, baCount}>}
  */
 function flattenSuite(suite) {
-  const items = suite.children.map(child => {
-    return child.children
-      ? flattenSuite(child)
-      : {tests: [child], baCount: 0};
+  let items = suite.children.map(child => {
+    const isChildSuite = Boolean(child.children);
+    return isChildSuite ? flattenSuite(child) : {tests: [child], baCount: 0};
   });
 
-  items.sort(sorter);
+  items = items
+    .filter(item => item.tests.length > 0)
+    .sort(sorter);
+
   const maxBaCount = items.length ? items[0].baCount : 0;
 
   return {

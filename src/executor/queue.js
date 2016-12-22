@@ -25,10 +25,6 @@ module.exports = class Queue {
     this.promised = new Promised();
   }
 
-  isEmpty() {
-    return this.tests.length === 0;
-  }
-
   getRemainingCount() {
     return this.tests.length - this.currentIndex - 1;
   }
