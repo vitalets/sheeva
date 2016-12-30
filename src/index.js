@@ -52,10 +52,11 @@ module.exports = class Sheeva {
     });
   }
   _createExecutor() {
-    this._executor = new Executor({
-      reporter: this._reporter,
-      config: this._config,
-    });
+    const fakeParent = {
+      _reporter: this._reporter,
+      _config: this._config,
+    };
+    this._executor = new Executor().setBaseProps(fakeParent);
   }
   _startRunner() {
     this._emitStart();

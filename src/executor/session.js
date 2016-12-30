@@ -3,6 +3,9 @@
  * Runs queues of tests.
  */
 
+const Base = require('./base');
+const Caller = require('./caller');
+
 const {
   SESSION_START,
   SESSION_STARTED,
@@ -10,9 +13,7 @@ const {
   SESSION_END,
 } = require('../events');
 
-const Caller = require('./caller');
-
-const STATE = {
+const STATUS = {
   CREATED: 'created',
   STARTING: 'starting',
   STARTED: 'started',
@@ -20,26 +21,19 @@ const STATE = {
   ENDED: 'ended',
 };
 
-module.exports = class Session {
+module.exports = class Session extends Base {
   /**
    * Constructor
    *
-   * @param {Object} options
-   * @param {Reporter} options.reporter
-   * @param {Object} options.config
-   * @param {Object} options.env
-   * @param {Number} options.index
+   * @param {Number} index
+   * @param {Object} env
    */
-  constructor(options) {
-    this._reporter = options.reporter;
-    this._config = options.config;
-    this._env = options.env;
-    this._index = options.index;
-    this._state = STATE.CREATED;
-    this._caller = new Caller({
-      config: options.config,
-      session: this,
-    });
+  constructor(index, env) {
+    super();
+    this._index = index;
+    this._env = env;
+    this._status = STATUS.CREATED;
+    this._caller = new Caller(this);
     this._queue = null;
   }
 
@@ -56,39 +50,39 @@ module.exports = class Session {
   }
 
   get started() {
-    return this._state === STATE.STARTED;
+    return this._status === STATUS.STARTED;
   }
 
   run(queue) {
     this._queue = queue;
     return Promise.resolve()
-      .then(() => this.started ? null : this.start())
+      .then(() => this._status === STATUS.STARTED ? null : this.start())
       .then(() => queue.run(this._caller))
   }
 
   start() {
-    if (this._state !== STATE.CREATED) {
-      throw new Error(`Can not start session ${this._index} as it is already in ${this._state} state`);
+    if (this._status !== STATUS.CREATED) {
+      throw new Error(`Can not start session ${this._index} as it is already in ${this._status} status`);
     }
     this.emit(SESSION_START);
-    this._state = STATE.STARTING;
+    this._status = STATUS.STARTING;
     return Promise.resolve()
       .then(() => this._config.startSession(this._env, this))
       .then(() => {
-        this._state = STATE.STARTED;
+        this._status = STATUS.STARTED;
         this.emit(SESSION_STARTED);
       });
   }
 
   end() {
     // try end session even if it in starting state for better cleanup
-    if (this._state === STATE.STARTING || this._state === STATE.STARTED) {
-      this._state = STATE.ENDING;
+    if (this._status === STATUS.STARTING || this._status === STATUS.STARTED) {
+      this._status = STATUS.ENDING;
       this.emit(SESSION_ENDING);
       return Promise.resolve()
         .then(() => this._config.endSession(this))
         .then(() => {
-          this._state = STATE.ENDED;
+          this._status = STATUS.ENDED;
           this.emit(SESSION_END);
         });
     } else {
@@ -96,10 +90,20 @@ module.exports = class Session {
     }
   }
 
-  emit(event, data = {}) {
-    data.session = this;
-    data.env = this._env;
-    this._reporter.handleEvent(event, data);
+  call(params) {
+    params = Object.assign({
+      session: this,
+      env: this._env,
+    }, params);
+    return this._config.callTestHookFn(params);
+  }
+
+  emit(event, data) {
+    data = Object.assign({
+      session: this,
+      env: this._env,
+    }, data);
+    super._emit(event, data);
   }
 
 };

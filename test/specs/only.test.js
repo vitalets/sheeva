@@ -23,7 +23,7 @@ describe('only', () => {
     `);
 
     return expectResolve(result, [
-      'SESSION_START 1',
+      'SESSION_START 0',
       'SUITE_START root',
       'SUITE_START suite 1',
       'SUITE_START suite 2',
@@ -31,7 +31,7 @@ describe('only', () => {
       'SUITE_END suite 2',
       'SUITE_END suite 1',
       'SUITE_END root',
-      'SESSION_END 1',
+      'SESSION_END 0',
     ]);
   });
 
@@ -55,7 +55,7 @@ describe('only', () => {
     `);
 
     return expectResolve(result, [
-      'SESSION_START 1',
+      'SESSION_START 0',
       'SUITE_START root',
       'SUITE_START suite 1',
       'SUITE_START suite 2',
@@ -66,7 +66,7 @@ describe('only', () => {
       'SUITE_END suite 2',
       'SUITE_END suite 1',
       'SUITE_END root',
-      'SESSION_END 1',
+      'SESSION_END 0',
     ]);
   });
 
@@ -93,7 +93,7 @@ describe('only', () => {
     `);
 
     return expectResolve(result, [
-      'SESSION_START 1',
+      'SESSION_START 0',
       'SUITE_START root',
       'SUITE_START suite',
       'TEST_END test 0',
@@ -107,7 +107,7 @@ describe('only', () => {
       'SUITE_END suite 4',
       'SUITE_END suite 3',
       'SUITE_END root',
-      'SESSION_END 1',
+      'SESSION_END 0',
     ]);
   });
 

@@ -30,7 +30,7 @@ describe('errors', () => {
     `);
 
     return expectResolve(report, [
-      'SESSION_START 1',
+      'SESSION_START 0',
       'SUITE_START root',
       'HOOK_END root before 0',
       'HOOK_END root before 1',
@@ -47,7 +47,7 @@ describe('errors', () => {
       'HOOK_END root after 0',
       'HOOK_END root after 1',
       'SUITE_END root',
-      'SESSION_END 1',
+      'SESSION_END 0',
     ]);
   });
 
@@ -72,13 +72,13 @@ describe('errors', () => {
       `);
 
       return expectResolve(report, [
-        'SESSION_START 1',
+        'SESSION_START 0',
         'SUITE_START root',
         'HOOK_END root before 0 err',
         'HOOK_END root after 0',
         'HOOK_END root after 1',
         'SUITE_END root err',
-        'SESSION_END 1',
+        'SESSION_END 0',
       ]);
     });
 
@@ -101,14 +101,14 @@ describe('errors', () => {
       `);
 
       return expectResolve(report, [
-        'SESSION_START 1',
+        'SESSION_START 0',
         'SUITE_START root',
         'HOOK_END root before 0',
         'HOOK_END root before 1 err',
         'HOOK_END root after 0',
         'HOOK_END root after 1',
         'SUITE_END root err',
-        'SESSION_END 1',
+        'SESSION_END 0',
       ]);
     });
 
@@ -131,7 +131,7 @@ describe('errors', () => {
       `);
 
       return expectResolve(report, [
-        'SESSION_START 1',
+        'SESSION_START 0',
         'SUITE_START root',
         'HOOK_END root before 0',
         'HOOK_END root before 1',
@@ -141,7 +141,7 @@ describe('errors', () => {
         'HOOK_END root after 0',
         'HOOK_END root after 1',
         'SUITE_END root err',
-        'SESSION_END 1',
+        'SESSION_END 0',
       ]);
     });
 
@@ -164,7 +164,7 @@ describe('errors', () => {
       `);
 
       return expectResolve(report, [
-        'SESSION_START 1',
+        'SESSION_START 0',
         'SUITE_START root',
         'HOOK_END root before 0',
         'HOOK_END root before 1',
@@ -175,7 +175,7 @@ describe('errors', () => {
         'HOOK_END root after 0',
         'HOOK_END root after 1',
         'SUITE_END root err',
-        'SESSION_END 1',
+        'SESSION_END 0',
       ]);
     });
 
@@ -198,7 +198,7 @@ describe('errors', () => {
       `);
 
       return expectResolve(report, [
-        'SESSION_START 1',
+        'SESSION_START 0',
         'SUITE_START root',
         'HOOK_END root before 0',
         'HOOK_END root before 1',
@@ -209,7 +209,7 @@ describe('errors', () => {
         'HOOK_END root after 0',
         'HOOK_END root after 1',
         'SUITE_END root err',
-        'SESSION_END 1',
+        'SESSION_END 0',
       ]);
     });
 
@@ -232,7 +232,7 @@ describe('errors', () => {
       `);
 
       return expectResolve(report, [
-        'SESSION_START 1',
+        'SESSION_START 0',
         'SUITE_START root',
         'HOOK_END root before 0',
         'HOOK_END root before 1',
@@ -244,7 +244,7 @@ describe('errors', () => {
         'HOOK_END root after 0',
         'HOOK_END root after 1',
         'SUITE_END root err',
-        'SESSION_END 1',
+        'SESSION_END 0',
       ]);
     });
 
@@ -267,7 +267,7 @@ describe('errors', () => {
       `);
 
       return expectResolve(report, [
-        'SESSION_START 1',
+        'SESSION_START 0',
         'SUITE_START root',
         'HOOK_END root before 0',
         'HOOK_END root before 1',
@@ -283,7 +283,7 @@ describe('errors', () => {
         'HOOK_END root afterEach 1',
         'HOOK_END root after 0 err',
         'SUITE_END root err',
-        'SESSION_END 1',
+        'SESSION_END 0',
       ]);
     });
 
@@ -306,7 +306,7 @@ describe('errors', () => {
       `);
 
       return expectResolve(report, [
-        'SESSION_START 1',
+        'SESSION_START 0',
         'SUITE_START root',
         'HOOK_END root before 0',
         'HOOK_END root before 1',
@@ -323,7 +323,7 @@ describe('errors', () => {
         'HOOK_END root after 0',
         'HOOK_END root after 1 err',
         'SUITE_END root err',
-        'SESSION_END 1',
+        'SESSION_END 0',
       ]);
     });
 

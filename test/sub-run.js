@@ -50,14 +50,14 @@ function runCode(code, options) {
 }
 
 function createConfig(options) {
-  return Object.assign({}, {
+  return Object.assign({
     concurrency: 1,
     reporters: require('./log-reporter'),
     splitSuites: false,
     createEnvs: function () {
       return [{id: 'env1'}];
     },
-  }, options.session.config, options.config);
+  }, options.config);
 }
 
 function createTempFiles(code, session) {

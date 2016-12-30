@@ -14,18 +14,18 @@ describe('nesting', () => {
     return expectResolve(result, [
       'RUNNER_START',
       'ENV_START env1',
-      'SESSION_START 1',
+      'SESSION_START 0',
       'SUITE_START root',
       'TEST_END test 0',
       'TEST_END test 1',
       'SUITE_END root',
-      'SESSION_END 1',
+      'SESSION_END 0',
       'ENV_END env1',
       'RUNNER_END',
     ])
   });
 
-  it('should not run describe without it', run => {
+  it('should not run describes without it', run => {
     const result = run(`
       describe('suite', () => {
         describe('suite 1', noop);
@@ -70,7 +70,7 @@ describe('nesting', () => {
     return expectResolve(result, [
       'RUNNER_START',
       'ENV_START env1',
-      'SESSION_START 1',
+      'SESSION_START 0',
       'SUITE_START root',
       'SUITE_START suite 1',
       'TEST_END test 0',
@@ -87,7 +87,7 @@ describe('nesting', () => {
       'TEST_END test 5',
       'SUITE_END suite 4',
       'SUITE_END root',
-      'SESSION_END 1',
+      'SESSION_END 0',
       'ENV_END env1',
       'RUNNER_END',
     ])

@@ -1,29 +1,27 @@
 /**
- * Run suites: pushes queque per queue into pool
+ * Controls concurrency pool of sessions: create and remove sessions for queues
+ *
+ * @type {Pool}
  */
 
-const Queue = require('./queue');
-const Pool = require('./pool');
-const {ENV_START} = require('../events');
+const Base = require('./base');
+const Promised = require('../utils/promised');
+const QueuePicker = require('./queue-picker');
+const Slot = require('./slot');
+const EnvState = require('./env-state');
+const SessionManager = require('./session-manager');
 
-module.exports = class Executor {
+module.exports = class Executor extends Base {
   /**
    * Constructor
-   *
-   * @param {Object} options
-   * @param {Reporter} options.reporter
-   * @param {Config} options.config
    */
-  constructor(options) {
-    this._reporter = options.reporter;
-    this._config = options.config;
-    this._envTests = null;
-    this._queues = [];
-    this._pool = new Pool({
-      reporter: this._reporter,
-      config: this._config,
-      getNextQueue: () => this._getNextQueue(),
-    });
+  constructor() {
+    super();
+    this._slots = new Set();
+    this._state = new Map();
+    this._queuePicker = null;
+    this._sessionManager = null;
+    this._promised = new Promised();
   }
 
   /**
@@ -32,46 +30,186 @@ module.exports = class Executor {
    * @param {Map} envTests
    */
   run(envTests) {
-    // todo:
-    //this._envTests = envTests;
-    this._envIterator = envTests.entries();
-    return this._pool.run();
+    return this._promised.call(() => {
+      this._initState(envTests);
+      this._initQueuePicker();
+      this._initSessionManager();
+      this._fillSlots();
+    });
   }
 
-  _nextEnv() {
-    const item = this._envIterator.next();
-    if (item.done) {
-      this._queues = null;
-    } else {
-      const [env, testsArr] = item.value;
-      this._createQueues(testsArr);
-      if (this._queues.length) {
-        this._emitEnvStart(env);
+  _initState(envTests) {
+    envTests.forEach((testsArr, env) => {
+      const envState = new EnvState(env, testsArr).setBaseProps(this);
+      if (!envState.isEmpty()) {
+        this._state.set(env, envState);
+      }
+    });
+  }
+
+  _initQueuePicker() {
+    this._queuePicker = new QueuePicker(this._state);
+  }
+
+  _initSessionManager() {
+    this._sessionManager = new SessionManager(this._state).setBaseProps(this);
+  }
+
+  /**
+   * Run parallel sessions in limited slots
+   */
+  _fillSlots() {
+    while (this._hasFreeSlots()) {
+      const slot = this._createSlot();
+      const queue = this._handleFreeSlot(slot);
+      if (!queue) {
+        break;
       }
     }
   }
 
-  _getNextQueue() {
-    if (!this._queues) {
-      return {};
-    } else if (this._queues.length) {
-      const queue = this._queues.shift();
-      const isLastQueueInEnv = this._queues.length === 0;
-      return {queue, isLastQueueInEnv};
+  _createSlot() {
+    const slot = new Slot(this._sessionManager);
+    this._slots.add(slot);
+    return slot;
+  }
+
+  _deleteSlot(slot) {
+    return slot.end()
+      .then(() => {
+        this._slots.delete(slot);
+        this._checkDone();
+      })
+  }
+
+  _hasFreeSlots() {
+    return !this._config.concurrency || this._slots.size < this._config.concurrency;
+  }
+
+  _handleFreeSlot(slot) {
+    const queue = this._queuePicker.getNextQueue(slot.session);
+
+    if (queue) {
+      slot.run(queue)
+        .then(() => this._handleFreeSlot(slot))
+        .catch(e => this._terminate(e));
     } else {
-      // dont emit ENV_END here as sessions are still finishing
-      this._nextEnv();
-      return this._getNextQueue();
+      this._deleteSlot(slot)
+        .catch(e => this._terminate(e));
     }
+
+    return queue;
+  }
+  //
+  // _handleFreeSession(session) {
+  //   let queue;
+  //
+  //   if (this._splitter) {
+  //     queue = this._splitter.trySplitForSession(session);
+  //     if (queue) {
+  //       return this._runOnExistingSession(session, queue);
+  //     }
+  //   }
+  //
+  //   queue = this._getNextQueue();
+  //
+  //   const queue = this._queuePicker.getNextQueue();
+  //
+  //   if (queue) {
+  //     const canRunOnExistingSession = !this._config.newSessionPerFile && queue.suite.env === session.env;
+  //     if (canRunOnExistingSession) {
+  //       return this._runOnExistingSession(session, queue);
+  //     } else {
+  //       return session.end()
+  //         .then(() => {
+  //           this._slots.delete(session);
+  //           this._checkEnvDone(session.env);
+  //           this._handleFreeSlot(queue);
+  //         });
+  //     }
+  //   } else {
+  //     return session.end()
+  //       .then(() => {
+  //         this._slots.delete(session);
+  //         this._checkEnvDone(session.env);
+  //       });
+  //   }
+  // }
+
+  // _runOnEmptySlot(queue) {
+  //   const session = this._createSession(queue.suite.env);
+  //   this._slots.add(session);
+  //   return this._runOnExistingSession(session, queue)
+  //     .catch(e => this._terminate(e));
+  // }
+
+  // _runOnNewSession(queue) {
+  //   const session = this._createSession(queue.suite.env);
+  //   this._slots.add(session);
+  //   return this._runOnExistingSession(session, queue)
+  //     .catch(e => this._terminate(e));
+  // }
+  //
+  // _runOnExistingSession(session, queue) {
+  //   return session.run(queue)
+  //     .then(() => this._handleFreeSession(session));
+  // }
+
+  // _getNextQueue() {
+  //   const {queue, isLastQueueInEnv} = this._options.getNextQueue();
+  //   if (queue) {
+  //     this._updateEnvState(queue, isLastQueueInEnv);
+  //   } else {
+  //     this._noMoreQueues = true;
+  //   }
+  //   return queue;
+  // }
+  //
+  // _createSession(env) {
+  //   return new Session({
+  //     env,
+  //     index: ++this._sessionsCount,
+  //     reporter: this._options.reporter,
+  //     config: this._options.config,
+  //   });
+  // }
+
+  _terminate(error) {
+    this._endAllSlots()
+      .then(
+        () => this._promised.reject(error),
+        () => this._promised.reject(error)
+      );
   }
 
-  _createQueues(testsArr) {
-    this._queues = testsArr.map(tests => new Queue(tests));
+  /**
+   * Closes all sessions and ignore other errors in favor of first runner error
+   */
+  _endAllSlots() {
+    const tasks = [];
+    this._slots.forEach(slot => {
+      // ignore error while closing session to keep original error
+      // try close all sessions even if they were not started for better clean up
+      const task = slot.end().catch();
+      tasks.push(task);
+    });
+    return Promise.all(tasks);
   }
 
-  _emitEnvStart(env) {
-    const label = this._config.createEnvLabel(env);
-    const testsCount = this._queues.reduce((res, queue) => res + queue.tests.length, 0);
-    this._reporter.handleEvent(ENV_START, {env, label, testsCount, queues: this._queues});
+  // _checkEnvDone(env) {
+  //   for (let session of this._slots.values()) {
+  //     if (session.env === env) {
+  //       return false;
+  //     }
+  //   }
+  //   const envState = this._envStates.get(env);
+  //   envState.ended = true;
+  //   this._options.reporter.handleEvent(ENV_END, {env});
+  // }
+  //
+  _checkDone() {
+    if (this._slots.size === 0) {
+      this._promised.resolve();
+    }
   }
 };

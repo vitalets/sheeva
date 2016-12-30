@@ -22,7 +22,7 @@ module.exports = class DebugReporter {
         break;
       }
       case events.RUNNER_END: {
-        log(`${event}`);
+        log(`${event}`, data.error);
         break;
       }
 

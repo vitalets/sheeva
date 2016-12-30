@@ -21,17 +21,17 @@ describe('envs', () => {
 
     return expectResolve(report, {
         env1: {
+          session0: [
+            'SESSION_START 0',
+            'TEST_END test 0',
+            'SESSION_END 0'
+          ]
+        },
+        env2: {
           session1: [
             'SESSION_START 1',
             'TEST_END test 0',
             'SESSION_END 1'
-          ]
-        },
-        env2: {
-          session2: [
-            'SESSION_START 2',
-            'TEST_END test 0',
-            'SESSION_END 2'
           ]
         }
       }
@@ -72,9 +72,9 @@ describe('envs', () => {
       `, {config});
 
     return expectResolve(report, [
-      'SESSION_START 1',
+      'SESSION_START 0',
       'TEST_END test 0',
-      'SESSION_END 1'
+      'SESSION_END 0'
     ]);
   });
 

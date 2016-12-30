@@ -15,12 +15,10 @@ module.exports = class Caller {
   /**
    * Constructor
    *
-   * @param {Object} options
-   * @param {Object} options.session
-   * @param {Object} options.config
+   * @param {Session} session
    */
-  constructor(options) {
-    this._options = options;
+  constructor(session) {
+    this._session = session;
     this._beforeEachStack = [];
     this._errorSuite = null;
     this._error = null;
@@ -46,19 +44,6 @@ module.exports = class Caller {
         })
         .catch(error => this._storeErrorForSuite(suite, error));
     }, Promise.resolve());
-
-    //
-    // for (let i = lastSuiteIndex + 1; i < this.currentTest.parents.length; i++) {
-    //   const suite = this.currentTest.parents[i];
-    //   this.suiteStack.push(suite);
-    //   this.emit(events.SESSION_SUITE_START, {suite});
-    //   const error = this.executeHooksArray(suite, 'before');
-    //   if (error) {
-    //     this.errorSuite = suite;
-    //     this.error = error;
-    //     break;
-    //   }
-    // }
   }
 
   /**
@@ -85,18 +70,6 @@ module.exports = class Caller {
             .then(() => Promise.reject(error), () => Promise.reject(error));
         }
       );
-
-    // if (!this.errorSuite) {
-    //   this.emit(events.TEST_START, {test});
-    //   try {
-    //     const {fn, context} = test;
-    //     this.executeFn({fn, context, test});
-    //     this.emit(events.TEST_END, {test});
-    //   } catch (error) {
-    //     this.emit(events.TEST_END, {test, error});
-    //   }
-    // }
-    // this.executeAfterEach();
   }
 
   callAfter(suiteStack, stopSuite) {
@@ -130,18 +103,6 @@ module.exports = class Caller {
         })
         .catch(error => this._storeErrorForSuite(suite, error));
     }, Promise.resolve());
-
-    //
-    // for (let i = 0; i < this.suiteStack.length; i++) {
-    //   const suite = this.suiteStack[i];
-    //   this.beforeEachStack.push(suite);
-    //   const error = this.executeHooksArray(suite, 'beforeEach', this.currentTest.context);
-    //   if (error) {
-    //     this.errorSuite = suite;
-    //     this.error = error;
-    //     break;
-    //   }
-    // }
   }
 
   /**
@@ -153,15 +114,6 @@ module.exports = class Caller {
         .then(() => this._callHooksArray(suite, 'afterEach', test.context))
         .catch(error => this._storeErrorForSuite(suite, error));
     }, Promise.resolve());
-
-    // for (let i = this.beforeEachStack.length - 1; i >= 0; i--) {
-    //   const suite = this.beforeEachStack[i];
-    //   const error = this.executeHooksArray(suite, 'afterEach');
-    //   if (error) {
-    //     this.errorSuite = suite;
-    //     this.error = error;
-    //   }
-    // }
   }
 
   _callHooksArray(suite, hookType, context) {
@@ -184,12 +136,8 @@ module.exports = class Caller {
   }
 
   _callFn(params) {
-    Object.assign(params, {
-      session: this._options.session,
-      env: this._options.session.env,
-    });
     return Promise.resolve()
-      .then(() => this._options.config.callTestHookFn(params));
+      .then(() => this._session.call(params));
   }
 
   /**
@@ -219,7 +167,7 @@ module.exports = class Caller {
     return Promise.reject(error);
   }
 
-  _emit(event, data = {}) {
-    this._options.session.emit(event, data);
+  _emit(event, data) {
+    this._session.emit(event, data);
   }
 };

@@ -24,20 +24,20 @@ module.exports = {
       //{id: 'tests-async4', delay: 100},
     ];
   },
-  // session contains sub-run config overwrites
   startSession: function (env, session) {
-    session.config = {
-      callTestHookFn: env.delay === undefined
-        ? callSync
-        : callAsync.bind(null, env.delay)
-    };
+
   },
-  callTestHookFn: function ({fn, session, context, hookType}) {
+  callTestHookFn: function ({fn, session, context, hookType, env}) {
     if (hookType) {
       return fn(context);
     }
-    const run = function (code, options) {
-      return global.runCode(code, Object.assign({session}, context, options));
+    const baseConfig = {
+      callTestHookFn: env.delay === undefined ? callSync : callAsync.bind(null, env.delay)
+    };
+    const run = function (code, options = {}) {
+      options.config = Object.assign({}, baseConfig, options.config);
+      const finalOptions = Object.assign({session}, context, options);
+      return global.runCode(code, finalOptions);
     };
     return fn(run);
   },

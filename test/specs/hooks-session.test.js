@@ -1,6 +1,10 @@
 describe('hooks session', () => {
 
-  it('should call startSession / endSession in normal case', run => {
+  beforeEach(context => {
+    context.include = ['SESSION'];
+  });
+
+  it('should call startSession / endSession in success case', run => {
     let a = 0;
     let b = 0;
     const config = {
@@ -10,10 +14,14 @@ describe('hooks session', () => {
     const result = run([`
       describe('suite 1', () => {
         it('test 1', noop);
+        it('test 2', noop);
       });
       `], {config});
 
-    return expectResolve(result).then(() => {
+    return expectResolve(result, [
+      'SESSION_START 0',
+      'SESSION_END 0',
+    ]).then(() => {
       expect(a, 'to equal', 1);
       expect(b, 'to equal', 1);
     })
@@ -34,14 +42,14 @@ describe('hooks session', () => {
     return expectReject(result, {
       message: 'err',
       report: [
-        'SESSION_START 1',
-        'SESSION_END 1'
+        'SESSION_START 0',
+        'SESSION_END 0'
       ]
     })
     .then(() => expect(b, 'to equal', 1));
   });
-
-  it('should call all endSessions in case of error in one startSession', run => {
+/*
+  it('should call startSession / endSession for concurrency = 2', run => {
     let a = 0;
     let b = 0;
     const config = {
@@ -60,28 +68,68 @@ describe('hooks session', () => {
         it('test 1', noop);
         it('test 2', noop);
       });
-      `], {config, include: ['SESSION']});
+      `], {config});
 
     return expectReject(result, {
       message: 'err',
       report: {
         env1: {
+          session0: [
+            'SESSION_START 0',
+            'SESSION_END 0',
+          ],
           session1: [
             'SESSION_START 1',
-            'SESSION_END 1',
-          ],
-          session2: [
-            'SESSION_START 2',
-            'SESSION_END 2'
+            'SESSION_END 1'
           ]
         }
       }
     })
     .then(() => expect(b, 'to equal', 2));
-
   });
 
-  it('should not call endSession in startSession was not called', run => {
+  it('should not call endSession if startSession was not called (error in first startSession)', run => {
+    let a = 0;
+    let b = 0;
+    const config = {
+      concurrency: 2,
+      splitSuites: true,
+      startSession: () => {
+        return a++ === 1
+          ? Promise.resolve().then(() => { throw new Error('err') })
+          : null;
+      },
+      endSession: () => b++,
+    };
+    const result = run([`
+      describe('suite 1', () => {
+        it('test 1', noop);
+        it('test 2', noop);
+      });
+      `], {config});
+
+    return expectReject(result, {
+      message: 'err',
+      report: {
+        env1: {
+          session0: [
+            'SESSION_START 0',
+            'SESSION_END 0',
+          ],
+          session1: [
+            'SESSION_START 1',
+            'SESSION_END 1'
+          ]
+        }
+      }
+    })
+    .then(() => {
+      expect(a, 'to equal', 1);
+      expect(b, 'to equal', 2);
+    });
+  });
+*/
+  it('should not call endSession if startSession was not called (error in create envs)', run => {
     let a = 0;
     let b = 0;
     const config = {
@@ -102,7 +150,6 @@ describe('hooks session', () => {
       expect(a, 'to equal', 0);
       expect(b, 'to equal', 0);
     });
-
   });
 
 });

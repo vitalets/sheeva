@@ -16,8 +16,8 @@ describe('split suites', () => {
 
     return expectResolve(result, {
         env1: {
-          session1: [
-            'SESSION_START 1',
+          session0: [
+            'SESSION_START 0',
             'SUITE_START root',
             'SUITE_START suite 1',
             'HOOK_END suite 1 before 0',
@@ -30,10 +30,10 @@ describe('split suites', () => {
             'HOOK_END suite 1 after 0',
             'SUITE_END suite 1',
             'SUITE_END root',
-            'SESSION_END 1'
+            'SESSION_END 0'
           ],
-          session2: [
-            'SESSION_START 2',
+          session1: [
+            'SESSION_START 1',
             'SUITE_START root',
             'SUITE_START suite 1',
             'HOOK_END suite 1 before 0',
@@ -43,7 +43,7 @@ describe('split suites', () => {
             'HOOK_END suite 1 after 0',
             'SUITE_END suite 1',
             'SUITE_END root',
-            'SESSION_END 2'
+            'SESSION_END 1'
           ]
         }
       }
@@ -89,16 +89,16 @@ describe('split suites', () => {
       // todo: something goes wrong because split not equal
       return expectResolve(result, {
         env1: {
-          session1: [
+          session0: [
             'TEST_END test 1',
             'TEST_END test 2'
           ],
-          session2: [
+          session1: [
             'TEST_END test 4',
             'TEST_END test 5',
             'TEST_END test 6',
           ],
-          session3: [
+          session2: [
             'TEST_END test 3',
           ]
         }

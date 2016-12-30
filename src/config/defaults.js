@@ -7,7 +7,7 @@
  */
 module.exports = {
   /**
-   * Test files pattern or array of patterns
+   * Test files pattern or array of patterns, e.g. './test/*.js'
    */
   files: [],
 
@@ -21,19 +21,19 @@ module.exports = {
    * How envs are executed per pool of sessions:
    * - `fullEnvFirst`: run all available sessions of first env, then run on second env, etc
    * - `fullEnvFirstDone`: run all available sessions of first env and wait until it's done, then run on second env, etc
-   * - `allEnvsParallel`: run all envs in parallel (not supported yet)
+   * - `allEnvs`: run all envs in parallel (not supported yet)
    */
-  concurrencyMode: 'fullEnvFirst',
+  //concurrencyMode: 'fullEnvFirst',
+
+  /**
+   * Start new session for each file
+   */
+  newSessionPerFile: false,
 
   /**
    * Allows split of suites between parallel sessions
    */
   splitSuites: false,
-
-  /**
-   * Start new session per each file
-   */
-  newSessionPerFile: false,
 
   /**
    * todo:
@@ -42,7 +42,7 @@ module.exports = {
    * - continue-env (default)
    * - continue-all
    */
-  onError: 'continue-env',
+  //onError: 'continue-env',
 
   /**
    * Reporters
@@ -70,14 +70,28 @@ module.exports = {
   env: '',
 
   /**
-   * Creates envs (environments).
-   * Each env should have `id` property.
+   * Creates environments (shortly envs).
+   * Each env should have `id` property and can overwrite some config fields.
    *
    * @returns {Array<Object>}
    */
   createEnvs: function () {
     return [
-      {id: 'default-env'}
+      {
+        /**
+         * Each environment must have id property
+         */
+        id: 'default-env',
+        /**
+         * Priority defines in with order envs will be executed.
+         * Envs with equal priority will be executed simultaneously sharing the concurrency limit
+         */
+        // priority: <number>
+        /**
+         * Env can have own concurrency limit.
+         */
+        // concurrency: <number>
+      }
     ];
   },
 

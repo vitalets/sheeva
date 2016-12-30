@@ -2,16 +2,9 @@
  * Tries split queues between sessions
  */
 
-const noop = function () {
-};
-
 module.exports = class Splitter {
-  constructor(pool, enabled) {
+  constructor(pool) {
     this._pool = pool;
-    if (!enabled) {
-      this.trySplitForSession = noop;
-      this.trySplitForSlot = noop;
-    }
   }
 
   /**

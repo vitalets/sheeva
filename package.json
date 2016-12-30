@@ -16,7 +16,7 @@
     "start": "node ./examples/run",
     "test": "node src/cli --config test/sheeva.config.js --env=tests-sync",
     "tt": "node src/cli --config test/sheeva.config.js",
-    "devtool": "devtool src/cli --config test/sheeva.config.js",
+    "devtool": "devtool src/cli --config test/sheeva.config.js --env=tests-sync",
     "mocha": "node ./examples/mocha"
   },
   "license": "MIT",
