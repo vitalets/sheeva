@@ -31,9 +31,9 @@ module.exports = {
   newSessionPerFile: false,
 
   /**
-   * Allows split of suites between parallel sessions
+   * Allows to split files between parallel sessions
    */
-  splitSuites: false,
+  splitFiles: false,
 
   /**
    * todo:
@@ -41,6 +41,8 @@ module.exports = {
    * - stop
    * - continue-env (default)
    * - continue-all
+   *
+   * or just bail?
    */
   //onError: 'continue-env',
 
@@ -55,9 +57,9 @@ module.exports = {
   tags: [],
 
   /**
-   * todo:
+   * todo: store timing information in file
    */
-  useTimings: true,
+  //useTimings: true,
 
   /**
    * Disallow ONLY tests. Useful for pre-commit / pre-push hooks.

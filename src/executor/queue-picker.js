@@ -1,5 +1,5 @@
 /**
- * Picks queues from envs by priority. Can also split queues if `config.splitSuites` = true.
+ * Picks next queue for execution.
  */
 
 const Splitter = require('./splitter');
@@ -21,7 +21,8 @@ module.exports = class QueuePicker {
   }
 
   /**
-   * Returns next queue
+   * Returns next queue.
+   * If session provided, try to get queue for that session first.
    *
    * @param {Session} [session]
    */
