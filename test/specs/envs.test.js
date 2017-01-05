@@ -16,6 +16,7 @@ describe('envs', () => {
     const report = run(`
         describe('suite', () => {
           it('test 0', noop);
+          it('test 1', noop);
         });
       `, {config});
 
@@ -24,6 +25,7 @@ describe('envs', () => {
           session0: [
             'SESSION_START 0',
             'TEST_END test 0',
+            'TEST_END test 1',
             'SESSION_END 0'
           ]
         },
@@ -31,6 +33,7 @@ describe('envs', () => {
           session1: [
             'SESSION_START 1',
             'TEST_END test 0',
+            'TEST_END test 1',
             'SESSION_END 1'
           ]
         }

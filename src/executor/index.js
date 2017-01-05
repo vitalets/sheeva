@@ -1,7 +1,9 @@
 /**
- * Controls concurrency pool of sessions: create and remove sessions for queues
+ * Main class for executing tests.
+ * It creates Slots and keep their number under concurrency limit.
+ * Each slot execute sessions serially.
  *
- * @type {Pool}
+ * @type {Executor}
  */
 
 const Base = require('./base');
@@ -68,6 +70,10 @@ module.exports = class Executor extends Base {
     }
   }
 
+  _hasFreeSlots() {
+    return !this._config.concurrency || this._slots.size < this._config.concurrency;
+  }
+
   _createSlot() {
     const slot = new Slot(this._sessionManager);
     this._slots.add(slot);
@@ -80,10 +86,6 @@ module.exports = class Executor extends Base {
         this._slots.delete(slot);
         this._checkDone();
       })
-  }
-
-  _hasFreeSlots() {
-    return !this._config.concurrency || this._slots.size < this._config.concurrency;
   }
 
   _handleFreeSlot(slot) {
@@ -188,8 +190,7 @@ module.exports = class Executor extends Base {
   _endAllSlots() {
     const tasks = [];
     this._slots.forEach(slot => {
-      // ignore error while closing session to keep original error
-      // try close all sessions even if they were not started for better clean up
+      // use empty catch() to ignore error while closing slot session to keep original error
       const task = slot.end().catch();
       tasks.push(task);
     });
