@@ -1,4 +1,4 @@
-describe('hooks session', () => {
+describe('config session', () => {
 
   beforeEach(context => {
     context.include = ['SESSION'];
@@ -11,12 +11,12 @@ describe('hooks session', () => {
       startSession: () => a++,
       endSession: () => b++,
     };
-    const result = run([`
+    const result = run(`
       describe('suite 1', () => {
         it('test 1', noop);
         it('test 2', noop);
       });
-      `], {config});
+      `, {config});
 
     return expectResolve(result, [
       'SESSION_START 0',
@@ -33,11 +33,11 @@ describe('hooks session', () => {
       startSession: () => { throw new Error('err') },
       endSession: () => b++,
     };
-    const result = run([`
+    const result = run(`
       describe('suite 1', () => {
         it('test 1', noop);
       });
-      `], {config});
+    `, {config});
 
     return expectReject(result, {
       message: 'err',
@@ -137,11 +137,11 @@ describe('hooks session', () => {
       endSession: () => b++,
       createEnvs: () => { throw new Error('err') }
     };
-    const result = run([`
+    const result = run(`
       describe('suite 1', () => {
         it('test 1', noop);
       });
-      `], {config, include: ['SESSION']});
+      `, {config, include: ['SESSION']});
 
     return expectReject(result, {
       message: 'err'

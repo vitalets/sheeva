@@ -1,6 +1,10 @@
 
 describe('errors', () => {
 
+  beforeEach(context => {
+    context.include = ['SESSION', 'SUITE', 'HOOK_END', 'TEST_END'];
+  });
+
   it('should reject run() promise in case of error in describe', run => {
     const result = run(`
       throw new Error('err');

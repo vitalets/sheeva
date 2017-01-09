@@ -1,4 +1,4 @@
-describe('envs', () => {
+describe('config envs', () => {
 
   beforeEach(context => {
     context.include = ['SESSION', 'TEST_END'];

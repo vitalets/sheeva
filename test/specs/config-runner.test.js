@@ -1,4 +1,4 @@
-describe('hooks runner', () => {
+describe('config runner', () => {
 
   it('should call sync startRunner', run => {
     let a = 0;

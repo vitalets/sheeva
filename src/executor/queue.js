@@ -15,9 +15,12 @@ module.exports = class Queue {
    * @param {Array} tests
    */
   constructor(tests) {
+    if (!tests || !tests.length) {
+      throw new Error('Queue should e created on non-empty tests array');
+    }
     // todo: make private fields
     this.tests = tests;
-    this.suite = tests.length ? tests[0].parents[0] : null;
+    this.suite = tests[0].parents[0];
     this.currentIndex = -1;
     this.currentTest = null;
     this.nextTest = this.tests[0];

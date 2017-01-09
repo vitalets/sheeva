@@ -1,5 +1,9 @@
 describe('hooks', () => {
 
+  beforeEach(context => {
+    context.include = ['SUITE', 'HOOK_END', 'TEST_END'];
+  });
+
   it('should run it and all hooks without describe', run => {
     const report = run(`
       before(noop);
@@ -19,7 +23,6 @@ describe('hooks', () => {
     `);
 
     return expectResolve(report, [
-      'SESSION_START 0',
       'SUITE_START root',
       'HOOK_END root before 0',
       'HOOK_END root before 1',
@@ -36,7 +39,6 @@ describe('hooks', () => {
       'HOOK_END root after 0',
       'HOOK_END root after 1',
       'SUITE_END root',
-      'SESSION_END 0',
     ]);
   });
 
@@ -59,7 +61,6 @@ describe('hooks', () => {
     `);
 
     return expectResolve(report, [
-      'SESSION_START 0',
       'SUITE_START root',
       'HOOK_END root before 0',
       'SUITE_START suite',
@@ -78,7 +79,6 @@ describe('hooks', () => {
       'SUITE_END suite',
       'HOOK_END root after 0',
       'SUITE_END root',
-      'SESSION_END 0',
     ]);
   });
 

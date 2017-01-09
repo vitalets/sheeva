@@ -1,10 +1,6 @@
 
 describe('concurrency', () => {
 
-  beforeEach(context => {
-    context.include = ['TEST_END'];
-  });
-
   it('should run 2 files in parallel sessions', run => {
     const config = {concurrency: 2};
     const report = run([`

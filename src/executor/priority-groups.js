@@ -18,11 +18,11 @@ module.exports = class PriorityGroups {
     this._initGroups(state);
   }
 
-  getNextQueue() {
+  getNextSuite() {
     for (let group of this._groups) {
-      const queue = this._getFromGroup(group);
-      if (queue) {
-        return queue;
+      const flatSuite = getFromGroup(group);
+      if (flatSuite) {
+        return flatSuite;
       }
     }
   }
@@ -44,14 +44,18 @@ module.exports = class PriorityGroups {
         return group.envs.map(env => state.get(env));
       });
   }
+};
 
-  _getFromGroup(group) {
-    group.sort((a, b) => a.slots - b.slots);
-    for (let envState of group) {
-      const queue = envState.getNextQueue({increaseSlots: true});
-      if (queue) {
-        return queue;
-      }
+function getFromGroup(group) {
+  group.sort(slotsSorter);
+  for (let envState of group) {
+    const flatSuite = envState.getNextSuite({increaseSlots: true});
+    if (flatSuite) {
+      return flatSuite;
     }
   }
-};
+}
+
+function slotsSorter(a, b) {
+  return a.slots - b.slots;
+}

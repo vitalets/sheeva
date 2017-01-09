@@ -6,6 +6,7 @@ const config = require('./config');
 const Reader = require('./reader');
 const Executor = require('./executor');
 const Reporter = require('./reporter');
+const sorter = require('./sorter');
 const {RUNNER_START, RUNNER_END} = require('./events');
 
 module.exports = class Sheeva {
@@ -16,11 +17,13 @@ module.exports = class Sheeva {
    */
   constructor(inConfig) {
     this._inConfig = inConfig;
+    this._envFlatSuites = new Map();
   }
   run() {
     return Promise.resolve()
       .then(() => this._init())
-      .then(() => this._reader.read())
+      .then(() => this._readFiles())
+      .then(() => this._flattenAndSort())
       .then(() => this._startRunner())
       .then(() => this._execute())
       .then(() => this._endRunner(), e => this._endRunner(e || new Error('Empty rejection')));
@@ -58,13 +61,22 @@ module.exports = class Sheeva {
     };
     this._executor = new Executor().setBaseProps(fakeParent);
   }
+  _readFiles() {
+    return this._reader.read();
+  }
+  _flattenAndSort() {
+    this._reader.envSuites.forEach((suites, env) => {
+      const flatSuites = sorter.flattenAndSort(suites);
+      this._envFlatSuites.set(env, flatSuites);
+    });
+  }
   _startRunner() {
     this._emitStart();
     return Promise.resolve()
       .then(() => this._config.startRunner(this._config))
   }
   _execute() {
-    return this._executor.run(this._reader.envTests);
+    return this._executor.run(this._envFlatSuites);
   }
   _endRunner(runnerError) {
     return Promise.resolve()
@@ -78,12 +90,10 @@ module.exports = class Sheeva {
       });
   }
   _emitStart() {
-    const envLabels = new Map(this._envs.map(env => [env, this._config.createEnvLabel(env)]));
     const data = {
       envs: this._envs,
-      envLabels: envLabels,
+      envLabels: this._getEnvLabels(),
       files: this._reader.files,
-      envTests: this._reader.envTests,
       onlyFiles: this._reader.onlyFiles,
       config: this._config,
     };
@@ -93,6 +103,9 @@ module.exports = class Sheeva {
     if (this._reporter) {
       this._reporter.handleEvent(RUNNER_END, {error});
     }
+  }
+  _getEnvLabels() {
+    return new Map(this._envs.map(env => [env, this._config.createEnvLabel(env)]));
   }
 };
 

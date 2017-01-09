@@ -9,7 +9,6 @@ const api = require('./api');
 const builder = require('./builder');
 const meta = require('./meta');
 const Only = require('./only');
-const flatten = require('./flatten');
 
 module.exports = class Reader {
   /**
@@ -22,8 +21,6 @@ module.exports = class Reader {
   constructor(options) {
     // map of env --> suites tree structure
     this._envSuites = new Map(options.envs.map(env => [env, []]));
-    // map of env --> array of <flat array of tests>
-    this._envTests = new Map();
     this._files = [];
     this._only = null;
     this._config = options.config;
@@ -32,8 +29,8 @@ module.exports = class Reader {
   get files() {
     return this._files;
   }
-  get envTests() {
-    return this._envTests;
+  get envSuites() {
+    return this._envSuites;
   }
   /**
    * Array of files where ONLY found
@@ -49,7 +46,6 @@ module.exports = class Reader {
     this._readFiles();
     cleanupApi(global);
     this._processOnly();
-    this._flatten();
   }
   _expandPatterns() {
     this._files = this._config.files.reduce((res, pattern) => res.concat(glob.sync(pattern)), []);
@@ -74,11 +70,6 @@ module.exports = class Reader {
       const filesList = this._only.files.join('\n');
       throw new Error(`ONLY is disallowed but found in ${filesCount} file(s):\n ${filesList}`);
     }
-  }
-  _flatten() {
-    this._envSuites.forEach((suites, env) => {
-      this._envTests.set(env, flatten(suites));
-    });
   }
 };
 

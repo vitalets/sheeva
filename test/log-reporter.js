@@ -99,7 +99,7 @@ module.exports = class LogReporter {
   getResult(filter) {
     if (!filter.include && !filter.exclude) {
       // default filter
-      filter.exclude = ['RUNNER_', 'ENV_', 'HOOK_START', 'TEST_START'];
+      filter.include = ['TEST_END'];
     }
 
     const envs = Object.keys(this._treeLog);

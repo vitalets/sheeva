@@ -2,6 +2,7 @@
  * Picks next queue for execution.
  */
 
+const Queue = require('./queue');
 const Splitter = require('./splitter');
 const PriorityGroups = require('./priority-groups');
 
@@ -28,25 +29,28 @@ module.exports = class QueuePicker {
    */
   getNextQueue(session) {
     const env = session && session.env;
-    return env && this._getByEnv(env) || this._getByPriority();
+    const flatSuite = env && this._getByEnv(env) || this._getByPriority();
+    if (flatSuite) {
+      return new Queue(flatSuite.tests);
+    }
   }
 
   /**
-   * Returns next queue for suggested env
+   * Returns next suite for suggested env
    *
    * @param {Object} env
-   * @returns {Queue|undefined}
+   * @returns {FlatSuite|undefined}
    */
   _getByEnv(env) {
-    return this._state.get(env).getNextQueue({decreaseSlots: true});
+    return this._state.get(env).getNextSuite({decreaseSlots: true});
   }
 
   /**
-   * Returns next queue if no env suggested (e.g. empty slot)
+   * Returns next suite if no env suggested (e.g. empty slot)
    *
-   * @returns {Queue|undefined}
+   * @returns {FlatSuite|undefined}
    */
   _getByPriority() {
-    return this._proirityGroups.getNextQueue();
+    return this._proirityGroups.getNextSuite();
   }
 };

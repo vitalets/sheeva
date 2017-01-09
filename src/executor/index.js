@@ -29,20 +29,20 @@ module.exports = class Executor extends Base {
   /**
    * Run
    *
-   * @param {Map} envTests
+   * @param {Map} envFlatSuites
    */
-  run(envTests) {
+  run(envFlatSuites) {
     return this._promised.call(() => {
-      this._initState(envTests);
+      this._initState(envFlatSuites);
       this._initQueuePicker();
       this._initSessionManager();
       this._fillSlots();
     });
   }
 
-  _initState(envTests) {
-    envTests.forEach((testsArr, env) => {
-      const envState = new EnvState(env, testsArr).setBaseProps(this);
+  _initState(envFlatSuites) {
+    envFlatSuites.forEach((flatSuites, env) => {
+      const envState = new EnvState(env, flatSuites).setBaseProps(this);
       if (!envState.isEmpty()) {
         this._state.set(env, envState);
       }
