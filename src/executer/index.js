@@ -3,7 +3,7 @@
  * It creates Slots and keep their number under concurrency limit.
  * Each slot execute sessions serially.
  *
- * @type {Executor}
+ * @type {Executer}
  */
 
 const Base = require('./base');
@@ -13,7 +13,7 @@ const Slot = require('./slot');
 const EnvState = require('./env-state');
 const SessionManager = require('./session-manager');
 
-module.exports = class Executor extends Base {
+module.exports = class Executer extends Base {
   /**
    * Constructor
    */

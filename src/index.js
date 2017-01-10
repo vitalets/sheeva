@@ -4,7 +4,7 @@
 
 const config = require('./config');
 const Reader = require('./reader');
-const Executor = require('./executor');
+const Executer = require('./executer');
 const Reporter = require('./reporter');
 const sorter = require('./sorter');
 const {RUNNER_START, RUNNER_END} = require('./events');
@@ -36,7 +36,7 @@ module.exports = class Sheeva {
     this._createEnvs();
     this._createReader();
     this._createReporter();
-    this._createExecutor();
+    this._createExecuter();
   }
   _createEnvs() {
     this._envs = config.createEnvs(this._config);
@@ -54,12 +54,12 @@ module.exports = class Sheeva {
       timings: this._config.timings,
     });
   }
-  _createExecutor() {
+  _createExecuter() {
     const fakeParent = {
       _reporter: this._reporter,
       _config: this._config,
     };
-    this._executor = new Executor().setBaseProps(fakeParent);
+    this._executer = new Executer().setBaseProps(fakeParent);
   }
   _readFiles() {
     return this._reader.read();
@@ -76,7 +76,7 @@ module.exports = class Sheeva {
       .then(() => this._config.startRunner(this._config))
   }
   _execute() {
-    return this._executor.run(this._envFlatSuites);
+    return this._executer.run(this._envFlatSuites);
   }
   _endRunner(runnerError) {
     return Promise.resolve()
