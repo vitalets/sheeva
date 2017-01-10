@@ -1,15 +1,14 @@
 /**
  * Global API for tests
- *
  */
 
-const builder = require('./builder');
+const appender = require('./appender');
 const meta = require('./meta');
 
 // suite
 
 exports.describe = function (name, fn) {
-  builder.addSuite(name, fn);
+  appender.addSuite(name, fn);
 };
 
 exports.ddescribe = exports.describe.only = function (name, fn) {
@@ -25,7 +24,7 @@ exports.xdescribe = exports.describe.skip = function (name, fn) {
 // test
 
 exports.it = function (name, fn) {
-  builder.addTest(name, fn);
+  appender.addTest(name, fn);
 };
 
 exports.iit = exports.it.only = function (name, fn) {
@@ -41,19 +40,19 @@ exports.xit = exports.it.skip = function (name, fn) {
 // hooks
 
 exports.before = exports.beforeAll = function (fn) {
-  builder.addHook('before', fn);
+  appender.addHook('before', fn);
 };
 
 exports.beforeEach = function (fn) {
-  builder.addHook('beforeEach', fn);
+  appender.addHook('beforeEach', fn);
 };
 
 exports.after = exports.afterAll = function (fn) {
-  builder.addHook('after', fn);
+  appender.addHook('after', fn);
 };
 
 exports.afterEach = function (fn) {
-  builder.addHook('afterEach', fn);
+  appender.addHook('afterEach', fn);
 };
 
 // meta

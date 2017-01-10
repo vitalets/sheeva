@@ -6,7 +6,7 @@ const path = require('path');
 const glob = require('glob');
 const Suite = require('./suite');
 const api = require('./api');
-const builder = require('./builder');
+const appender = require('./appender');
 const meta = require('./meta');
 const Only = require('./only');
 
@@ -54,14 +54,14 @@ module.exports = class Reader {
     this._files.forEach(file => this._readFile(file));
   }
   _readFile(file) {
-    const suites = [];
+    const rootSuites = [];
     this._envSuites.forEach((envSuites, env) => {
       const rootSuite = new Suite({name: file, isFile: true, env});
       envSuites.push(rootSuite);
-      suites.push(rootSuite);
+      rootSuites.push(rootSuite);
     });
     const fn = () => loadFile(file);
-    builder.fillSuites(suites, fn);
+    appender.fillSuites(rootSuites, fn);
   }
   _processOnly() {
     this._only = new Only(this._envSuites).process();

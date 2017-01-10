@@ -1,5 +1,5 @@
 /**
- * Singleton that builds suites tree when applying globals
+ * Singleton that appends suites/tests/hooks to the suite tree.
  */
 
 const Suite = require('./suite');
@@ -16,7 +16,7 @@ let currentSuites = [];
 let subSuites = null;
 
 /**
- * Fills array of empty suites from executing fn.
+ * Recursively fills array of empty suites by executing fn.
  * Suites are array as they belong to different envs.
  *
  * @param {Array<Suite>} suites
