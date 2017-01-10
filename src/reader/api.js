@@ -23,6 +23,16 @@ exports.cleanup = function (context) {
   Object.keys(methods).forEach(method => delete context[method]);
 };
 
+/**
+ * Calls fn applying api methods to suites
+ *
+ * @param {Function} fn
+ * @param {Array<Suite>} suites
+ */
+exports.apply = function (fn, suites) {
+  appender.fillSuites(suites, fn);
+};
+
 // suite
 
 const methods = {};

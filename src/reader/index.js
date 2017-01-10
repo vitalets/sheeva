@@ -6,7 +6,6 @@ const path = require('path');
 const glob = require('glob');
 const Suite = require('./suite');
 const api = require('./api');
-const appender = require('./appender');
 const meta = require('./meta');
 const Only = require('./only');
 
@@ -19,11 +18,13 @@ module.exports = class Reader {
    * @param {Config} options.config
    */
   constructor(options) {
-    // map of env --> suites tree structure
-    this._envSuites = new Map(options.envs.map(env => [env, []]));
+    this._envs = options.envs;
+    this._config = options.config;
+    this._envSuites = new Map();
+    this._fileSuites = new Map();
     this._files = [];
     this._only = null;
-    this._config = options.config;
+    this._context = global;
     meta.setTags(this._config.tags);
   }
   get files() {
@@ -41,27 +42,36 @@ module.exports = class Reader {
     return this._only.files;
   }
   read() {
-    this._expandPatterns();
-    api.expose(global);
+    this._expandFilePatterns();
+    this._createRootSuites();
+    this._exposeApi();
     this._readFiles();
-    api.cleanup(global);
+    this._cleanupApi();
     this._processOnly();
   }
-  _expandPatterns() {
+  _expandFilePatterns() {
     this._files = this._config.files.reduce((res, pattern) => res.concat(glob.sync(pattern)), []);
   }
-  _readFiles() {
-    this._files.forEach(file => this._readFile(file));
-  }
-  _readFile(file) {
-    const rootSuites = [];
-    this._envSuites.forEach((envSuites, env) => {
-      const rootSuite = new Suite({name: file, isFile: true, env});
-      envSuites.push(rootSuite);
-      rootSuites.push(rootSuite);
+  _createRootSuites() {
+    this._files.forEach(file => {
+      this._envs.forEach(env => {
+        const rootSuite = new Suite({name: file, isFile: true, env});
+        pushToMap(this._envSuites, env, rootSuite);
+        pushToMap(this._fileSuites, file, rootSuite);
+      });
     });
-    const fn = () => loadFile(file);
-    appender.fillSuites(rootSuites, fn);
+  }
+  _exposeApi() {
+    api.expose(this._context);
+  }
+  _readFiles() {
+    this._fileSuites.forEach((suites, file) => {
+      const fn = () => readFile(file);
+      api.apply(fn, suites);
+    });
+  }
+  _cleanupApi() {
+    api.cleanup(this._context);
   }
   _processOnly() {
     this._only = new Only(this._envSuites).process();
@@ -74,6 +84,14 @@ module.exports = class Reader {
 };
 
 // todo: move to separate module for browser
-function loadFile(file) {
+function readFile(file) {
   require(path.resolve(file));
+}
+
+function pushToMap(map, key, item) {
+  if (map.has(key)) {
+    map.get(key).push(item);
+  } else {
+    map.set(key, [item]);
+  }
 }
