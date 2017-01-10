@@ -42,9 +42,9 @@ module.exports = class Reader {
   }
   read() {
     this._expandPatterns();
-    exposeApi(global);
+    api.expose(global);
     this._readFiles();
-    cleanupApi(global);
+    api.cleanup(global);
     this._processOnly();
   }
   _expandPatterns() {
@@ -77,13 +77,3 @@ module.exports = class Reader {
 function loadFile(file) {
   require(path.resolve(file));
 }
-
-function exposeApi(context) {
-  Object.keys(api).forEach(key => context[key] = api[key]);
-}
-
-function cleanupApi(context) {
-  Object.keys(api).forEach(key => delete context[key]);
-}
-
-

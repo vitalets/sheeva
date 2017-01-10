@@ -5,74 +5,94 @@
 const appender = require('./appender');
 const meta = require('./meta');
 
+/**
+ * Exposes methods to the context
+ *
+ * @param {Object} context
+ */
+exports.expose = function (context) {
+  Object.keys(methods).forEach(method => context[method] = methods[method]);
+};
+
+/**
+ * Cleanups methods from the context
+ *
+ * @param {Object} context
+ */
+exports.cleanup = function (context) {
+  Object.keys(methods).forEach(method => delete context[method]);
+};
+
 // suite
 
-exports.describe = function (name, fn) {
+const methods = {};
+
+methods.describe = function (name, fn) {
   appender.addSuite(name, fn);
 };
 
-exports.ddescribe = exports.describe.only = function (name, fn) {
-  exports.$only();
-  exports.describe(name, fn);
+methods.ddescribe = methods.describe.only = function (name, fn) {
+  methods.$only();
+  methods.describe(name, fn);
 };
 
-exports.xdescribe = exports.describe.skip = function (name, fn) {
-  exports.$skip();
-  exports.describe(name, fn);
+methods.xdescribe = methods.describe.skip = function (name, fn) {
+  methods.$skip();
+  methods.describe(name, fn);
 };
 
 // test
 
-exports.it = function (name, fn) {
+methods.it = function (name, fn) {
   appender.addTest(name, fn);
 };
 
-exports.iit = exports.it.only = function (name, fn) {
-  exports.$only();
-  exports.it(name, fn);
+methods.iit = methods.it.only = function (name, fn) {
+  methods.$only();
+  methods.it(name, fn);
 };
 
-exports.xit = exports.it.skip = function (name, fn) {
-  exports.$skip();
-  exports.it(name, fn);
+methods.xit = methods.it.skip = function (name, fn) {
+  methods.$skip();
+  methods.it(name, fn);
 };
 
 // hooks
 
-exports.before = exports.beforeAll = function (fn) {
+methods.before = methods.beforeAll = function (fn) {
   appender.addHook('before', fn);
 };
 
-exports.beforeEach = function (fn) {
+methods.beforeEach = function (fn) {
   appender.addHook('beforeEach', fn);
 };
 
-exports.after = exports.afterAll = function (fn) {
+methods.after = methods.afterAll = function (fn) {
   appender.addHook('after', fn);
 };
 
-exports.afterEach = function (fn) {
+methods.afterEach = function (fn) {
   appender.addHook('afterEach', fn);
 };
 
 // meta
 
-exports.$tags = function () {
+methods.$tags = function () {
   meta.tags.apply(meta, arguments);
 };
 
-exports.$skip = function (fn) {
+methods.$skip = function (fn) {
   meta.skip(fn);
 };
 
-exports.$only = function () {
+methods.$only = function () {
   meta.only();
 };
 
-exports.$if = function (fn) {
+methods.$if = function (fn) {
   meta.if(fn);
 };
 
-exports.$serial =function () {
+methods.$serial =function () {
   meta.serial();
 };
