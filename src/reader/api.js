@@ -40,7 +40,7 @@ exports.xit = exports.it.skip = function (name, fn) {
 
 // hooks
 
-exports.before = function (fn) {
+exports.before = exports.beforeAll = function (fn) {
   builder.addHook('before', fn);
 };
 
@@ -48,7 +48,7 @@ exports.beforeEach = function (fn) {
   builder.addHook('beforeEach', fn);
 };
 
-exports.after = function (fn) {
+exports.after = exports.afterAll = function (fn) {
   builder.addHook('after', fn);
 };
 
