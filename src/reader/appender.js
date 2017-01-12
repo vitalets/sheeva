@@ -1,67 +1,57 @@
 /**
- * Singleton that appends suites/tests/hooks to the suite tree.
+ * Appends children and hooks to array of suites.
+ * Also collects fnSuites map for next iteration.
  */
 
-const Suite = require('./suite');
-const Test = require('./test');
+const factory = require('./factory');
 const meta = require('./meta');
+const utils = require('../utils');
 
-/**
- * Array of current suites to be filled
- */
-let currentSuites = [];
-/**
- * Map of fn -> Array<Suites> for found suites (describes)
- */
-let subSuites = null;
-
-/**
- * Recursively fills array of empty suites by executing fn.
- * Suites are array as they belong to different envs.
- *
- * @param {Array<Suite>} suites
- * @param {Function} fn
- */
-exports.fillSuites = function fillSuites(suites, fn) {
-  currentSuites = suites;
-  subSuites = new Map();
-  fn();
-  // use a copy of subSuites as it will be changed later
-  new Map(subSuites).forEach(fillSuites);
-};
-
-exports.addSuite = function (name, fn) {
-  const addedSuites = [];
-  currentSuites.forEach(suite => {
-    const options = meta.getOptions(suite.env);
-    const subSuite = new Suite(Object.assign({name}, options));
-    suite.addChild(subSuite);
-    if (!options.skip) {
-      addedSuites.push(subSuite);
-    }
-  });
-  if (addedSuites.length) {
-    subSuites.set(fn, addedSuites);
+module.exports = class Appender {
+  constructor(suites) {
+    this._suites = suites;
+    this._childFnSuites = new Map();
   }
-  meta.clear();
-};
 
-exports.addTest = function (name, fn) {
-  currentSuites.forEach(suite => {
-    const options = meta.getOptions(suite.env);
-    const test = new Test(Object.assign({name, fn}, options));
-    suite.addChild(test);
-  });
-  meta.clear();
-};
+  get childFnSuites() {
+    return this._childFnSuites;
+  }
 
-exports.addHook = function (type, fn) {
-  currentSuites.forEach(suite => {
-    const options = meta.getOptions(suite.env);
-    if (!options.skip) {
-      suite.addHook(type, fn);
-    }
-  });
-  meta.clear();
-};
+  addChildSuite(name, fn) {
+    this._addItem((suite, options) => {
+      Object.assign(options, {name});
+      const childSuite = factory.createSuite(options);
+      factory.addChild(suite, childSuite);
+      utils.pushToMap(this._childFnSuites, fn, childSuite);
+    });
+  }
 
+  addChildTest(name, fn) {
+    this._addItem((suite, options) => {
+      Object.assign(options, {name, fn});
+      const childTest = factory.createTest(options);
+      factory.addChild(suite, childTest);
+    });
+  }
+
+  addHook(type, fn) {
+    this._addItem(suite => {
+      factory.addHook(suite, type, fn);
+    });
+  }
+
+  _addItem(iterator) {
+    this._forEachSuites(iterator);
+    meta.clear();
+  }
+
+  _forEachSuites(iterator) {
+    this._suites.forEach(suite => {
+      const options = meta.getOptions(suite.env);
+      if (options) {
+        options.env = suite.env;
+        iterator(suite, options);
+      }
+    });
+  }
+};

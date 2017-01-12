@@ -4,9 +4,10 @@
 
 const config = require('./config');
 const Reader = require('./reader');
+//const Reformer = require('./reformer');
 const Executer = require('./executer');
 const Reporter = require('./reporter');
-const sorter = require('./sorter');
+const sorter = require('./filter/sorter');
 const {RUNNER_START, RUNNER_END} = require('./events');
 
 module.exports = class Sheeva {
@@ -17,12 +18,18 @@ module.exports = class Sheeva {
    */
   constructor(inConfig) {
     this._inConfig = inConfig;
-    this._envFlatSuites = new Map();
+    this._config = null;
+    this._envs = null;
+    this._reader = null;
+    this._reformer = null;
+    this._reporter = null;
+    this._executer = null;
   }
   run() {
     return Promise.resolve()
       .then(() => this._init())
       .then(() => this._readFiles())
+     // .then(() => this._prepare())
       .then(() => this._flattenAndSort())
       .then(() => this._startRunner())
       .then(() => this._execute())
@@ -32,11 +39,15 @@ module.exports = class Sheeva {
     return this._reporter && this._reporter.get(index);
   }
   _init() {
-    this._config = config.parse(this._inConfig);
+    this._createConfig();
     this._createEnvs();
     this._createReader();
+    //this._createReformer();
     this._createReporter();
     this._createExecuter();
+  }
+  _createConfig() {
+    this._config = config.parse(this._inConfig);
   }
   _createEnvs() {
     this._envs = config.createEnvs(this._config);
@@ -44,6 +55,10 @@ module.exports = class Sheeva {
   _createReader() {
     this._reader = new Reader({
       envs: this._envs,
+    });
+  }
+  _createReformer() {
+    this._reformer = new Reformer({
       config: this._config,
     });
   }
@@ -55,16 +70,18 @@ module.exports = class Sheeva {
     });
   }
   _createExecuter() {
-    const fakeParent = {
-      _reporter: this._reporter,
-      _config: this._config,
-    };
-    this._executer = new Executer().setBaseProps(fakeParent);
+    this._executer = new Executer().setBaseProps(this);
   }
   _readFiles() {
-    return this._reader.read();
+    //this._filter = new Filter().process(this._reader.envSuites);
+    //if ()
+    return this._reader.read(this._config.files);
+  }
+  _prepare() {
+    return this._reformer.process(this._reader.envSuites);
   }
   _flattenAndSort() {
+    this._envFlatSuites = new Map();
     this._reader.envSuites.forEach((suites, env) => {
       const flatSuites = sorter.flattenAndSort(suites);
       this._envFlatSuites.set(env, flatSuites);
@@ -94,7 +111,8 @@ module.exports = class Sheeva {
       envs: this._envs,
       envLabels: this._getEnvLabels(),
       files: this._reader.files,
-      onlyFiles: this._reader.onlyFiles,
+      //onlyFiles: this._reader.onlyFiles,
+      onlyFiles: [],
       config: this._config,
     };
     this._reporter.handleEvent(RUNNER_START, data);

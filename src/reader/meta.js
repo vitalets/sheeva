@@ -3,18 +3,6 @@
  */
 
 let info = {};
-let tags = [];
-
-exports.setTags = function (newTags) {
-  if (newTags && typeof newTags === 'string') {
-    newTags = [newTags];
-  }
-  if (Array.isArray(newTags)) {
-    tags = newTags;
-  } else {
-    throw new Error('Tags should be array');
-  }
-};
 
 exports.clear = function () {
   info = {};
@@ -25,52 +13,32 @@ exports.clear = function () {
  * and filtering by env
  *
  * @param {Object} env
- * @returns {Object<only, skip, serial>}
+ * @returns {Object<only, skip, serial>|null}
  */
 exports.getOptions = function (env) {
-  const options = {
-    env,
-    serial: info.serial
-  };
-  if (info.only) {
-    options.only = true;
-    return options;
+  if (isExcludedByIgnore(env) || isExcludedByIf(env)) {
+    return null;
+  } else {
+    return createOptions();
   }
-  if (tags.length) {
-    options.skip = !info.tags || !info.tags.some(tag => tags.indexOf(tag) >= 0);
-    if (options.skip) {
-      return options;
-    }
-  }
-  if (info.skip) {
-    options.skip = info.skip.some(fn => fn(env));
-    if (options.skip) {
-      return options;
-    }
-  }
-  if (info.if) {
-    options.skip = info.if.some(fn => !fn(env));
-    if (options.skip) {
-      return options;
-    }
-  }
-  return options;
 };
 
 exports.only = function () {
   info.only = true;
 };
 
-exports.skip = function (fn) {
-  fn = typeof fn === 'function' ? fn : () => true;
-  info.skip = info.skip ? info.skip.concat([fn]) : [fn];
+exports.skip = function () {
+  info.skip = true;
 };
 
 exports.if = function (fn) {
-  if (typeof fn !== 'function') {
-    throw new Error('$if should accept function as parameter');
-  }
+  assertFn(fn, '$if() should accept function as parameter');
   info.if = info.if ? info.if.concat([fn]) : [fn];
+};
+
+exports.ignore = function (fn) {
+  assertFn(fn, '$ignore() should accept function as parameter');
+  info.ignore = info.ignore ? info.ignore.concat([fn]) : [fn];
 };
 
 exports.tags = function () {
@@ -78,6 +46,30 @@ exports.tags = function () {
   info.tags = info.tags ? info.tags.concat(args) : args;
 };
 
+// todo
 exports.serial = function () {
   info.serial = true;
 };
+
+function createOptions() {
+  return {
+    serial: info.serial,
+    tags: info.tags,
+    only: info.only,
+    skip: !info.only && info.skip,
+  };
+}
+
+function isExcludedByIgnore(env) {
+  return info.ignore && info.ignore.some(fn => fn(env));
+}
+
+function isExcludedByIf(env) {
+  return info.if && info.if.some(fn => !fn(env));
+}
+
+function assertFn(value, msg) {
+  if (typeof value !== 'function') {
+    throw new Error(msg);
+  }
+}

@@ -2,15 +2,18 @@
  * Global API for tests
  */
 
-const appender = require('./appender');
 const meta = require('./meta');
+const Appender = require('./appender');
+
+const methods = {};
+let currentAppender = null;
 
 /**
- * Exposes methods to the context
+ * Injects methods to the context
  *
  * @param {Object} context
  */
-exports.expose = function (context) {
+exports.inject = function (context) {
   Object.keys(methods).forEach(method => context[method] = methods[method]);
 };
 
@@ -24,21 +27,22 @@ exports.cleanup = function (context) {
 };
 
 /**
- * Calls fn applying api methods to suites
+ * Recursively fills suites with children by calling fn
  *
- * @param {Function} fn
- * @param {Array<Suite>} suites
+ * @param {Map<Function,Array<Suite>>} fnSuites
  */
-exports.apply = function (fn, suites) {
-  appender.fillSuites(suites, fn);
+exports.fillSuites = function fillSuites(fnSuites) {
+  fnSuites.forEach((suites, fn) => {
+    currentAppender = new Appender(suites);
+    fn();
+    fillSuites(currentAppender.childFnSuites);
+  });
 };
 
 // suite
 
-const methods = {};
-
 methods.describe = function (name, fn) {
-  appender.addSuite(name, fn);
+  currentAppender.addChildSuite(name, fn);
 };
 
 methods.ddescribe = methods.describe.only = function (name, fn) {
@@ -54,7 +58,7 @@ methods.xdescribe = methods.describe.skip = function (name, fn) {
 // test
 
 methods.it = function (name, fn) {
-  appender.addTest(name, fn);
+  currentAppender.addChildTest(name, fn);
 };
 
 methods.iit = methods.it.only = function (name, fn) {
@@ -70,37 +74,41 @@ methods.xit = methods.it.skip = function (name, fn) {
 // hooks
 
 methods.before = methods.beforeAll = function (fn) {
-  appender.addHook('before', fn);
+  currentAppender.addHook('before', fn);
 };
 
 methods.beforeEach = function (fn) {
-  appender.addHook('beforeEach', fn);
+  currentAppender.addHook('beforeEach', fn);
 };
 
 methods.after = methods.afterAll = function (fn) {
-  appender.addHook('after', fn);
+  currentAppender.addHook('after', fn);
 };
 
 methods.afterEach = function (fn) {
-  appender.addHook('afterEach', fn);
+  currentAppender.addHook('afterEach', fn);
 };
 
 // meta
-
-methods.$tags = function () {
-  meta.tags.apply(meta, arguments);
-};
-
-methods.$skip = function (fn) {
-  meta.skip(fn);
-};
 
 methods.$only = function () {
   meta.only();
 };
 
+methods.$skip = function () {
+  meta.skip();
+};
+
+methods.$tags = function () {
+  meta.tags.apply(meta, arguments);
+};
+
 methods.$if = function (fn) {
   meta.if(fn);
+};
+
+methods.$ignore = function (fn) {
+  meta.ignore(fn);
 };
 
 methods.$serial =function () {

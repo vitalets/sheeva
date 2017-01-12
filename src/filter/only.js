@@ -3,18 +3,22 @@
  */
 
 module.exports = class Only {
-  constructor(envSuites) {
-    this._envSuites = envSuites;
+  constructor() {
     this._files = [];
   }
   get files() {
     return this._files;
   }
-  process() {
+  process(envSuites) {
     if (this._hasOnly()) {
       this._filter();
     }
     return this;
+  }
+  throwNoOnlyError() {
+    throw new Error(
+      `ONLY is disallowed but found in ${this._files.length} file(s):\n ${this._files.join('\n')}`
+    );
   }
   _hasOnly() {
     for (let suites of this._envSuites.values()) {

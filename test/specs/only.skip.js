@@ -3,26 +3,17 @@ const escapeRe = require('escape-string-regexp');
 
 describe('only', () => {
 
-  beforeEach(context => {
-    context.include = ['TEST_END'];
-  });
-
   it('should run only test by $only()', run => {
     const result = run(`
       describe('suite 1', () => {
         it('test 0', noop);
-        describe('suite 2', () => {
-          $only();
-          it('test 1', noop);
-          describe('suite 3', () => {
-            it('test 2', noop);
-          });
-        });
+        $only();
+        it('test 1', noop);
+        it('test 2', noop);
       });
       
-      describe('suite 4', () => {
-        it('test 4', noop);
-        it('test 5', noop);
+      describe('suite 2', () => {
+        it('test 3', noop);
       });
     `);
 
@@ -33,18 +24,13 @@ describe('only', () => {
 
   it('should run only describe by $only()', run => {
     const result = run(`
+      $only();
       describe('suite 1', () => {
-        it('test 1', noop);
-        $only();
-        describe('suite 2', () => {
-          it('test 2', noop);
-          it('test 3', noop);
-        });
+        it('test 2', noop);
+        it('test 3', noop);
       });
-      
       describe('suite 4', () => {
         it('test 4', noop);
-        it('test 5', noop);
       });
     `);
 
