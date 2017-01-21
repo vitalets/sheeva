@@ -1,3 +1,6 @@
+/**
+ * Events emitted to reporter
+ */
 
 module.exports = {
   RUNNER_START: 'RUNNER_START',
