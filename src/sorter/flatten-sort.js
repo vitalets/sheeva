@@ -1,21 +1,9 @@
 /**
- * Flatten and sort suites tree before execution.
- * Sorting is applied so that tests with more before/after hooks count are moved to the beginning,
- * and tests without before/after hooks are moved to the end.
- * This is useful for suite splitting between parallel sessions because splitting for suites with before/after hooks
- * requires that hooks to be executed again.
- *
- * @typedef {Object} FlatSuite
- * @property {Array<Test>} tests
- * @property {Number} baCount max number of before / after hooks
- */
-
-/**
  *
  * @param {Array<Suite|Test>} items
  * @returns {Array<FlatSuite>}
  */
-exports.flattenAndSort = function (items) {
+const flattenSort = module.exports = function (items) {
   return []
     .concat(flattenSuites(items))
     .concat(flattenTests(items))
@@ -54,7 +42,7 @@ function flattenTests(items) {
  */
 function flattenSuite(suite) {
   const parentBaCount = getBaCount(suite);
-  const flatSuites = exports.flattenAndSort(suite.children);
+  const flatSuites = flattenSort(suite.children);
   if (parentBaCount > 0 && flatSuites.length > 0) {
     return mergeChildrenFlatSuites(flatSuites, parentBaCount);
   } else {

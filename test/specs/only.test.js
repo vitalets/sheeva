@@ -11,7 +11,7 @@ describe('only', () => {
         it('test 1', noop);
         it('test 2', noop);
       });
-      
+
       describe('suite 2', () => {
         it('test 3', noop);
       });
@@ -69,17 +69,23 @@ describe('only', () => {
         it('test 0', noop);
         it('test 1', noop);
       });
-      
+
       describe('suite 2', () => {
         it('test 2', noop);
         $only();
         it('test 3', noop);
+        $only();
+        it('test 4', noop);
       });
-      
+
       describe('suite 3', () => {
         $only();
         describe('suite 4', () => {
-          it('test 4', noop);
+          it('test 5', noop);
+        });
+        $only();
+        describe('suite 5', () => {
+          it('test 6', noop);
         });
       });
     `);
@@ -88,10 +94,28 @@ describe('only', () => {
       'TEST_END test 0',
       'TEST_END test 3',
       'TEST_END test 4',
+      'TEST_END test 5',
+      'TEST_END test 6',
     ]);
   });
 
-  it('should throw error if $only disallowed by config noOnly flag', run => {
+  it('should correctly apply nested $only', run => {
+    const result = run(`
+      $only();
+      describe('suite 1', () => {
+        $only();
+        it('test 2', noop);
+        it('test 3', noop);
+      });
+    `);
+
+    return expectResolve(result, [
+      'TEST_END test 2',
+      'TEST_END test 3',
+    ]);
+  });
+
+  it.skip('should throw error if $only disallowed by config noOnly flag', run => {
     const config = {noOnly: true};
     const result = run(`
       describe('suite', () => {
@@ -104,5 +128,11 @@ describe('only', () => {
       message: new RegExp('^' + escapeRe('ONLY is disallowed but found in 1 file(s):\n ./test/temp')),
     });
   });
+
+  // throwNoOnlyError() {
+  //   throw new Error(
+  //     `ONLY is disallowed but found in ${this._files.length} file(s):\n ${this._files.join('\n')}`
+  //   );
+  // }
 
 });

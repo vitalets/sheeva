@@ -1,5 +1,7 @@
 /**
  * Check config and apply defaults
+ *
+ * @typedef {Object} Env
  */
 
 const defaults = require('./defaults');

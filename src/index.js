@@ -2,12 +2,13 @@
  * Sheeva
  */
 
+const utils = require('./utils');
 const config = require('./config');
 const Reader = require('./reader');
-//const Reformer = require('./reformer');
+const Filter = require('./filter');
+const Sorter = require('./sorter');
 const Executer = require('./executer');
 const Reporter = require('./reporter');
-const sorter = require('./filter/sorter');
 const {RUNNER_START, RUNNER_END} = require('./events');
 
 module.exports = class Sheeva {
@@ -21,7 +22,8 @@ module.exports = class Sheeva {
     this._config = null;
     this._envs = null;
     this._reader = null;
-    this._reformer = null;
+    this._filter = null;
+    this._sorter = null;
     this._reporter = null;
     this._executer = null;
   }
@@ -29,8 +31,7 @@ module.exports = class Sheeva {
     return Promise.resolve()
       .then(() => this._init())
       .then(() => this._readFiles())
-     // .then(() => this._prepare())
-      .then(() => this._flattenAndSort())
+      .then(() => this._transform())
       .then(() => this._startRunner())
       .then(() => this._execute())
       .then(() => this._endRunner(), e => this._endRunner(e || new Error('Empty rejection')));
@@ -42,7 +43,6 @@ module.exports = class Sheeva {
     this._createConfig();
     this._createEnvs();
     this._createReader();
-    //this._createReformer();
     this._createReporter();
     this._createExecuter();
   }
@@ -57,11 +57,6 @@ module.exports = class Sheeva {
       envs: this._envs,
     });
   }
-  _createReformer() {
-    this._reformer = new Reformer({
-      config: this._config,
-    });
-  }
   _createReporter() {
     this._reporter = new Reporter({
       reporters: this._config.reporters,
@@ -73,27 +68,18 @@ module.exports = class Sheeva {
     this._executer = new Executer().setBaseProps(this);
   }
   _readFiles() {
-    //this._filter = new Filter().process(this._reader.envSuites);
-    //if ()
     return this._reader.read(this._config.files);
   }
-  _prepare() {
-    return this._reformer.process(this._reader.envSuites);
-  }
-  _flattenAndSort() {
-    this._envFlatSuites = new Map();
-    this._reader.envSuites.forEach((suites, env) => {
-      const flatSuites = sorter.flattenAndSort(suites);
-      this._envFlatSuites.set(env, flatSuites);
-    });
+  _transform() {
+    this._filter = new Filter(this._reader.envData).run();
+    this._sorter = new Sorter(this._filter.envData).run();
   }
   _startRunner() {
     this._emitStart();
-    return Promise.resolve()
-      .then(() => this._config.startRunner(this._config))
+    return utils.thenCall(() => this._config.startRunner(this._config));
   }
   _execute() {
-    return this._executer.run(this._envFlatSuites);
+    return this._executer.run(this._sorter.envFlatSuites);
   }
   _endRunner(runnerError) {
     return Promise.resolve()
@@ -111,8 +97,7 @@ module.exports = class Sheeva {
       envs: this._envs,
       envLabels: this._getEnvLabels(),
       files: this._reader.files,
-      //onlyFiles: this._reader.onlyFiles,
-      onlyFiles: [],
+      onlyFiles: this._filter.onlyFiles,
       config: this._config,
     };
     this._reporter.handleEvent(RUNNER_START, data);

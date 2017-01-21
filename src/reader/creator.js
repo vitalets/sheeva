@@ -31,16 +31,6 @@ exports.createTest = function (options) {
   });
 };
 
-exports.addChild = function (parent, child) {
-  parent.children.push(child);
-  child.parents = parent.parents.concat([parent]);
-  child.parent = parent;
-};
-
-exports.addHook = function (parent, type, fn) {
-  parent[type].push(fn);
-};
-
 function extendBase(options, extraOptions) {
   return Object.assign({
     name: options.name,
