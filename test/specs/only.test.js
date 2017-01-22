@@ -129,10 +129,4 @@ describe('only', () => {
     });
   });
 
-  // throwNoOnlyError() {
-  //   throw new Error(
-  //     `ONLY is disallowed but found in ${this._files.length} file(s):\n ${this._files.join('\n')}`
-  //   );
-  // }
-
 });
