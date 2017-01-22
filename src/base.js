@@ -11,10 +11,17 @@ module.exports = class Base {
   }
 
   setBaseProps(parent) {
-    // getting private props directly is better here (instead of making public getters)
-    this._config = parent._config;
-    this._reporter = parent._reporter;
+    const {config, reporter} = parent.getBaseProps();
+    this._config = config;
+    this._reporter = reporter;
     return this;
+  }
+
+  getBaseProps() {
+    return {
+      config: this._config,
+      reporter: this._reporter,
+    };
   }
 
   _emit(event, data = {}) {

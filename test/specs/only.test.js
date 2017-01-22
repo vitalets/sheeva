@@ -115,7 +115,7 @@ describe('only', () => {
     ]);
   });
 
-  it.skip('should throw error if $only disallowed by config noOnly flag', run => {
+  it('should throw error if $only disallowed by config noOnly flag', run => {
     const config = {noOnly: true};
     const result = run(`
       describe('suite', () => {

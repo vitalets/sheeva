@@ -3,6 +3,7 @@
  */
 
 const utils = require('./utils');
+const Base = require('./base');
 const config = require('./config');
 const Reader = require('./reader');
 const Filter = require('./filter');
@@ -11,13 +12,14 @@ const Executer = require('./executer');
 const Reporter = require('./reporter');
 const {RUNNER_START, RUNNER_END} = require('./events');
 
-module.exports = class Sheeva {
+module.exports = class Sheeva extends Base {
   /**
    * Constructor
    *
    * @param {Config} inConfig
    */
   constructor(inConfig) {
+    super();
     this._inConfig = inConfig;
     this._config = null;
     this._envs = null;
@@ -31,7 +33,8 @@ module.exports = class Sheeva {
     return Promise.resolve()
       .then(() => this._init())
       .then(() => this._readFiles())
-      .then(() => this._transform())
+      .then(() => this._applyFilter())
+      .then(() => this._applySort())
       .then(() => this._startRunner())
       .then(() => this._execute())
       .then(() => this._endRunner(), e => this._endRunner(e || new Error('Empty rejection')));
@@ -70,8 +73,11 @@ module.exports = class Sheeva {
   _readFiles() {
     return this._reader.read(this._config.files);
   }
-  _transform() {
-    this._filter = new Filter(this._reader.envData).run();
+  _applyFilter() {
+    this._filter = new Filter(this._reader.envData).setBaseProps(this);
+    this._filter.run();
+  }
+  _applySort() {
     this._sorter = new Sorter(this._filter.envData).run();
   }
   _startRunner() {
