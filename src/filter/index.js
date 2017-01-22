@@ -8,13 +8,15 @@
 const Base = require('../base');
 const Only = require('./only');
 const Skip = require('./skip');
+const Tags = require('./tags');
 
 module.exports = class Filter extends Base {
-  constructor(envData) {
+  constructor() {
     super();
-    this._envData = envData;
-    this._only = new Only(this._envData);
-    this._skip = new Skip(this._envData);
+    this._envData = null;
+    this._only = null;
+    this._skip = null;
+    this._tags = null;
   }
 
   get envData() {
@@ -25,11 +27,23 @@ module.exports = class Filter extends Base {
     return this._only.files;
   }
 
-  run() {
+  run(envData) {
+    this._envData = envData;
+    this._init();
+    this._filter();
+  }
+
+  _init() {
+    this._only = new Only(this._envData);
+    this._skip = new Skip(this._envData);
+    this._tags = new Tags(this._envData, this._config.tags);
+  }
+
+  _filter() {
     if (this._only.exists) {
       this._processOnly();
     } else {
-      //this._processTags();
+      this._tags.filter();
       this._skip.filter();
     }
   }

@@ -67,8 +67,8 @@ module.exports = class Sheeva extends Base {
     return this._reader.read(this._config.files);
   }
   _applyFilter() {
-    this._filter = new Filter(this._reader.envData).setBaseProps(this);
-    this._filter.run();
+    this._filter = new Filter().setBaseProps(this);
+    this._filter.run(this._reader.envData);
   }
   _applySort() {
     this._sorter = new Sorter(this._filter.envData).run();
