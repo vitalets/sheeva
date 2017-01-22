@@ -45,20 +45,13 @@ module.exports = class Sheeva extends Base {
   _init() {
     this._createConfig();
     this._createEnvs();
-    this._createReader();
     this._createReporter();
-    this._createExecuter();
   }
   _createConfig() {
     this._config = config.parse(this._inConfig);
   }
   _createEnvs() {
     this._envs = config.createEnvs(this._config);
-  }
-  _createReader() {
-    this._reader = new Reader({
-      envs: this._envs,
-    });
   }
   _createReporter() {
     this._reporter = new Reporter({
@@ -67,10 +60,10 @@ module.exports = class Sheeva extends Base {
       timings: this._config.timings,
     });
   }
-  _createExecuter() {
-    this._executer = new Executer().setBaseProps(this);
-  }
   _readFiles() {
+    this._reader = new Reader({
+      envs: this._envs,
+    });
     return this._reader.read(this._config.files);
   }
   _applyFilter() {
@@ -85,6 +78,7 @@ module.exports = class Sheeva extends Base {
     return utils.thenCall(() => this._config.startRunner(this._config));
   }
   _execute() {
+    this._executer = new Executer().setBaseProps(this);
     return this._executer.run(this._sorter.envFlatSuites);
   }
   _endRunner(runnerError) {
