@@ -106,12 +106,10 @@ module.exports = class Sheeva extends Base {
       onlyFiles: this._filter.onlyFiles,
       config: this._config,
     };
-    this._reporter.handleEvent(RUNNER_START, data);
+    this._emit(RUNNER_START, data);
   }
   _emitEnd(error) {
-    if (this._reporter) {
-      this._reporter.handleEvent(RUNNER_END, {error});
-    }
+    this._emit(RUNNER_END, {error});
   }
   _getEnvLabels() {
     return new Map(this._envs.map(env => [env, this._config.createEnvLabel(env)]));

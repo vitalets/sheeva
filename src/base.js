@@ -25,6 +25,8 @@ module.exports = class Base {
   }
 
   _emit(event, data = {}) {
-    this._reporter.handleEvent(event, data);
+    if (this._reporter) {
+      this._reporter.handleEvent(event, data);
+    }
   }
 };
