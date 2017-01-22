@@ -37,7 +37,7 @@ module.exports = class Sheeva extends Base {
       .then(() => this._applySort())
       .then(() => this._startRunner())
       .then(() => this._execute())
-      .then(() => this._endRunner(), e => this._endRunner(e || new Error('Empty rejection')));
+      .then(() => this._success(), e => this._fail(e));
   }
   getReporter(index) {
     return this._reporter && this._reporter.get(index);
@@ -80,6 +80,12 @@ module.exports = class Sheeva extends Base {
   _execute() {
     this._executer = new Executer().setBaseProps(this);
     return this._executer.run(this._sorter.envFlatSuites);
+  }
+  _success() {
+    return this._endRunner();
+  }
+  _fail(e) {
+    return this._endRunner(e || new Error('Empty rejection'));
   }
   _endRunner(runnerError) {
     return Promise.resolve()
