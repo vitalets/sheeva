@@ -5,7 +5,7 @@
  */
 
 const Session = require('./session');
-const Base = require('./base');
+const Base = require('../base');
 
 module.exports = class SessionManager extends Base {
   /**

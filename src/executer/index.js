@@ -6,7 +6,7 @@
  * @type {Executer}
  */
 
-const Base = require('./base');
+const Base = require('../base');
 const Promised = require('../utils/promised');
 const QueuePicker = require('./queue-picker');
 const Slot = require('./slot');

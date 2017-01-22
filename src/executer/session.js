@@ -3,7 +3,7 @@
  * Runs queues of tests.
  */
 
-const Base = require('./base');
+const Base = require('../base');
 const Caller = require('./caller');
 
 const {

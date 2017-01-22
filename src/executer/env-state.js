@@ -4,7 +4,7 @@
  * @type {EnvState}
  */
 
-const Base = require('./base');
+const Base = require('../base');
 const {ENV_START, ENV_END} = require('../events');
 
 const STATUS = {
