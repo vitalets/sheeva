@@ -4,7 +4,7 @@
 
 const utils = require('./utils');
 const Base = require('./base');
-const config = require('./config');
+const Configurator = require('./configurator');
 const Reader = require('./reader');
 const Filter = require('./filter');
 const Sorter = require('./sorter');
@@ -16,13 +16,12 @@ module.exports = class Sheeva extends Base {
   /**
    * Constructor
    *
-   * @param {Config} inConfig
+   * @param {Config} config
    */
-  constructor(inConfig) {
+  constructor(config) {
     super();
-    this._inConfig = inConfig;
-    this._config = null;
-    this._envs = null;
+    this._configurator = new Configurator(config);
+    this._config = this._configurator.config;
     this._reader = null;
     this._filter = null;
     this._sorter = null;
@@ -43,32 +42,16 @@ module.exports = class Sheeva extends Base {
     return this._reporter && this._reporter.get(index);
   }
   _init() {
-    this._createConfig();
-    this._createEnvs();
-    this._createReporter();
-  }
-  _createConfig() {
-    this._config = config.parse(this._inConfig);
-  }
-  _createEnvs() {
-    this._envs = config.createEnvs(this._config);
-  }
-  _createReporter() {
-    this._reporter = new Reporter({
-      reporters: this._config.reporters,
-      envs: this._envs,
-      timings: this._config.timings,
-    });
+    this._configurator.run();
+    this._reporter = new Reporter(this._config);
   }
   _readFiles() {
-    this._reader = new Reader({
-      envs: this._envs,
-    });
-    return this._reader.read(this._config.files);
+    this._reader = new Reader().setBaseProps(this);
+    return this._reader.read();
   }
   _applyFilter() {
     this._filter = new Filter().setBaseProps(this);
-    this._filter.run(this._reader.envData);
+    return this._filter.run(this._reader.envData);
   }
   _applySort() {
     this._sorter = new Sorter(this._filter.envData).run();
@@ -100,19 +83,14 @@ module.exports = class Sheeva extends Base {
   }
   _emitStart() {
     const data = {
-      envs: this._envs,
-      envLabels: this._getEnvLabels(),
+      config: this._config,
       files: this._reader.files,
       onlyFiles: this._filter.onlyFiles,
-      config: this._config,
     };
     this._emit(RUNNER_START, data);
   }
   _emitEnd(error) {
     this._emit(RUNNER_END, {error});
-  }
-  _getEnvLabels() {
-    return new Map(this._envs.map(env => [env, this._config.createEnvLabel(env)]));
   }
 };
 

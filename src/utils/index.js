@@ -48,3 +48,13 @@ exports.assertFn = function(value, msg) {
 exports.thenCall = function(fn) {
   return Promise.resolve().then(fn);
 };
+
+/**
+ * Converts single value to array if it's not array
+ *
+ * @param {*} value
+ * @returns {Array}
+ */
+exports.toArray = function(value) {
+  return Array.isArray(value) ? value : [value];
+};

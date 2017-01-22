@@ -5,21 +5,19 @@
 const path = require('path');
 const glob = require('glob');
 const utils = require('../utils');
+const Base = require('../base');
 const creator = require('./creator');
 const Collector = require('./collector');
 const Appender = require('./appender');
 const Annotation = require('./annotation');
 const Api = require('./api');
 
-module.exports = class Reader {
+module.exports = class Reader extends Base {
   /**
    * Constructor
-   *
-   * @param {Object} options
-   * @param {Array} options.envs
    */
-  constructor(options) {
-    this._envs = options.envs;
+  constructor() {
+    super();
     this._files = [];
     this._fnSuites = new Map();
     this._context = global;
@@ -34,15 +32,15 @@ module.exports = class Reader {
   get envData() {
     return this._collector.envData;
   }
-  read(patterns) {
-    this._expandPatterns(patterns);
+  read() {
+    this._expandPatterns();
     this._createRootSuites();
     this._injectApi();
     this._readFiles();
     this._cleanupApi();
   }
-  _expandPatterns(patterns) {
-    this._files = patterns.reduce((res, pattern) => {
+  _expandPatterns() {
+    this._files = this._config.files.reduce((res, pattern) => {
       const files = expandPattern(pattern);
       return res.concat(files);
     }, []);
@@ -50,7 +48,7 @@ module.exports = class Reader {
   _createRootSuites() {
     this._files.forEach(file => {
       const fn = () => readFile(file);
-      this._envs.forEach(env => {
+      this._config.envs.forEach(env => {
         const suite = creator.createSuite({name: file, env});
         utils.pushToMap(this._fnSuites, fn, suite);
         this._collector.addRootSuite(suite);

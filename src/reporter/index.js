@@ -12,16 +12,13 @@ module.exports = class TopReporter {
   /**
    * Constructor
    *
-   * @param {Object} options
-   * @param {Array} options.reporters
-   * @param {Array} options.envs
-   * @param {String|Boolean} options.timings
+   * @param {Config} config
    */
-  constructor(options) {
-    this._reporters = options.reporters.map(createReporter).filter(Boolean);
-    this._timings = options.timings;
+  constructor(config) {
+    this._reporters = config.reporters.map(createReporter).filter(Boolean);
+    this._timings = config.timings;
     this._envCollectors = new Map();
-    options.envs.forEach(env => {
+    config.envs.forEach(env => {
       this._envCollectors.set(env, {
         suites: new SuitesCollector(this),
         time: new TimeCollector(),
