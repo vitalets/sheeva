@@ -6,7 +6,7 @@
  * @type {Queue}
  */
 
-const Promised = require('../utils/promised');
+const utils = require('../utils');
 
 module.exports = class Queue {
   /**
@@ -25,7 +25,7 @@ module.exports = class Queue {
     this.currentTest = null;
     this.nextTest = this.tests[0];
     this.suiteStack = [];
-    this.promised = new Promised();
+    this.promised = new utils.Promised();
   }
 
   getRemainingCount() {

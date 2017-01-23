@@ -58,3 +58,16 @@ exports.thenCall = function(fn) {
 exports.toArray = function(value) {
   return Array.isArray(value) ? value : [value];
 };
+
+/**
+ * Class that store resolve/reject methods and can be fulfilled later
+ */
+exports.Promised = class {
+  call(fn) {
+    return new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+      fn();
+    });
+  }
+};

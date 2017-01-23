@@ -6,8 +6,8 @@
  * @type {Executer}
  */
 
+const utils = require('../utils');
 const Base = require('../base');
-const Promised = require('../utils/promised');
 const QueuePicker = require('./queue-picker');
 const Slot = require('./slot');
 const EnvState = require('./env-state');
@@ -23,7 +23,7 @@ module.exports = class Executer extends Base {
     this._state = new Map();
     this._queuePicker = null;
     this._sessionManager = null;
-    this._promised = new Promised();
+    this._promised = new utils.Promised();
   }
 
   /**
