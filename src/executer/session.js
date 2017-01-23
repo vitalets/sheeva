@@ -67,7 +67,7 @@ module.exports = class Session extends Base {
     this.emit(SESSION_START);
     this._status = STATUS.STARTING;
     return Promise.resolve()
-      .then(() => this._config.startSession(this._env, this))
+      .then(() => this._config.startSession(this))
       .then(() => {
         this._status = STATUS.STARTED;
         this.emit(SESSION_STARTED);

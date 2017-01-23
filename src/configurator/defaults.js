@@ -85,11 +85,6 @@ module.exports = {
          */
         id: 'default-env',
         /**
-         * Priority defines in with order envs will be executed.
-         * Envs with equal priority will be executed simultaneously sharing the concurrency limit
-         */
-        // priority: <number>
-        /**
          * Env can have own concurrency limit.
          */
         // concurrency: <number>
@@ -111,11 +106,10 @@ module.exports = {
    * Attach any data to session.
    * For Webdriver tests it is usually a `driver` instance.
    *
-   * @param {Object} env
    * @param {Session} session
    * @returns {Promise}
    */
-  startSession: function (env, session) { },
+  startSession: function (session) { },
 
   /**
    * Cleanup session data.

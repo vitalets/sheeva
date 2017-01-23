@@ -24,7 +24,7 @@ module.exports = {
       //{id: 'tests-async4', delay: 100},
     ];
   },
-  startSession: function (env, session) {
+  startSession: function (session) {
 
   },
   callTestHookFn: function ({fn, session, context, hookType, env}) {
