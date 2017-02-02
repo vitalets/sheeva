@@ -18,16 +18,6 @@ exports.pushToMap = function (map, key, item) {
 };
 
 /**
- * Maps Map ala array .map()
- *
- * @param {Map} map
- * @param {Function} fn
- */
-exports.mapMap = function (map, fn) {
-  map.forEach((value, key) => map.set(key, fn(value, key)));
-};
-
-/**
  * Asserts that value is function
  *
  * @param {*} value
@@ -55,7 +45,7 @@ exports.thenCall = function(fn) {
  * @param {*} value
  * @returns {Array}
  */
-exports.toArray = function(value) {
+exports.ensureArray = function(value) {
   return Array.isArray(value) ? value : [value];
 };
 

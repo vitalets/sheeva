@@ -8,8 +8,8 @@ module.exports = {
   concurrency: 5,
   files: './test/specs/*.test.js',
   //files: './test/specs/only.test.js',
-  //splitSuites: false,
-  splitSuites: true,
+  splitSuites: false,
+  //splitSuites: true,
   reporters: require('sheeva-reporter-progress'),
   //reporters: require('./debug-reporter'),
   createEnvs: function () {

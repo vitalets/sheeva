@@ -6,7 +6,7 @@
  * @type {Queue}
  */
 
-const utils = require('../utils');
+const utils = require('../../utils');
 
 module.exports = class Queue {
   /**
@@ -15,12 +15,11 @@ module.exports = class Queue {
    * @param {Array} tests
    */
   constructor(tests) {
-    if (!tests || !tests.length) {
-      throw new Error('Queue should e created on non-empty tests array');
-    }
-    // todo: make private fields
+    // todo: use _
+    assertTests(tests);
     this.tests = tests;
     this.suite = tests[0].parents[0];
+    this.isRunning = false;
     this.currentIndex = -1;
     this.currentTest = null;
     this.nextTest = this.tests[0];
@@ -28,8 +27,14 @@ module.exports = class Queue {
     this.promised = new utils.Promised();
   }
 
-  getRemainingCount() {
-    return this.tests.length - this.currentIndex - 1;
+  /**
+   * Remaining tests count depends on if queue is running or not, because queue runs hooks considering next test,
+   * and if this test will be splitted we will got error.
+   *
+   * @returns {Number}
+   */
+  getRemainingTestsCount() {
+    return this.isRunning ? this.tests.length - this.currentIndex - 2 : this.tests.length;
   }
 
   /**
@@ -40,6 +45,7 @@ module.exports = class Queue {
    */
   run(caller) {
     return this.promised.call(() => {
+      this.isRunning = true;
       this.caller = caller;
       this.next()
         .catch(e => this.promised.reject(e));
@@ -55,7 +61,10 @@ module.exports = class Queue {
       .then(() => {
         if (this.currentTest) {
           return this.caller.callTest(this.suiteStack, this.currentTest)
-            .then(() => this.next(), () => this.handleHookError())
+            .then(
+              () => this.next(),
+              () => this.handleHookError()
+            )
         } else {
           this.promised.resolve();
         }
@@ -176,3 +185,9 @@ module.exports = class Queue {
     return this.currentTest.parent;
   }
 };
+
+function assertTests(tests) {
+  if (!tests || !tests.length) {
+    throw new Error('Queue should be created on non-empty tests array');
+  }
+}

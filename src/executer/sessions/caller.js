@@ -9,7 +9,7 @@ const {
   HOOK_END,
   TEST_START,
   TEST_END,
-} = require('../events');
+} = require('../../events');
 
 module.exports = class Caller {
   /**
@@ -158,7 +158,7 @@ module.exports = class Caller {
 
   _callFn(params) {
     return Promise.resolve()
-      .then(() => this._session.call(params));
+      .then(() => this._session.callTestHookFn(params));
   }
 
   /**

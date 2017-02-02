@@ -1,7 +1,5 @@
 /**
  * Creates config
- *
- * @typedef {Object} Config
  */
 
 const utils = require('../utils');
@@ -37,7 +35,7 @@ module.exports = class Configurator {
   }
 
   _ensurePropTypes() {
-    this._config.files = utils.toArray(this._config.files);
-    this._config.reporters = utils.toArray(this._config.reporters);
+    this._config.files = utils.ensureArray(this._config.files);
+    this._config.reporters = utils.ensureArray(this._config.reporters);
   }
 };
