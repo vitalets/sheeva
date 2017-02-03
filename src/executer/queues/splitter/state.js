@@ -18,11 +18,8 @@ module.exports = class State {
    * @param {Array<Env>} envs
    * @returns {Set}
    */
-  getSplittableEnvs(envs) {
-    const result = envs
-      .filter(env => this._canSplit(env))
-      .map(env => [env, env]);
-
+  filterSplittableEnvs(envs) {
+    const result = envs.filter(env => this._canSplit(env));
     return new Set(result);
   }
 

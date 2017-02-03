@@ -53,7 +53,7 @@ function createConfig(options) {
   return Object.assign({
     concurrency: 1,
     reporters: require('./log-reporter'),
-    splitSuites: false,
+    splitFiles: false,
     createEnvs: function () {
       return [{id: 'env1'}];
     },

@@ -25,6 +25,10 @@ module.exports = class Slot extends Base {
     return this._currentQueue;
   }
 
+  get env() {
+    return this._currentQueue && this._currentQueue.suite.env;
+  }
+
   run(queue) {
     this._currentQueue = queue;
     return Promise.resolve()
@@ -43,7 +47,8 @@ module.exports = class Slot extends Base {
   }
 
   _reCreateSession() {
-    return this.deleteSession()
+    return Promise.resolve()
+      .then(() => this.deleteSession())
       .then(() => this._createSession());
   }
 
@@ -53,14 +58,10 @@ module.exports = class Slot extends Base {
   }
 
   _needNewSession() {
-    return !this._currentSession || this._config.newSessionPerFile || !this._isSameEnv();
+    return !this._currentSession || this._config.newSessionPerFile || !this._currentSession.canRun(this._currentQueue);
   }
 
   _runQueue() {
     return this._currentSession.run(this._currentQueue);
-  }
-
-  _isSameEnv() {
-    return this._currentQueue.suite.env === this._currentSession.env;
   }
 };

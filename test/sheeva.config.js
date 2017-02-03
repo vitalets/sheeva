@@ -8,8 +8,7 @@ module.exports = {
   concurrency: 5,
   files: './test/specs/*.test.js',
   //files: './test/specs/only.test.js',
-  splitSuites: false,
-  //splitSuites: true,
+  splitFiles: true,
   reporters: require('sheeva-reporter-progress'),
   //reporters: require('./debug-reporter'),
   createEnvs: function () {
@@ -41,9 +40,6 @@ module.exports = {
     };
     return fn(run);
   },
-  // just for debug:
-  // this._options.config._main && console.log(123);
-  _main: true,
 };
 
 function callSync({fn, session, context}) {

@@ -1,7 +1,11 @@
-describe('split suites', () => {
+describe('split files', () => {
 
-  it('should split suites on 2 parallel sessions with needed hooks', run => {
-    const config = {concurrency: 2, splitSuites: true};
+  it('should split suite on 2 parallel sessions', run => {
+    const config = {
+      concurrency: 2,
+      splitFiles: true
+    };
+    const include = ['SESSION', 'SUITE', 'HOOK_END', 'TEST_END'];
     const result = run([`
       describe('suite 1', () => {
         before(noop);
@@ -12,7 +16,7 @@ describe('split suites', () => {
         it('test 2', noop);
         it('test 3', noop);
       });
-      `], {config});
+    `], {config, include});
 
     return expectResolve(result, {
         env1: {
@@ -50,31 +54,11 @@ describe('split suites', () => {
     )
   });
 
-  it('should not split suites if disabled in config', run => {
-    const config = {concurrency: 2, splitSuites: false};
-    const result = run([`
-      describe('suite 1', () => {
-        it('test 1', noop);
-        it('test 2', noop);
-        it('test 3', noop);
-      });
-      `], {config});
-
-    return expectResolve(result, [
-      'SESSION_START 1',
-      'SUITE_START root',
-      'SUITE_START suite 1',
-      'TEST_END test 1',
-      'TEST_END test 2',
-      'TEST_END test 3',
-      'SUITE_END suite 1',
-      'SUITE_END root',
-      'SESSION_END 1',
-    ])
-  });
-
-  it('should split suites on 3 parallel sessions', run => {
-    const config = {concurrency: 3, splitSuites: true};
+  it('should split suite on 3 parallel sessions', run => {
+    const config = {
+      concurrency: 3,
+      splitFiles: true
+    };
     const result = run([`
       describe('suite 1', () => {
         it('test 1', noop);
@@ -84,10 +68,17 @@ describe('split suites', () => {
         it('test 5', noop);
         it('test 6', noop);
       });
-      `], {config, include: ['TEST_END']});
+      `], {config});
 
-      // todo: something goes wrong because split not equal
-      return expectResolve(result, {
+    /*
+     Split is not equal, because following steps:
+     - picked queue with 6 test(s)
+     - splitted 3 of 6 test(s)
+     - splitted 1 of 3 test(s)
+
+     Maybe this should be improved in future.
+    */
+    return expectResolve(result, {
         env1: {
           session0: [
             'TEST_END test 1',

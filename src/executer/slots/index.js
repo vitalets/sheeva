@@ -57,9 +57,14 @@ module.exports = class Slots extends Base {
    */
   getWithQueues() {
     return this._slots.toArray()
-      .filter(slot => slot.session && slot.session.queue);
+      .filter(slot => slot.queue)
   }
 
+  /**
+   * Get slots with sessions of specified env
+   *
+   * @returns {Array}
+   */
   getForEnv(env) {
     return this._slots.toArray()
       .filter(slot => slot.session && slot.session.env === env);

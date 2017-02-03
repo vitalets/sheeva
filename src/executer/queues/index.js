@@ -96,7 +96,7 @@ module.exports = class Queues extends Base {
 
   _getSplitterOptions() {
     return {
-      isSessionStarted: this._session && this._session.isStarted
+      isSessionStarted: Boolean(this._session && this._session.isStarted)
     };
   }
 };

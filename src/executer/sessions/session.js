@@ -34,7 +34,6 @@ module.exports = class Session extends Base {
     this._env = env;
     this._status = STATUS.CREATED;
     this._caller = new Caller(this);
-    this._queue = null;
   }
 
   get env() {
@@ -43,10 +42,6 @@ module.exports = class Session extends Base {
 
   get index() {
     return this._index;
-  }
-
-  get queue() {
-    return this._queue;
   }
 
   get isStarted() {
@@ -60,12 +55,12 @@ module.exports = class Session extends Base {
       .then(() => this._started());
   }
 
+  canRun(queue) {
+    return this._env === queue.suite.env;
+  }
+
   run(queue) {
-    this._queue = queue;
-    return Promise.resolve()
-      //.then(() => this._status === STATUS.STARTED ? null : this._start())
-      .then(() => queue.run(this._caller))
-      .then(() => this._queue = null)
+    return queue.run(this._caller);
   }
 
   end() {

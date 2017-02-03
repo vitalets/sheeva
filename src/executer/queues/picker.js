@@ -19,6 +19,7 @@ module.exports = class Picker {
     for (let env of envs) {
       const queues = this._envQueues.get(env);
       if (queues.length) {
+        // console.log(`${env.id}: picked queue with ${queues[0].tests.length} test(s)`);
         return queues.shift();
       }
     }

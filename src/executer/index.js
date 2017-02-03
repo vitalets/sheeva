@@ -43,14 +43,10 @@ module.exports = class Executer extends Base {
   }
 
   _init() {
-    this._initQueues();
     this._initSessions();
     this._initSlots();
+    this._initQueues();
     this._initEmitter();
-  }
-
-  _initQueues() {
-    this._queues = new Queues(this._slots, this._envFlatSuites).setBaseProps(this);
   }
 
   _initSessions() {
@@ -67,6 +63,10 @@ module.exports = class Executer extends Base {
       onEmpty: () => this._end(),
     };
     this._slots = new Slots(this._sessions, handlers).setBaseProps(this);
+  }
+
+  _initQueues() {
+    this._queues = new Queues(this._slots, this._envFlatSuites).setBaseProps(this);
   }
 
   _initEmitter() {

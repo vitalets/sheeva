@@ -42,13 +42,17 @@ module.exports = class Splitter {
   }
 
   _setSplittableEnvs(envs) {
-    this._splittableEnvs = this._state.getSplittableEnvs(envs);
+    this._splittableEnvs = this._state.filterSplittableEnvs(envs);
   }
 
   _setSplittableItems() {
     this._splittableItems = this._slots.getWithQueues()
-      .filter(slot => this._splittableEnvs.has(slot.session.env))
-      .filter(slot => slot.session.queue.getRemainingTestsCount() >= MIN_REMAINING_TESTS_COUNT)
+      .filter(slot => {
+        return this._splittableEnvs.has(slot.env)
+      })
+      .filter(slot => {
+        return slot.queue.getRemainingTestsCount() >= MIN_REMAINING_TESTS_COUNT;
+      })
       .map(slot => createSplittableItem(slot))
   }
 
@@ -69,9 +73,9 @@ module.exports = class Splitter {
 
   _trySplitItem(item) {
     const queue = item.queue;
-    const splitCount = Math.floor(queue.getRemainingTestsCount() / 2);
+    const splitCount = Math.floor(item.remainingTestsCount / 2);
     const fromIndex = queue.tests.length - splitCount;
-    //console.log(`splitted new queue from ${queueToSplit.suite.name} with ${splitCount} test(s)`);
+    // console.log(`${item.env.id}: splitted ${splitCount} of ${item.remainingTestsCount} test(s) in ${queue.suite.name}`);
     return queue.split(fromIndex);
   }
 };
@@ -79,7 +83,7 @@ module.exports = class Splitter {
 function createSplittableItem(slot) {
   return {
     queue: slot.queue,
-    env: slot.session.env,
+    env: slot.env,
     remainingTestsCount: slot.queue.getRemainingTestsCount(),
     // as first approach use getRemainingTestsCount as remaining time
     remainingTime: slot.queue.getRemainingTestsCount(),
