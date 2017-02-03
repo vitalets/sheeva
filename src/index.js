@@ -54,7 +54,8 @@ module.exports = class Sheeva extends Base {
     return this._filter.run(this._reader.envData);
   }
   _applySort() {
-    this._sorter = new Sorter(this._filter.envData).run();
+    this._sorter = new Sorter(this._filter.envData).setBaseProps(this);
+    return this._sorter.run();
   }
   _startRunner() {
     this._emitStart();

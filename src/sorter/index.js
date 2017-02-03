@@ -10,10 +10,12 @@
  * @property {Number} baCount max number of before / after hooks
  */
 
+const Base = require('../base');
 const flattenSort = require('./flatten-sort');
 
-module.exports = class Sorter {
+module.exports = class Sorter extends Base {
   constructor(envData) {
+    super();
     this._envData = envData;
     this._envFlatSuites = new Map();
   }
