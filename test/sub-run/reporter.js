@@ -2,7 +2,7 @@
  * Reporter that just put events into log
  */
 
-const events = require('../src/events');
+const events = require('../../src/events');
 
 module.exports = class LogReporter {
   constructor() {
@@ -53,7 +53,6 @@ module.exports = class LogReporter {
         this._add(data, `${event} ${data.env.id}`);
         break;
       }
-
       case events.SESSION_START: {
         this._add(data, `${event} ${data.session.index}`);
         break;
@@ -63,6 +62,10 @@ module.exports = class LogReporter {
         break;
       }
       case events.SUITE_START: {
+        this._add(data, `${event} ${suiteName}`);
+        break;
+      }
+      case events.SUITE_SPLIT: {
         this._add(data, `${event} ${suiteName}`);
         break;
       }

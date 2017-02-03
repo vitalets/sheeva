@@ -99,4 +99,8 @@ module.exports = class Queues extends Base {
       isSessionStarted: Boolean(this._session && this._session.isStarted)
     };
   }
+
+  _onBaseProps() {
+    this._splitter.setBaseProps(this);
+  }
 };

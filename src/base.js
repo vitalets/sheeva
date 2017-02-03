@@ -14,6 +14,7 @@ module.exports = class Base {
     const {config, reporter} = parent.getBaseProps();
     this._config = config;
     this._reporter = reporter;
+    this._onBaseProps();
     return this;
   }
 
@@ -22,6 +23,10 @@ module.exports = class Base {
       config: this._config,
       reporter: this._reporter,
     };
+  }
+
+  _onBaseProps() {
+    // this could be set to init sub classes with base props
   }
 
   _emit(event, data = {}) {

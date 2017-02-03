@@ -2,7 +2,7 @@
  * Main selftest runner
  */
 
-require('./sub-run');
+require('../sub-run');
 
 module.exports = {
   concurrency: 5,
@@ -36,7 +36,7 @@ module.exports = {
     const run = function (code, options = {}) {
       options.config = Object.assign({}, baseConfig, options.config);
       const finalOptions = Object.assign({session}, context, options);
-      return global.runCode(code, finalOptions);
+      return global.run(code, finalOptions);
     };
     return fn(run);
   },

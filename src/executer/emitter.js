@@ -3,7 +3,6 @@
  */
 
 const Base = require('../base');
-
 const {ENV_START, ENV_END} = require('../events');
 
 module.exports = class Emitter extends Base {
