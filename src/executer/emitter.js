@@ -10,11 +10,12 @@ module.exports = class Emitter extends Base {
   /**
    * Constructor
    */
-  constructor(slots, queues) {
+  constructor(slots, queues, envFlatSuites) {
     super();
     this._startedEnvs = new Set();
     this._slots = slots;
     this._queues = queues;
+    this._envFlatSuites = envFlatSuites;
   }
 
   checkEnvStart(env) {
@@ -42,7 +43,6 @@ module.exports = class Emitter extends Base {
   }
 
   _calcTestsCount(env) {
-    const queues = this._queues.getQueuesForEnv(env);
-    return queues.reduce((res, queue) => res + queue.tests.length, 0);
+    return this._envFlatSuites.get(env).reduce((res, flatSuite) => res + flatSuite.tests.length, 0);
   }
 };

@@ -70,7 +70,7 @@ module.exports = class Executer extends Base {
   }
 
   _initEmitter() {
-    this._emitter = new Emitter(this._slots, this._queues).setBaseProps(this);
+    this._emitter = new Emitter(this._slots, this._queues, this._envFlatSuites).setBaseProps(this);
   }
 
   _handleFreeSlot(slot) {
