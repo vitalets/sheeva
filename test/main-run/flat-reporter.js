@@ -2,7 +2,7 @@
  * Reporter that just put events into log
  */
 
-const events = require('../src/events');
+const events = require('../../src/events');
 
 module.exports = class DebugReporter {
   handleEvent(event, data) {
@@ -40,6 +40,10 @@ module.exports = class DebugReporter {
         break;
       }
       case events.SUITE_END: {
+        log(`${event} ${session} ${suiteName}${errMessage}`);
+        break;
+      }
+      case events.SUITE_SPLIT: {
         log(`${event} ${session} ${suiteName}${errMessage}`);
         break;
       }

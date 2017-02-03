@@ -10,9 +10,9 @@
  *
  */
 
-const Base = require('../../../base');
+const Base = require('../../base');
 const State = require('./state');
-const {SUITE_SPLIT} = require('../../../events');
+const {SUITE_SPLIT} = require('../../events');
 const MIN_REMAINING_TESTS_COUNT = 2;
 
 module.exports = class Splitter extends Base {
@@ -36,6 +36,9 @@ module.exports = class Splitter extends Base {
    * @param {Boolean} options.isSessionStarted
    */
   trySplit(envs, options = {}) {
+    // if (envs.some(env => env.id !== 'env1')) {
+    //   console.log(`trying split ${envs.length} envs with isSessionStarted = ${options.isSessionStarted}`);
+    // }
     this._state.forStartedSession = options.isSessionStarted;
     this._setSplittableEnvs(envs);
     this._setSplittableItems();

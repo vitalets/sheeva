@@ -11,7 +11,7 @@
 
 const Base = require('../../base');
 const Picker = require('./picker');
-const Splitter = require('./splitter');
+const Splitter = require('../splitter');
 
 module.exports = class Queues extends Base {
   /**

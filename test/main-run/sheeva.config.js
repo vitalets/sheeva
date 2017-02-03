@@ -8,9 +8,10 @@ module.exports = {
   concurrency: 5,
   files: './test/specs/*.test.js',
   //files: './test/specs/only.test.js',
+  newSessionPerFile: false,
   splitFiles: true,
   reporters: require('sheeva-reporter-progress'),
-  //reporters: require('./debug-reporter'),
+  //reporters: require('./flat-reporter'),
   createEnvs: function () {
     return [
       //{id: 'tests-async0', delay: 50},
