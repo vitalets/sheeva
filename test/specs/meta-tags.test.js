@@ -1,4 +1,4 @@
-describe('tags', () => {
+describe('meta tags', () => {
 
   it('should run tagged test', run => {
     const config = {
