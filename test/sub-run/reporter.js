@@ -66,7 +66,7 @@ module.exports = class LogReporter {
         break;
       }
       case events.SUITE_SPLIT: {
-        this._add(data, `${event} ${suiteName}`);
+        this._add(data, `${event} ${suiteName} ${data.splittedTestsCount} of ${data.remainingTestsCount}`);
         break;
       }
       case events.SUITE_END: {
