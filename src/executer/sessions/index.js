@@ -4,10 +4,9 @@
  * @type {Sessions}
  */
 
-const Base = require('../../base');
 const Session = require('./session');
 
-module.exports = class Sessions extends Base {
+module.exports = class Sessions {
   /**
    * Constructor
    *
@@ -16,14 +15,13 @@ module.exports = class Sessions extends Base {
    * @param {Function} handlers.onSessionEnd
    */
   constructor(handlers) {
-    super();
     this._sessions = [];
     this._handlers = handlers;
   }
 
   createSession(env) {
     const index = this._sessions.length;
-    const session = new Session(index, env).setBaseProps(this);
+    const session = new Session(index, env);
     this._sessions.push(session);
     return session;
   }

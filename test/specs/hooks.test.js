@@ -4,7 +4,7 @@ describe('hooks', () => {
     context.include = ['SUITE', 'HOOK_END', 'TEST_END'];
   });
 
-  it('should run it and all hooks without describe', run => {
+  it('should run all hooks without describe', run => {
     const report = run(`
       before(noop);
       before(noop);
@@ -42,7 +42,7 @@ describe('hooks', () => {
     ]);
   });
 
-  it('should run it and all hooks within describe', run => {
+  it('should run all hooks with describe', run => {
     const report = run(`
       before(noop);
       beforeEach(noop);

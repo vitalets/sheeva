@@ -2,7 +2,8 @@
  * Exports run() function passed to all tests
  */
 
-const Sheeva = require('../../src');
+const path = require('path');
+
 const baseConfig = require('./sheeva.config');
 const TempFiles = require('./tempfiles');
 
@@ -20,6 +21,7 @@ const TempFiles = require('./tempfiles');
 module.exports = function (code, options) {
   const tempFiles = new TempFiles(code, options.session);
   const config = Object.assign({}, baseConfig, options.config, {files: tempFiles.files});
+  const Sheeva = requireSheeva();
   const sheeva = new Sheeva(config);
   return sheeva.run()
     .then(() => sheeva.getReporter(0).getResult(options))
@@ -41,4 +43,21 @@ function addReportToError(e, sheeva, options) {
   } catch (err) {
     // reporter may not exist
   }
+}
+
+/**
+ * Clear src cache to have fresh instance of Sheeva for testing
+ */
+function requireSheeva() {
+  clearSrcCache();
+  return require('../../src');
+}
+
+function clearSrcCache() {
+  Object.keys(require.cache).forEach(key => {
+    const relpath = path.relative('.', key);
+    if (relpath.startsWith('src')) {
+      delete require.cache[key];
+    }
+  });
 }

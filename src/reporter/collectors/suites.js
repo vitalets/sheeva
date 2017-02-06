@@ -28,16 +28,16 @@ module.exports = class SuitesCollector {
   _emit(event, data) {
     this._reporter.handleEvent(event, data);
   }
-  _handleSessionSuiteStart(data) {
-    this._suiteCounter.handleStartEvent(data.suite);
-    if (this._suiteCounter.isFirstForId) {
-      this._emit(events.SUITE_START, data);
-    }
-  }
-  _handleSessionSuiteEnd(data) {
-    this._suiteCounter.handleEndEvent(data.suite);
-    if (this._suiteCounter.isLastForId) {
-      this._emit(events.SUITE_END, data);
-    }
-  }
+  // _handleSessionSuiteStart(data) {
+  //   this._suiteCounter.handleStartEvent(data.suite);
+  //   if (this._suiteCounter.isFirstForId) {
+  //     this._emit(events.SUITE_START, data);
+  //   }
+  // }
+  // _handleSessionSuiteEnd(data) {
+  //   this._suiteCounter.handleEndEvent(data.suite);
+  //   if (this._suiteCounter.isLastForId) {
+  //     this._emit(events.SUITE_END, data);
+  //   }
+  // }
 };

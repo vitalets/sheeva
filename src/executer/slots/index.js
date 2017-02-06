@@ -3,10 +3,10 @@
  */
 
 const ExtraSet = require('../../utils/extra-set');
-const Base = require('../../base');
+const {config} = require('../../configurator');
 const Slot = require('./slot');
 
-module.exports = class Slots extends Base {
+module.exports = class Slots {
   /**
    * Constructor
    *
@@ -16,7 +16,6 @@ module.exports = class Slots extends Base {
    * @param {Function} handlers.onEmpty
    */
   constructor(sessions, handlers) {
-    super();
     this._sessions = sessions;
     this._handlers = handlers;
     this._slots = new ExtraSet();
@@ -71,11 +70,11 @@ module.exports = class Slots extends Base {
   }
 
   _hasFree() {
-    return !this._config.concurrency || this._slots.size < this._config.concurrency;
+    return !config.concurrency || this._slots.size < config.concurrency;
   }
 
   _add() {
-    const slot = new Slot(this._sessions).setBaseProps(this);
+    const slot = new Slot(this._sessions);
     this._slots.add(slot);
     return slot;
   }

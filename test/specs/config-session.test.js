@@ -74,10 +74,10 @@ describe('config startSession / endSession hooks', () => {
         endSession: () => b++,
       };
       const result = run([`
-      describe('suite 1', () => {
-        it('test 1', noop);
-        it('test 1', noop);
-      });
+        describe('suite 1', () => {
+          it('test 1', noop);
+          it('test 1', noop);
+        });
       `], {config});
 
       return expectResolve(result, {
@@ -110,10 +110,10 @@ describe('config startSession / endSession hooks', () => {
         endSession: () => b++,
       };
       const result = run(`
-      describe('suite 1', () => {
-        it('test 1', noop);
-      });
-    `, {config});
+        describe('suite 1', () => {
+          it('test 1', noop);
+        });
+      `, {config});
 
       return expectReject(result, {
         message: 'err',

@@ -2,6 +2,9 @@
  * Calls hooks and test fn
  */
 
+const {config} = require('../../configurator');
+const reporter = require('../../reporter');
+
 const {
   SESSION_SUITE_START,
   SESSION_SUITE_END,
@@ -157,8 +160,10 @@ module.exports = class Caller {
   }
 
   _callFn(params) {
+    params.session = this._session;
+    params.env = this._session.env;
     return Promise.resolve()
-      .then(() => this._session.callTestHookFn(params));
+      .then(() => config.callTestHookFn(params));
   }
 
   /**
@@ -189,6 +194,8 @@ module.exports = class Caller {
   }
 
   _emit(event, data) {
-    this._session.emit(event, data);
+    data.session = this._session;
+    data.env = this._session.env;
+    reporter.handleEvent(event, data);
   }
 };

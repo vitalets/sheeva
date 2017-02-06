@@ -5,14 +5,13 @@
  * - tags
  */
 
-const Base = require('../base');
+const {config} = require('../configurator');
 const Only = require('./only');
 const Skip = require('./skip');
 const Tags = require('./tags');
 
-module.exports = class Filter extends Base {
+module.exports = class Filter {
   constructor() {
-    super();
     this._envData = null;
     this._only = null;
     this._skip = null;
@@ -36,7 +35,7 @@ module.exports = class Filter extends Base {
   _init() {
     this._only = new Only(this._envData);
     this._skip = new Skip(this._envData);
-    this._tags = new Tags(this._envData, this._config.tags);
+    this._tags = new Tags(this._envData, config.tags);
   }
 
   _filter() {
@@ -50,7 +49,7 @@ module.exports = class Filter extends Base {
 
   _processOnly() {
     this._only.filter();
-    if (this._config.noOnly) {
+    if (config.noOnly) {
       this._only.throwNoOnlyError();
     }
   }

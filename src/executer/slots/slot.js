@@ -2,16 +2,15 @@
  * Slot that can execute sessions serially
  */
 
-const Base = require('../../base');
+const {config} = require('../../configurator');
 
-module.exports = class Slot extends Base {
+module.exports = class Slot {
   /**
    * Constructor
    *
    * @param sessionManager
    */
   constructor(sessionManager) {
-    super();
     this._sessionManager = sessionManager;
     this._currentSession = null;
     this._currentQueue = null;
@@ -58,7 +57,7 @@ module.exports = class Slot extends Base {
   }
 
   _needNewSession() {
-    return !this._currentSession || this._config.newSessionPerFile || !this._currentSession.canRun(this._currentQueue);
+    return !this._currentSession || config.newSessionPerFile || !this._currentSession.canRun(this._currentQueue);
   }
 
   _runQueue() {

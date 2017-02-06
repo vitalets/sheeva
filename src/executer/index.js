@@ -9,18 +9,16 @@
  */
 
 const utils = require('../utils');
-const Base = require('../base');
 const Queues = require('./queues');
 const Sessions = require('./sessions');
 const Slots = require('./slots');
 const Emitter = require('./emitter');
 
-module.exports = class Executer extends Base {
+module.exports = class Executer {
   /**
    * Constructor
    */
   constructor() {
-    super();
     this._envFlatSuites = null;
     this._queues = null;
     this._emitter = null;
@@ -54,7 +52,7 @@ module.exports = class Executer extends Base {
       onSessionStart: session => this._emitter.checkEnvStart(session.env),
       onSessionEnd: session => this._emitter.checkEnvEnd(session.env),
     };
-    this._sessions = new Sessions(handlers).setBaseProps(this);
+    this._sessions = new Sessions(handlers);
   }
 
   _initSlots() {
@@ -62,15 +60,15 @@ module.exports = class Executer extends Base {
       onFreeSlot: slot => this._handleFreeSlot(slot),
       onEmpty: () => this._end(),
     };
-    this._slots = new Slots(this._sessions, handlers).setBaseProps(this);
+    this._slots = new Slots(this._sessions, handlers);
   }
 
   _initQueues() {
-    this._queues = new Queues(this._slots, this._envFlatSuites).setBaseProps(this);
+    this._queues = new Queues(this._slots, this._envFlatSuites);
   }
 
   _initEmitter() {
-    this._emitter = new Emitter(this._slots, this._queues, this._envFlatSuites).setBaseProps(this);
+    this._emitter = new Emitter(this._slots, this._queues, this._envFlatSuites);
   }
 
   _handleFreeSlot(slot) {

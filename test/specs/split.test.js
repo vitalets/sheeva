@@ -1,6 +1,6 @@
 describe('split files', () => {
 
-  it('should split suite on 2 parallel sessions', run => {
+  it('should split suite on 2 parallel sessions (and call needed hooks)', run => {
     const config = {
       concurrency: 2,
       splitFiles: true
@@ -91,6 +91,39 @@ describe('split files', () => {
           ],
           session2: [
             'TEST_END test 3',
+          ]
+        }
+      }
+    )
+  });
+
+  it('should split normally even if tests count less than concurrency', run => {
+    const config = {
+      concurrency: 10,
+      splitFiles: true
+    };
+    const result = run([`
+      describe('suite 1', () => {
+        it('test 1', noop);
+        it('test 2', noop);
+        it('test 3', noop);
+        it('test 4', noop);
+      });
+      `], {config});
+
+    return expectResolve(result, {
+        env1: {
+          session0: [
+            'TEST_END test 1',
+          ],
+          session1: [
+            'TEST_END test 3',
+          ],
+          session2: [
+            'TEST_END test 2',
+          ],
+          session3: [
+            'TEST_END test 4',
           ]
         }
       }

@@ -2,7 +2,7 @@
  * Main selftest runner
  */
 
-require('../sub-run');
+require('./sub-run');
 
 module.exports = {
   concurrency: 5,

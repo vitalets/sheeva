@@ -10,14 +10,13 @@
  *
  */
 
-const Base = require('../../base');
+const reporter = require('../../reporter');
 const State = require('./state');
 const {SUITE_SPLIT} = require('../../events');
 const MIN_REMAINING_TESTS_COUNT = 2;
 
-module.exports = class Splitter extends Base {
+module.exports = class Splitter {
   constructor(slots) {
-    super();
     this._slots = slots;
     this._state = new State();
     this._splittableEnvs = null;
@@ -84,7 +83,7 @@ module.exports = class Splitter extends Base {
   }
 
   _emitSplit(item, splittedQueue) {
-    this._emit(SUITE_SPLIT, {
+    reporter.handleEvent(SUITE_SPLIT, {
       suite: item.queue.suite,
       queue: item.queue,
       remainingTestsCount: item.remainingTestsCount,

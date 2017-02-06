@@ -9,16 +9,15 @@
  *
  */
 
-const Base = require('../../base');
+const {config} = require('../../configurator');
 const Picker = require('./picker');
 const Splitter = require('../splitter');
 
-module.exports = class Queues extends Base {
+module.exports = class Queues {
   /**
    * Constructor
    */
   constructor(slots, envFlatSuites) {
-    super();
     this._slots = slots;
     this._envs = [];
     this._picker = new Picker(envFlatSuites);
@@ -74,7 +73,7 @@ module.exports = class Queues extends Base {
   }
 
   _trySplit(envs) {
-    if (this._config.splitFiles) {
+    if (config.splitFiles) {
       const options = this._getSplitterOptions();
       return this._splitter.trySplit(envs, options);
     }

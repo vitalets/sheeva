@@ -1,10 +1,10 @@
 /**
- * Reporter that just put events into log
+ * Reporter that just logs events to console (for debug)
  */
 
-const events = require('../../src/events');
+const events = require('../src/events');
 
-module.exports = class DebugReporter {
+module.exports = class LogReporter {
   handleEvent(event, data) {
     const env = data.env;
     const session = data.session ? `Session #${data.session.index}` : '';

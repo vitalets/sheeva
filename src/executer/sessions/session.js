@@ -3,7 +3,8 @@
  * Session is located in Slot and runs Queues serially.
  */
 
-const Base = require('../../base');
+const {config} = require('../../configurator');
+const reporter = require('../../reporter');
 const Caller = require('./caller');
 
 const {
@@ -21,7 +22,7 @@ const STATUS = {
   ENDED: 'ended',
 };
 
-module.exports = class Session extends Base {
+module.exports = class Session {
   /**
    * Constructor
    *
@@ -29,7 +30,6 @@ module.exports = class Session extends Base {
    * @param {Object} env
    */
   constructor(index, env) {
-    super();
     this._index = index;
     this._env = env;
     this._status = STATUS.CREATED;
@@ -51,7 +51,7 @@ module.exports = class Session extends Base {
   start() {
     this._starting();
     return Promise.resolve()
-      .then(() => this._config.startSession(this))
+      .then(() => config.startSession(this))
       .then(() => this._started());
   }
 
@@ -70,38 +70,22 @@ module.exports = class Session extends Base {
 
     this._ending();
     return Promise.resolve()
-      .then(() => this._config.endSession(this))
+      .then(() => config.endSession(this))
       .then(() => this._ended());
-  }
-
-  callTestHookFn(params) {
-    params = Object.assign({
-      session: this,
-      env: this._env,
-    }, params);
-    return this._config.callTestHookFn(params);
-  }
-
-  emit(event, data) {
-    data = Object.assign({
-      session: this,
-      env: this._env,
-    }, data);
-    super._emit(event, data);
   }
 
   _starting() {
     if (this._status !== STATUS.CREATED) {
       throw new Error(`Can not start session ${this._index} as it is already in ${this._status} status`);
     }
-    this.emit(SESSION_START);
+    this._emit(SESSION_START);
     this._status = STATUS.STARTING;
   }
 
   _started() {
     if (this._status === STATUS.STARTING) {
       this._status = STATUS.STARTED;
-      this.emit(SESSION_STARTED);
+      this._emit(SESSION_STARTED);
     }
   }
 
@@ -111,11 +95,17 @@ module.exports = class Session extends Base {
 
   _ending() {
     this._status = STATUS.ENDING;
-    this.emit(SESSION_ENDING);
+    this._emit(SESSION_ENDING);
   }
 
   _ended() {
     this._status = STATUS.ENDED;
-    this.emit(SESSION_END);
+    this._emit(SESSION_END);
+  }
+
+  _emit(event, data = {}) {
+    data.session = this;
+    data.env = this._env;
+    reporter.handleEvent(event, data);
   }
 };

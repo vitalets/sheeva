@@ -1,85 +1,88 @@
 /**
- * Proxy events to collector and reporters.
+ * Process all events and proxy to other reporters.
  */
 
-const events = require('../events');
+const {config} = require('../configurator');
 const SuitesCollector = require('./collectors/suites');
 const TimeCollector = require('./collectors/time');
 const ErrorsCollector = require('./collectors/errors');
-const fs = require('fs');
 
-module.exports = class TopReporter {
+class Reporter {
   /**
    * Constructor
-   *
-   * @param {Config} config
    */
-  constructor(config) {
-    this._reporters = config.reporters.map(createReporter).filter(Boolean);
-    this._timings = config.timings;
-    this._envCollectors = new Map();
-    config.envs.forEach(env => {
-      this._envCollectors.set(env, {
-        suites: new SuitesCollector(this),
-        time: new TimeCollector(),
-        errors: new ErrorsCollector(),
-        // envs ?
-      });
-    });
+  constructor() {
+    this._reporters = [];
+    this._collectors = new Map();
+    this._currentEvent = null;
+    this._currentData = null;
   }
+
+  init() {
+    this._initReporters();
+    this._initCollectors();
+  }
+
   get(index) {
     return this._reporters[index];
   }
-  handleEvent(event, data) {
-    data = addTimestamp(data);
-    // todo: maybe use setImmediate/nextTick to do main things first. Check in bench.
-    this._proxyEvent(event, data);
-    this._collectEvent(event, data);
-    if (event === events.RUNNER_END && this._timings) {
-      this._saveTimes();
-    }
+
+  handleEvent(event, data = {}) {
+    this._currentEvent = event;
+    this._currentData = data;
+    this._addTimestamp();
+    this._proxyToReporters();
+    this._proxyToCollectors();
   }
+
   getResult() {
     const result = {
       errors: [],
     };
-    this._envCollectors.forEach(collectors => {
-      result.errors = result.errors.concat(collectors.errors.errors);
+    this._collectors.forEach(envCollectors => {
+      result.errors = result.errors.concat(envCollectors.errors.errors);
     });
     return result;
   }
-  _proxyEvent(event, data) {
-    this._reporters.forEach(reporter => {
-      if (typeof reporter.handleEvent === 'function') {
-        reporter.handleEvent(event, data);
+
+  _initReporters() {
+    this._reporters = config.reporters
+      .filter(Boolean)
+      .map(customReporter => typeof customReporter === 'function' ? new customReporter() : customReporter)
+  }
+
+  _initCollectors() {
+    this._collectors.clear();
+    config.envs.forEach(env => {
+      this._collectors.set(env, {
+        suites: new SuitesCollector(this),
+        //time: new TimeCollector(),
+        errors: new ErrorsCollector(),
+      });
+    });
+  }
+
+  _addTimestamp() {
+    // cumulative events already have timestamp
+    this._currentData.timestamp = this._currentData.timestamp || Date.now();
+  }
+
+  _proxyToReporters() {
+    this._reporters.forEach(customReporter => {
+      if (typeof customReporter.handleEvent === 'function') {
+        customReporter.handleEvent(this._currentEvent, this._currentData);
       }
     });
   }
-  _collectEvent(event, data) {
-    if (data.env) {
-      const collectors = this._envCollectors.get(data.env);
-      Object.keys(collectors).forEach(key => collectors[key].handleEvent(event, data));
+
+  _proxyToCollectors() {
+    if (this._currentData.env) {
+      const envCollectors = this._collectors.get(this._currentData.env);
+      Object.keys(envCollectors).forEach(key => {
+        envCollectors[key].handleEvent(this._currentEvent, this._currentData);
+      });
     }
   }
-  _saveTimes() {
-    const result = {};
-    this._envCollectors.forEach((collectors, env) => {
-      result[env.id] = collectors.time.getJson();
-    });
-    fs.writeFileSync(this._timings, JSON.stringify(result, false, 2));
-  }
-};
-
-function createReporter(reporter) {
-  if (reporter) {
-    return typeof reporter === 'function'
-      ? new reporter()
-      : reporter;
-  }
 }
 
-function addTimestamp(data) {
-  data = data || {};
-  data.timestamp = data.timestamp || Date.now();
-  return data;
-}
+module.exports = new Reporter();

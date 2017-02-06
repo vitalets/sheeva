@@ -2,15 +2,14 @@
  * Emits ENV_START / ENV_END
  */
 
-const Base = require('../base');
+const reporter = require('../reporter');
 const {ENV_START, ENV_END} = require('../events');
 
-module.exports = class Emitter extends Base {
+module.exports = class Emitter {
   /**
    * Constructor
    */
   constructor(slots, queues, envFlatSuites) {
-    super();
     this._startedEnvs = new Set();
     this._slots = slots;
     this._queues = queues;
@@ -25,20 +24,28 @@ module.exports = class Emitter extends Base {
   }
 
   checkEnvEnd(env) {
-    if (this._queues.getQueuesForEnv(env).length === 0 && this._slots.getForEnv(env).length === 0) {
+    if (this._hasQueues(env) && this._hasSlots(env)) {
       this._emitEnvEnd(env);
     }
   }
 
+  _hasQueues(env) {
+    return this._queues.getQueuesForEnv(env).length > 0;
+  }
+
+  _hasSlots(env) {
+    return this._slots.getForEnv(env).length > 0;
+  }
+
   _emitEnvStart(env) {
-    this._emit(ENV_START, {
+    reporter.handleEvent(ENV_START, {
       env,
       testsCount: this._calcTestsCount(env)
     });
   }
 
   _emitEnvEnd(env) {
-    this._emit(ENV_END, {env});
+    reporter.handleEvent(ENV_END, {env});
   }
 
   _calcTestsCount(env) {
