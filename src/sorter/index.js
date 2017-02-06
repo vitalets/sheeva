@@ -5,12 +5,9 @@
  * This is useful for suite splitting between parallel sessions because splitting for suites with before/after hooks
  * requires that hooks to be executed again.
  *
- * @typedef {Object} FlatSuite
- * @property {Array<Test>} tests
- * @property {Number} baCount max number of before / after hooks
  */
 
-const flattenSort = require('./flatten-sort');
+const Flattener = require('./flattener');
 
 module.exports = class Sorter {
   constructor() {
@@ -23,10 +20,8 @@ module.exports = class Sorter {
 
   run(envData) {
     envData.forEach((data, env) => {
-      const flatSuites = flattenSort(data.roots);
+      const flatSuites = new Flattener({children: data.roots}).flatten();
       this._envFlatSuites.set(env, flatSuites);
     });
-    return this;
   }
 };
-
