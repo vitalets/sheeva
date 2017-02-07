@@ -129,4 +129,22 @@ describe('only', () => {
     });
   });
 
+  it('should report files with $only()', run => {
+    const result = run([`
+      $only();
+      describe('suite 1', () => {
+        it('test 1', noop);
+      });
+    `, `
+      describe('suite 2', () => {
+        it('test 2', noop);
+      });
+    `], {events: true});
+
+    return expectResolve(result)
+      .then(res => {
+        const runnerStart = res.find(item => item.event === 'RUNNER_START');
+        expect(runnerStart.data.onlyFiles.length, 'to equal', 1);
+      })
+  });
 });

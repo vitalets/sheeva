@@ -9,6 +9,8 @@
  * @property {Number} baCount max number of before / after hooks
  */
 
+const {config} = require('../configurator');
+
 module.exports = class SuiteFlattener {
   /**
    * Constructor
@@ -25,7 +27,7 @@ module.exports = class SuiteFlattener {
     this._flattenTests();
     this._filterEmpty();
     this._sortByBaCount();
-    return this._baCount > 0
+    return this._baCount > 0 || (config.newSessionPerFile && this._isFileSuite())
       ? this._wrapAsSingleFlatSuite()
       : this._flatSuites;
   }
@@ -75,6 +77,10 @@ module.exports = class SuiteFlattener {
 
   _mergeTests() {
     return this._flatSuites.reduce((res, flatSuite) => res.concat(flatSuite.tests), []);
+  }
+
+  _isFileSuite() {
+    return this._suite.name && !this._suite.parent;
   }
 };
 

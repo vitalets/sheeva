@@ -3,7 +3,14 @@
  */
 
 module.exports = {
+  /**
+   * Triggered when runner is starting
+   *
+   */
   RUNNER_START: 'RUNNER_START',
+  /**
+   * Triggered when runner has ended
+   */
   RUNNER_END: 'RUNNER_END',
   /**
    * Triggered when first session of env is starting

@@ -26,7 +26,8 @@ module.exports = {
   //concurrencyMode: 'fullEnvFirst',
 
   /**
-   * Start new session for each file
+   * Start new session for each file.
+   * Even if file will be splitted, new session will be started for splitted part.
    */
   newSessionPerFile: false,
 

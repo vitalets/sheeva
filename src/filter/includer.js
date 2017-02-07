@@ -12,8 +12,7 @@ module.exports = class Includer {
   include(items) {
     this._items = items;
     this._setIncludeFlag();
-    this._includeWithFlag(this._fileSuites);
-    return this._fileSuites;
+    return this._includeWithFlag(this._fileSuites);
   }
 
   _setIncludeFlag() {
