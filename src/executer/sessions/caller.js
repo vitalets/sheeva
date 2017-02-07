@@ -25,7 +25,6 @@ module.exports = class Caller {
     this._beforeEachStack = [];
     this._errorSuite = null;
     this._error = null;
-    this._contexts = new Map();
   }
 
   get errorSuite() {
@@ -34,6 +33,9 @@ module.exports = class Caller {
 
   /**
    * Calls all `before` hooks for test (starting from last suite in suiteStack)
+   *
+   * todo: context in before/after hooks is not supported as it is not clear how to store contexts
+   * for different levels of suite tree.
    */
   callBefore(suiteStack, test) {
     const lastSuite = suiteStack[suiteStack.length - 1];
@@ -54,23 +56,26 @@ module.exports = class Caller {
    * Calls test fn with beforeEach / afterEach hooks
    */
   callTest(suiteStack, test) {
-    this._contexts.set(test, {});
+    const context = {};
     return Promise.resolve()
-      .then(() => this._callBeforeEach(suiteStack, test))
+      .then(() => this._callBeforeEach(suiteStack, context))
       .then(() => {
         this._emit(TEST_START, {test});
-        return this._callTestFn(test)
+        return this._callTestFn(test, context)
           .then(
             () => this._emit(TEST_END, {test}),
             error => this._emit(TEST_END, {test, error})
           )
       })
       .then(
-        () => this._callAfterEach(test),
+        () => this._callAfterEach(context),
         error => {
-          return this._callAfterEach(test)
+          return this._callAfterEach(context)
             // pass through initial error
-            .then(() => Promise.reject(error), () => Promise.reject(error));
+            .then(
+              () => Promise.reject(error),
+              () => Promise.reject(error)
+            );
         }
       );
   }
@@ -95,29 +100,29 @@ module.exports = class Caller {
   }
 
   /**
-   * Executes all `beforeEach` hooks for current test
+   * Executes all `beforeEach` hooks from stack
    *
    * @returns {*}
    */
-  _callBeforeEach(suiteStack, test) {
+  _callBeforeEach(suiteStack, context) {
     this._beforeEachStack.length = 0;
     return suiteStack.reduce((res, suite) => {
       return res
         .then(() => {
           this._beforeEachStack.push(suite);
-          return this._callHooksArray(suite, 'beforeEach', this._contexts.get(test));
+          return this._callHooksArray(suite, 'beforeEach', context);
         })
         .catch(error => this._storeErrorForSuite(suite, error));
     }, Promise.resolve());
   }
 
   /**
-   * Executes all afterEach from stack
+   * Executes all `afterEach` hooks from beforeEachStack
    */
-  _callAfterEach(test) {
+  _callAfterEach(context) {
     return this._beforeEachStack.reverse().reduce((res, suite) => {
       return res
-        .then(() => this._callHooksArray(suite, 'afterEach', this._contexts.get(test)))
+        .then(() => this._callHooksArray(suite, 'afterEach', context))
         .catch(error => this._storeErrorForSuite(suite, error));
     }, Promise.resolve());
   }
@@ -149,12 +154,12 @@ module.exports = class Caller {
     }, Promise.resolve());
   }
 
-  _callTestFn(test) {
+  _callTestFn(test, context) {
     const params = {
-      fn: test.fn,
-      context: this._contexts.get(test),
-      test: test,
+      test,
+      context,
       suite: test.parent,
+      fn: test.fn,
     };
     return this._callFn(params);
   }
