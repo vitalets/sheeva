@@ -35,9 +35,7 @@ module.exports = class Splitter {
    * @param {Boolean} options.isSessionStarted
    */
   trySplit(envs, options = {}) {
-    // if (envs.some(env => env.id !== 'env1')) {
-    //   console.log(`trying split ${envs.length} envs with isSessionStarted = ${options.isSessionStarted}`);
-    // }
+    // require('../../configurator').config.log(`trying to split ${envs.length} envs with isSessionStarted = ${options.isSessionStarted}`);
     this._state.forStartedSession = options.isSessionStarted;
     this._setSplittableEnvs(envs);
     this._setSplittableItems();

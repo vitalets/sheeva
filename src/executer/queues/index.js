@@ -73,7 +73,7 @@ module.exports = class Queues {
   }
 
   _trySplit(envs) {
-    if (config.splitFiles) {
+    if (config.splitFiles && envs.length) {
       const options = this._getSplitterOptions();
       return this._splitter.trySplit(envs, options);
     }

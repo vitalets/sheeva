@@ -41,6 +41,10 @@ module.exports = {
     };
     return fn(run);
   },
+  // for debug
+  log: function() {
+    // console.log.apply(console, arguments);
+  }
 };
 
 function callSync({fn, session, context}) {
