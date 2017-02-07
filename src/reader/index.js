@@ -1,5 +1,11 @@
 /**
  * Read test files into suites structure
+ *
+ * @typedef {Object} EnvData
+ * @property {Array<Suite>} roots
+ * @property {Array<Suite|Test>} only
+ * @property {Array<Suite|Test>} skip
+ * @property {Map<String, Array<Suite|Test>>} tags
  */
 
 const path = require('path');
@@ -25,56 +31,78 @@ module.exports = class Reader {
     this._api = new Api();
     this._appender = null;
   }
+
+  /**
+   * Returns processed files
+   *
+   * @returns {Array}
+   */
   get files() {
     return this._files;
   }
+
+  /**
+   * @returns {Map<Env,EnvData>}
+   */
   get envData() {
     return this._collector.envData;
   }
+
+  /**
+   * Reads patterns and creates suite tree
+   */
   read() {
     this._expandPatterns();
-    this._createRootSuites();
+    this._createFileSuites();
     this._injectApi();
     this._readFiles();
     this._cleanupApi();
   }
+
   _expandPatterns() {
     this._files = config.files.reduce((res, pattern) => {
       const files = expandPattern(pattern);
       return res.concat(files);
     }, []);
   }
-  _createRootSuites() {
+
+  _createFileSuites() {
     this._files.forEach(file => {
       const fn = () => readFile(file);
       config.envs.forEach(env => {
-        const suite = factory.createSuite({name: file, env});
-        utils.pushToMap(this._fnSuites, fn, suite);
-        this._collector.addRootSuite(suite);
+        const fileSuite = factory.createSuite({name: file, env});
+        utils.pushToMap(this._fnSuites, fn, fileSuite);
+        this._collector.addFileSuite(fileSuite);
       });
     });
   }
+
   _injectApi() {
     this._api.setAnnotation(this._annotation);
     this._api.inject(this._context);
   }
+
   _readFiles() {
     this._fillSuitesRecursive(this._fnSuites);
   }
+
   _fillSuitesRecursive(fnSuites) {
     fnSuites.forEach((suites, fn) => {
       this._fillSuites(suites, fn);
       this._fillChildSuites();
     });
   }
+
   _fillSuites(suites, fn) {
     this._appender = new Appender(this._collector, this._annotation, suites);
     this._api.setAppender(this._appender);
     fn();
   }
+
   _fillChildSuites() {
     this._fillSuitesRecursive(this._appender.childFnSuites);
   }
+
   _cleanupApi() {
     this._api.cleanup();
   }

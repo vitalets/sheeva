@@ -1,8 +1,8 @@
 /**
- * Collects data per env (root, tags, only and skip)
+ * Collects data per env (fileSuites and suites marked with tags, only and skip)
  *
  * @typedef {Object} EnvData
- * @property {Array<Suite>} roots
+ * @property {Array<Suite>} fileSuites
  * @property {Array<Suite|Test>} only
  * @property {Array<Suite|Test>} skip
  * @property {Map<String, Array<Suite|Test>>} tags
@@ -22,8 +22,8 @@ module.exports = class Collector {
     return this._envData;
   }
 
-  addRootSuite(suite) {
-    this._getEnvData(suite.env).roots.push(suite);
+  addFileSuite(suite) {
+    this._getEnvData(suite.env).fileSuites.push(suite);
   }
 
   /**
@@ -81,7 +81,7 @@ module.exports = class Collector {
 
   _createEnvData(env) {
     const envData = {
-      roots: [],
+      fileSuites: [],
       only: [],
       skip: [],
       tags: new Map(),

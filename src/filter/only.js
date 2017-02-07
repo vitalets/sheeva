@@ -2,11 +2,12 @@
  * Filters suites by only
  */
 
-const Cleaner = require('./cleaner');
+const Keeper = require('./keeper');
 
 module.exports = class Only {
   constructor(envData) {
     this._envData = envData;
+    // todo: use Set
     this._files = [];
     this._exists = this._check();
   }
@@ -41,13 +42,13 @@ module.exports = class Only {
 
   _clean() {
     this._envData.forEach(data => {
-      data.roots = new Cleaner(data.roots).keepItems(data.only);
+      data.fileSuites = new Keeper(data.fileSuites).keep(data.only);
     });
   }
 
   _fillFiles() {
     this._envData.forEach(data => {
-      data.roots.forEach(suite => {
+      data.fileSuites.forEach(suite => {
         const file = suite.name;
         if (this._files.indexOf(file) === -1) {
           this._files.push(file);

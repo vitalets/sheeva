@@ -2,7 +2,7 @@
  * Filters by tags
  */
 
-const Cleaner = require('./cleaner');
+const Keeper = require('./keeper');
 
 module.exports = class Tags {
   /**
@@ -25,7 +25,7 @@ module.exports = class Tags {
   _clean() {
     this._envData.forEach(data => {
       const items = this._concatTagItems(data.tags);
-      data.roots = new Cleaner(data.roots).keepItems(items);
+      data.fileSuites = new Keeper(data.fileSuites).keep(items);
     });
   }
 

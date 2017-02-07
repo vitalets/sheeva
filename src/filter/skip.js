@@ -2,7 +2,7 @@
  * Filters suites by skip
  */
 
-const Cleaner = require('./cleaner');
+const Remover = require('./remover');
 
 module.exports = class Skip {
   constructor(envData) {
@@ -11,7 +11,7 @@ module.exports = class Skip {
 
   filter() {
     this._envData.forEach(data => {
-      data.roots = new Cleaner(data.roots).removeItems(data.skip);
+      data.fileSuites = new Remover(data.fileSuites).remove(data.skip);
     });
   }
 };
