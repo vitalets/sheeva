@@ -7,9 +7,9 @@
  *
  */
 
-const Flattener = require('./flattener');
+const SuiteFlattener = require('./suite-flattener');
 
-module.exports = class Sorter {
+module.exports = class Flattener {
   constructor() {
     this._envFlatSuites = new Map();
   }
@@ -20,7 +20,7 @@ module.exports = class Sorter {
 
   run(envData) {
     envData.forEach((data, env) => {
-      const flatSuites = new Flattener({children: data.roots}).flatten();
+      const flatSuites = new SuiteFlattener({children: data.roots}).flatten();
       this._envFlatSuites.set(env, flatSuites);
     });
   }

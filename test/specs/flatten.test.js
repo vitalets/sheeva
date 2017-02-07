@@ -1,6 +1,6 @@
-describe('sort', () => {
+describe('flatten and sort', () => {
 
-  it('should sort suites on same level by before/after hooks count', run => {
+  it('should flatten suites on same level and sort by before/after hooks count', run => {
     const result = run(`
       describe('suite 1', () => {
         it('test 1', noop);
@@ -23,7 +23,7 @@ describe('sort', () => {
     ])
   });
 
-  it('should sort suites inside parent suite', run => {
+  it('should flatten and sort suites inside parent suite', run => {
     const result = run(`
       describe('parent suite', () => {
         describe('suite 1', () => {
@@ -48,7 +48,7 @@ describe('sort', () => {
     ])
   });
 
-  it('should sort suites by nested before/after hooks count', run => {
+  it('should flatten suites and sort by nested before/after hooks count', run => {
     const result = run(`
       describe('suite 1', () => {
         it('test 1', noop);
@@ -91,7 +91,7 @@ describe('sort', () => {
     ])
   });
 
-  it('should sort suites between files', run => {
+  it('should flatten and sort suites between several files', run => {
     const result = run([`
       describe('suite 1', () => {
         it('test 1', noop);

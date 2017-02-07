@@ -9,7 +9,7 @@
  * @property {Number} baCount max number of before / after hooks
  */
 
-module.exports = class Flattener {
+module.exports = class SuiteFlattener {
   /**
    * Constructor
    */
@@ -44,7 +44,7 @@ module.exports = class Flattener {
   }
 
   _flattenSubSuite(suite) {
-    const subFlatSuites = new Flattener(suite).flatten();
+    const subFlatSuites = new SuiteFlattener(suite).flatten();
     this._flatSuites = this._flatSuites.concat(subFlatSuites);
   }
 

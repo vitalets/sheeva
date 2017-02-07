@@ -7,7 +7,7 @@ const configurator = require('./configurator');
 const reporter = require('./reporter');
 const Reader = require('./reader');
 const Filter = require('./filter');
-const Sorter = require('./sorter');
+const Flattener = require('./flattener');
 const Executer = require('./executer');
 const {RUNNER_START, RUNNER_END} = require('./events');
 
@@ -23,7 +23,7 @@ module.exports = class Sheeva {
     this._rawConfig = rawConfig;
     this._reader = new Reader();
     this._filter = new Filter();
-    this._sorter = new Sorter();
+    this._flattener = new Flattener();
     this._executer = new Executer();
   }
 
@@ -32,7 +32,7 @@ module.exports = class Sheeva {
       .then(() => this._init())
       .then(() => this._readFiles())
       .then(() => this._applyFilter())
-      .then(() => this._applySort())
+      .then(() => this._applyFlatten())
       .then(() => this._startRunner())
       .then(() => this._execute())
       .then(() => this._success(), e => this._fail(e));
@@ -55,12 +55,12 @@ module.exports = class Sheeva {
     return this._filter.run(this._reader.envData);
   }
 
-  _applySort() {
-    return this._sorter.run(this._filter.envData);
+  _applyFlatten() {
+    return this._flattener.run(this._filter.envData);
   }
 
   _execute() {
-    return this._executer.run(this._sorter.envFlatSuites);
+    return this._executer.run(this._flattener.envFlatSuites);
   }
 
   _success() {
