@@ -1,8 +1,11 @@
 /**
  * Converts suite to one or several flatSuites.
  * Recursively flattens suite children.
- * If suite has before/after hooks, flatten() returns array with single flatSuite element
- * If suite does not have before/after hooks, flatten() returns array flatSuites corresponding to children suites
+ *
+ * 1. If suite has before/after hooks, flatten() returns array with single flatSuite element
+ * 2. If suite does not have before/after hooks, flatten() returns array with several flatSuites corresponding
+ *    to children suites. When it occurs fo file suite it is basically splitting because each sub-suite can be sorted
+ *    individually to begining or end of env suites (depending on it's before/after count).
  *
  * @typedef {Object} FlatSuite
  * @property {Array<Test>} tests
@@ -27,9 +30,7 @@ module.exports = class SuiteFlattener {
     this._flattenTests();
     this._filterEmpty();
     this._sortByBaCount();
-    return this._baCount > 0 || (config.newSessionPerFile && this._isFileSuite())
-      ? this._wrapAsSingleFlatSuite()
-      : this._flatSuites;
+    return this._needSingleFlatSuite() ? this._wrapAsSingleFlatSuite() : this._flatSuites;
   }
 
   _calcBaCount() {
@@ -77,6 +78,16 @@ module.exports = class SuiteFlattener {
 
   _mergeTests() {
     return this._flatSuites.reduce((res, flatSuite) => res.concat(flatSuite.tests), []);
+  }
+
+  _needSingleFlatSuite() {
+    if (this._baCount > 0) {
+      return true;
+    } else if (this._isFileSuite()) {
+      return config.newSessionPerFile || !config.splitFiles;
+    } else {
+      return false;
+    }
   }
 
   _isFileSuite() {

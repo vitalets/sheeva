@@ -104,8 +104,8 @@ module.exports = class LogReporter {
   getResult(filter) {
     this._setDefaultForEmptyFilter(filter);
 
-    const envs = Object.keys(this._treeLog);
-    const flat = envs.length === 0 || (envs.length === 1 && Object.keys(this._treeLog[envs[0]]).length <= 1);
+    const loggedEnvs = Object.keys(this._treeLog);
+    const flat = filter.flat || loggedEnvs.length === 0 || this._isSingleEnvAndSession();
 
     if (filter.events) {
       return this._events;
@@ -137,6 +137,11 @@ module.exports = class LogReporter {
       })
     });
     return treeLog;
+  }
+
+  _isSingleEnvAndSession() {
+    const loggedEnvs = Object.keys(this._treeLog);
+    return (loggedEnvs.length === 1 && Object.keys(this._treeLog[loggedEnvs[0]]).length <= 1);
   }
 
   _setDefaultForEmptyFilter(filter) {
