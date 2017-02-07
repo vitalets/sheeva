@@ -6,7 +6,7 @@ const path = require('path');
 const glob = require('glob');
 const utils = require('../utils');
 const {config} = require('../configurator');
-const creator = require('./creator');
+const factory = require('./factory');
 const Collector = require('./collector');
 const Appender = require('./appender');
 const Annotation = require('./annotation');
@@ -48,7 +48,7 @@ module.exports = class Reader {
     this._files.forEach(file => {
       const fn = () => readFile(file);
       config.envs.forEach(env => {
-        const suite = creator.createSuite({name: file, env});
+        const suite = factory.createSuite({name: file, env});
         utils.pushToMap(this._fnSuites, fn, suite);
         this._collector.addRootSuite(suite);
       });

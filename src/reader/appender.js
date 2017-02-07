@@ -3,7 +3,7 @@
  */
 
 const utils = require('../utils');
-const creator = require('./creator');
+const factory = require('./factory');
 
 module.exports = class Appender {
   constructor(collector, annotation, suites) {
@@ -21,7 +21,7 @@ module.exports = class Appender {
     this._processSkipOnly(skip, only);
     this._addItem((suite, options) => {
       Object.assign(options, {name});
-      const childSuite = creator.createSuite(options);
+      const childSuite = factory.createSuite(options);
       this._collector.addChild(suite, childSuite);
       utils.pushToMap(this._childFnSuites, fn, childSuite);
     });
@@ -31,7 +31,7 @@ module.exports = class Appender {
     this._processSkipOnly(skip, only);
     this._addItem((suite, options) => {
       Object.assign(options, {name, fn});
-      const childTest = creator.createTest(options);
+      const childTest = factory.createTest(options);
       this._collector.addChild(suite, childTest);
     });
   }
