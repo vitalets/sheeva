@@ -22,7 +22,7 @@ module.exports = class Slots {
   }
 
   fill() {
-    while (this._hasFree()) {
+    while (!this._isConcurrencyReached()) {
       const slot = this._add();
       const queue = this._handlers.onFreeSlot(slot);
       if (!queue) {
@@ -69,8 +69,8 @@ module.exports = class Slots {
       .filter(slot => slot.session && slot.session.env === env);
   }
 
-  _hasFree() {
-    return !config.concurrency || this._slots.size < config.concurrency;
+  _isConcurrencyReached() {
+    return config.concurrency && this._slots.size === config.concurrency;
   }
 
   _add() {

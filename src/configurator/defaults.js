@@ -64,11 +64,13 @@ module.exports = {
 
   /**
    * Disallow ONLY tests. Useful for pre-commit / pre-push hooks.
+   * @type {Boolean}
    */
   noOnly: false,
 
   /**
    * Run env with particular id
+   * @type {String}
    */
   env: '',
 
@@ -82,13 +84,15 @@ module.exports = {
     return [
       {
         /**
-         * Each environment must have id property
+         * Each environment must have unique id
+         * @type {String}
          */
         id: 'default-env',
         /**
-         * Env can have own concurrency limit.
+         * Env own concurrency limit
+         * @type {Number}
          */
-        // concurrency: <number>
+        concurrency: 0,
       }
     ];
   },
