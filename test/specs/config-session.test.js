@@ -1,7 +1,7 @@
 describe('config startSession / endSession hooks', () => {
 
   beforeEach(context => {
-    context.include = ['SESSION'];
+    context.runOptions.include = ['SESSION'];
   });
 
   describe('success cases', () => {

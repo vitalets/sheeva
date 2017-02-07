@@ -2,7 +2,7 @@
 describe('context', () => {
 
   beforeEach(context => {
-    context.include = ['HOOK_END', 'TEST_END'];
+    context.runOptions.include = ['HOOK_END', 'TEST_END'];
   });
 
   it('should create test context and pass it to each hooks', run => {

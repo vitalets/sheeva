@@ -1,7 +1,7 @@
 describe('config envs', () => {
 
   beforeEach(context => {
-    context.include = ['SESSION', 'TEST_END'];
+    context.runOptions.include = ['SESSION', 'TEST_END'];
   });
 
   it('should run tests in all envs', run => {

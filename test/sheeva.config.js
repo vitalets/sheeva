@@ -29,6 +29,7 @@ module.exports = {
   },
   callTestHookFn: function ({fn, session, context, hookType, env}) {
     if (hookType) {
+      context.runOptions = context.runOptions || {};
       return fn(context);
     }
     const baseConfig = {
@@ -36,7 +37,7 @@ module.exports = {
     };
     const run = function (code, options = {}) {
       options.config = Object.assign({}, baseConfig, options.config);
-      const finalOptions = Object.assign({session}, context, options);
+      const finalOptions = Object.assign({session}, context.runOptions, options);
       return global.run(code, finalOptions);
     };
     return fn(run);

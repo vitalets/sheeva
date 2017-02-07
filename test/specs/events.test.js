@@ -3,7 +3,7 @@ describe('events', () => {
   describe('suite/test', () => {
 
     beforeEach(context => {
-      context.include = ['SUITE', 'TEST'];
+      context.runOptions.include = ['SUITE', 'TEST'];
     });
 
     it('should emit for nested suites', run => {
@@ -71,7 +71,7 @@ describe('events', () => {
   describe('runner', () => {
 
     beforeEach(context => {
-      context.include = ['RUNNER'];
+      context.runOptions.include = ['RUNNER'];
     });
 
     it('should emit runner events in normal case', run => {
