@@ -12,31 +12,31 @@ describe('context', () => {
           if (!context) {
             throw new Error('test context not created')
           }
-          context.beforeEach1 = 1;
+          context.be1 = 1;
         });
         
         beforeEach((session, context) => {
-          if (!context.beforeEach1) {
+          if (!context.be1) {
             throw new Error('beforeEach1 was not called with context')
           }
-          context.beforeEach2 = 1;
+          context.be2 = 1;
         });
         
         afterEach((session, context) => {
-          if (!context.beforeEach1 || !context.beforeEach2 || !context.test1) {
+          if (!context.be1 || !context.be2 || !context.test1) {
             throw new Error('beforeEach1 or beforeEach2 or test1 was not called with context')
           }
-          context.afterEach1 = 1;
+          context.ae1 = 1;
         });
         
          afterEach((session, context) => {
-          if (!context.beforeEach1 || !context.beforeEach2 || !context.test1 || !context.afterEach1) {
+          if (!context.be1 || !context.be2 || !context.test1 || !context.ae1) {
             throw new Error('beforeEach1 or beforeEach2 or test1 or afterEach1 was not called with context')
           }
         });
         
         it('test 1', (session, context) => {
-          if (!context.beforeEach1 || !context.beforeEach2) {
+          if (!context.be1 || !context.be2) {
             throw new Error('beforeEach1 or beforeEach2 was not called with context')
           }
           context.test1 = 1;
