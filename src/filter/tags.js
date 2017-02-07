@@ -2,7 +2,7 @@
  * Filters by tags
  */
 
-const Keeper = require('./keeper');
+const Includer = require('./includer');
 
 module.exports = class Tags {
   /**
@@ -18,14 +18,14 @@ module.exports = class Tags {
 
   filter() {
     if (this._tags && this._tags.length) {
-      this._clean();
+      this._includeTagged();
     }
   }
 
-  _clean() {
+  _includeTagged() {
     this._envData.forEach(data => {
-      const items = this._concatTagItems(data.tags);
-      data.fileSuites = new Keeper(data.fileSuites).keep(items);
+      const taggedItems = this._concatTagItems(data.tags);
+      data.fileSuites = new Includer(data.fileSuites).include(taggedItems);
     });
   }
 

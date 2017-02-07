@@ -1,15 +1,15 @@
 /**
- * Removes specified items from fileSuites
+ * Excludes specified items from fileSuites
  */
 
-module.exports = class Remover {
+module.exports = class Excluder {
 
   constructor(fileSuites) {
     this._fileSuites = fileSuites;
     this._items = null;
   }
 
-  remove(items) {
+  exclude(items) {
     this._items = items;
     this._removeFromParents();
     return this._fileSuites;

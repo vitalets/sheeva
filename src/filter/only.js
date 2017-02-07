@@ -2,7 +2,7 @@
  * Filters suites by only
  */
 
-const Keeper = require('./keeper');
+const Includer = require('./includer');
 
 module.exports = class Only {
   constructor(envData) {
@@ -21,7 +21,7 @@ module.exports = class Only {
   }
 
   filter() {
-    this._clean();
+    this._includeOnly();
     this._fillFiles();
   }
 
@@ -40,9 +40,9 @@ module.exports = class Only {
     return false;
   }
 
-  _clean() {
+  _includeOnly() {
     this._envData.forEach(data => {
-      data.fileSuites = new Keeper(data.fileSuites).keep(data.only);
+      data.fileSuites = new Includer(data.fileSuites).include(data.only);
     });
   }
 
