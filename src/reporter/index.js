@@ -29,7 +29,7 @@ class Reporter {
 
   handleEvent(event, data = {}) {
     this._currentEvent = event;
-    this._currentData = data;
+    this._currentData = Object.assign({}, data);
     this._addTimestamp();
     this._proxyToReporters();
     this._proxyToCollectors();

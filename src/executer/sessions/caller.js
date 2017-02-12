@@ -34,7 +34,8 @@ module.exports = class Caller {
   /**
    * Calls all `before` hooks for test (starting from last suite in suiteStack)
    *
-   * todo: context in before/after hooks is not supported as it is not clear how to store contexts
+   * todo:
+   * Context in before/after hooks is not supported as it is not clear how to store contexts
    * for different levels of suite tree.
    */
   callBefore(suiteStack, test) {
@@ -48,36 +49,8 @@ module.exports = class Caller {
           this._emit(SESSION_SUITE_START, {suite});
           return this._callHooksArray(suite, 'before');
         })
-        .catch(error => this._storeErrorForSuite(suite, error));
+        .catch(error => this._storeErrorAndReject(suite, error));
     }, Promise.resolve());
-  }
-
-  /**
-   * Calls test fn with beforeEach / afterEach hooks
-   */
-  callTest(suiteStack, test) {
-    const context = {};
-    return Promise.resolve()
-      .then(() => this._callBeforeEach(suiteStack, context))
-      .then(() => {
-        this._emit(TEST_START, {test});
-        return this._callTestFn(test, context)
-          .then(
-            () => this._emit(TEST_END, {test}),
-            error => this._emit(TEST_END, {test, error})
-          )
-      })
-      .then(
-        () => this._callAfterEach(context),
-        error => {
-          return this._callAfterEach(context)
-            // pass through initial error
-            .then(
-              () => Promise.reject(error),
-              () => Promise.reject(error)
-            );
-        }
-      );
   }
 
   /**
@@ -87,16 +60,38 @@ module.exports = class Caller {
     const index = suiteStack.findIndex(suite => suite === stopSuite);
     const suites = suiteStack.splice(index + 1);
     return suites.reverse().reduce((res, suite) => {
+      let errorInAfterHooks;
       return res
         .then(() => this._callHooksArray(suite, 'after'))
-        .then(
-          () => this._getErrorForSuite(suite),
-          // consider error in before hooks more important, than in after
-          // todo: report both before and after errors
-          afterError => this._getErrorForSuite(suite) || afterError
-        )
-        .then(error => this._emit(SESSION_SUITE_END, {suite, error}));
+        .catch(error => errorInAfterHooks = error)
+        .finally(() => {
+          // consider error in before hook more meaningful
+          const error = this._getErrorForSuite(suite) || errorInAfterHooks;
+          this._emit(SESSION_SUITE_END, {suite, error});
+        });
     }, Promise.resolve());
+  }
+
+  /**
+   * Calls test fn with beforeEach / afterEach hooks
+   */
+  callTestWithEachHooks(suiteStack, test) {
+    const context = {};
+    return Promise.resolve()
+      .then(() => this._callBeforeEach(suiteStack, context))
+      .then(() => this._callTest(test, context))
+      .finally(() => this._callAfterEach(context))
+  }
+
+  /**
+   * Calls test fn with beforeEach / afterEach hooks
+   */
+  _callTest(test, context) {
+    const eventData = {test};
+    this._emit(TEST_START, eventData);
+    return this._callTestFn(test, context)
+      .catch(error => eventData.error = error)
+      .finally(() => this._emit(TEST_END, eventData))
   }
 
   /**
@@ -112,7 +107,7 @@ module.exports = class Caller {
           this._beforeEachStack.push(suite);
           return this._callHooksArray(suite, 'beforeEach', context);
         })
-        .catch(error => this._storeErrorForSuite(suite, error));
+        .catch(error => this._storeErrorAndReject(suite, error));
     }, Promise.resolve());
   }
 
@@ -123,7 +118,7 @@ module.exports = class Caller {
     return this._beforeEachStack.reverse().reduce((res, suite) => {
       return res
         .then(() => this._callHooksArray(suite, 'afterEach', context))
-        .catch(error => this._storeErrorForSuite(suite, error));
+        .catch(error => this._storeErrorAndReject(suite, error));
     }, Promise.resolve());
   }
 
@@ -143,13 +138,11 @@ module.exports = class Caller {
           const params = {fn, suite, hookType, context, hookIndex: index};
           this._emit(HOOK_START, eventData);
           return this._callFn(params)
-            .then(
-              () => this._emit(HOOK_END, eventData),
-              error => {
-                this._emit(HOOK_END, Object.assign({}, eventData, {error}));
-                return Promise.reject(error);
-              }
-            )
+            .catch(error => {
+              eventData.error = error;
+              return Promise.reject(error);
+            })
+            .finally(() => this._emit(HOOK_END, eventData));
         })
     }, Promise.resolve());
   }
@@ -192,7 +185,7 @@ module.exports = class Caller {
    * @param {Suite} suite
    * @param {Error} error
    */
-  _storeErrorForSuite(suite, error) {
+  _storeErrorAndReject(suite, error) {
     this._errorSuite = suite;
     this._error = error;
     return Promise.reject(error);

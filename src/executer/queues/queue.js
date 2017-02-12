@@ -60,7 +60,7 @@ module.exports = class Queue {
       .then(() => this.moveToNextTest())
       .then(() => {
         if (this.currentTest) {
-          return this.caller.callTest(this.suiteStack, this.currentTest)
+          return this.caller.callTestWithEachHooks(this.suiteStack, this.currentTest)
             .then(
               () => this.next(),
               () => this.handleHookError()

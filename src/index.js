@@ -2,6 +2,8 @@
  * Sheeva
  */
 
+require('promise.prototype.finally').shim();
+
 const utils = require('./utils');
 const configurator = require('./configurator');
 const reporter = require('./reporter');
