@@ -15,27 +15,21 @@
   "scripts": {
     "test": "node src/cli --config test/sheeva.config.js --env=tests-sync",
     "tt": "node src/cli --config test/sheeva.config.js",
-    "devtool": "devtool src/cli --config test/sheeva.config.js --env=tests-sync"
+    "devtool": "devtool src/cli --config test/sheeva.config.js --env=tests-sync",
+    "precommit": "npm run tt -- --no-only"
   },
   "license": "MIT",
   "dependencies": {
     "commander": "^2.9.0",
-    "eslint": "^3.12.2",
     "glob": "^7.1.1",
-    "mocha": "^3.2.0",
-    "unexpected": "^10.20.0"
+    "promise.prototype.finally": "^2.0.1"
   },
   "devDependencies": {
     "escape-string-regexp": "^1.0.5",
-    "eslint": "^3.9.1",
-    "ghooks": "^1.3.2",
+    "eslint": "^3.15.0",
+    "husky": "^0.13.1",
     "mocha": "^3.1.2",
     "treeify": "^1.0.1",
-    "unexpected": "^10.18.1"
-  },
-  "config": {
-    "ghooks": {
-      "pre-commit": "npm run tt -- --no-only"
-    }
+    "unexpected": "^10.25.0"
   }
 }
