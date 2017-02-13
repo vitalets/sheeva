@@ -1,48 +1,61 @@
 /**
- * Slot that can execute sessions serially
+ * Slot that can execute sessions serially.
  */
 
 const {config} = require('../../configurator');
+const Session = require('./session');
 
 module.exports = class Slot {
   /**
    * Constructor
    *
-   * @param sessionManager
+   * @param {Object} handlers
+   * @param {Function} handlers.onSessionStart
+   * @param {Function} handlers.onSessionEnd
    */
-  constructor(sessionManager) {
-    this._sessionManager = sessionManager;
-    this._currentSession = null;
-    this._currentQueue = null;
+  constructor(handlers) {
+    this._handlers = handlers;
+    this._session = null;
+    this._queue = null;
   }
 
   get session() {
-    return this._currentSession;
+    return this._session;
   }
 
   get queue() {
-    return this._currentQueue;
-  }
-
-  get env() {
-    return this._currentQueue && this._currentQueue.suite.env;
+    return this._queue;
   }
 
   run(queue) {
-    this._currentQueue = queue;
+    this._queue = queue;
     return Promise.resolve()
       .then(() => this._needNewSession() ? this._reCreateSession() : null)
       .then(() => this._runQueue())
-      .then(() => this._currentQueue = null);
+      .then(() => this._queue = null);
   }
 
   deleteSession() {
-    if (this._currentSession) {
-      return this._sessionManager.endSession(this._currentSession)
-        .then(() => this._currentSession = null);
+    if (this._session) {
+      return this._session.end()
+        .then(() => this._onSessionEnd());
     } else {
       return Promise.resolve();
     }
+  }
+
+  /**
+   * Checks that slot is holding env.
+   * Actually, slot can hold two envs simultaneously when queue is assigned,
+   * but previous session is still ending
+   *
+   * @returns {Boolean}
+   */
+  isHoldingEnv(env) {
+    return [
+      this._session && this._session.env === env,
+      this._queue && this._queue.env === env,
+    ].some(Boolean);
   }
 
   _reCreateSession() {
@@ -52,15 +65,22 @@ module.exports = class Slot {
   }
 
   _createSession() {
-    this._currentSession = this._sessionManager.createSession(this._currentQueue.suite.env);
-    return this._sessionManager.startSession(this._currentSession);
+    this._session = new Session(this._queue.env);
+    this._handlers.onSessionStart(this._session);
+    return this._session.start();
   }
 
   _needNewSession() {
-    return !this._currentSession || config.newSessionPerFile || !this._currentSession.canRun(this._currentQueue);
+    return !this._session || config.newSessionPerFile || !this._session.canRun(this._queue);
   }
 
   _runQueue() {
-    return this._currentSession.run(this._currentQueue);
+    return this._session.run(this._queue);
+  }
+
+  _onSessionEnd() {
+    const session = this._session;
+    this._session = null;
+    this._handlers.onSessionEnd(session);
   }
 };

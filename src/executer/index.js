@@ -10,7 +10,6 @@
 
 const utils = require('../utils');
 const Queues = require('./queues');
-const Sessions = require('./sessions');
 const Slots = require('./slots');
 const Emitter = require('./emitter');
 
@@ -22,7 +21,6 @@ module.exports = class Executer {
     this._envFlatSuites = null;
     this._queues = null;
     this._emitter = null;
-    this._sessions = null;
     this._slots = null;
     this._promised = new utils.Promised();
   }
@@ -41,26 +39,19 @@ module.exports = class Executer {
   }
 
   _init() {
-    this._initSessions();
     this._initSlots();
     this._initQueues();
     this._initEmitter();
-  }
-
-  _initSessions() {
-    const handlers = {
-      onSessionStart: session => this._emitter.checkEnvStart(session.env),
-      onSessionEnd: session => this._emitter.checkEnvEnd(session.env),
-    };
-    this._sessions = new Sessions(handlers);
   }
 
   _initSlots() {
     const handlers = {
       onFreeSlot: slot => this._handleFreeSlot(slot),
       onEmpty: () => this._end(),
+      onSessionStart: session => this._emitter.checkEnvStart(session.env),
+      onSessionEnd: session => this._emitter.checkEnvEnd(session.env),
     };
-    this._slots = new Slots(this._sessions, handlers);
+    this._slots = new Slots(handlers);
   }
 
   _initQueues() {

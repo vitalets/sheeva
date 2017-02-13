@@ -10,15 +10,17 @@ module.exports = class Slots {
   /**
    * Constructor
    *
-   * @param {Sessions} sessions
    * @param {Object} handlers
    * @param {Function} handlers.onFreeSlot
    * @param {Function} handlers.onEmpty
    */
-  constructor(sessions, handlers) {
-    this._sessions = sessions;
+  constructor(handlers) {
     this._handlers = handlers;
     this._slots = new ExtraSet();
+  }
+
+  toArray() {
+    return this._slots.toArray();
   }
 
   fill() {
@@ -43,30 +45,9 @@ module.exports = class Slots {
    * Terminates all slot sessions and ignore other errors in favor of first runner error
    */
   terminate() {
-    // use empty catch() to ignore error while closing slot session to keep original error
     const tasks = this._slots.mapToArray(slot => slot.deleteSession().catch());
     this._slots.clear();
     return Promise.all(tasks);
-  }
-
-  /**
-   * Some slot sessions may be in starting / ending state, when they dont have
-   *
-   * @returns {Array}
-   */
-  getWithQueues() {
-    return this._slots.toArray()
-      .filter(slot => slot.queue)
-  }
-
-  /**
-   * Get slots with sessions of specified env
-   *
-   * @returns {Array}
-   */
-  getForEnv(env) {
-    return this._slots.toArray()
-      .filter(slot => slot.session && slot.session.env === env);
   }
 
   _isConcurrencyReached() {
@@ -74,7 +55,7 @@ module.exports = class Slots {
   }
 
   _add() {
-    const slot = new Slot(this._sessions);
+    const slot = new Slot(this._handlers);
     this._slots.add(slot);
     return slot;
   }

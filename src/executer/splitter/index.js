@@ -48,12 +48,12 @@ module.exports = class Splitter {
   }
 
   _setSplittableItems() {
-    this._splittableItems = this._slots.getWithQueues()
-      .filter(slot => this._splittableEnvs.has(slot.env))
+    this._splittableItems = this._slots.toArray()
+      .filter(slot => Boolean(slot.queue))
+      .filter(slot => this._splittableEnvs.has(slot.queue.env))
       .map(slot => createSplittableItem(slot))
       .filter(item => item.remainingTestsCount >= MIN_REMAINING_TESTS_COUNT)
-      // as first approach use for remainingTime value of remainingTestsCount
-      .map(item => Object.assign(item, {remainingTime: item.remainingTestsCount}));
+      .map(item => calcRemainingTime(item));
   }
 
   _sortByRemainingTime() {
@@ -93,8 +93,17 @@ module.exports = class Splitter {
 function createSplittableItem(slot) {
   return {
     queue: slot.queue,
-    env: slot.env,
+    env: slot.queue.env,
     remainingTestsCount: slot.queue.getRemainingTestsCount(),
     remainingTime: 0,
   };
+}
+
+/**
+ * As first rough approach use remainingTestsCount as value for remainingTime
+ */
+function calcRemainingTime(item) {
+  return Object.assign(item, {
+    remainingTime: item.remainingTestsCount
+  });
 }

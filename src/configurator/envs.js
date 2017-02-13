@@ -3,7 +3,8 @@
  *
  * @typedef {Object} Env
  * @property {String} id
- * @property {String} [label]
+ * @property {String} label
+ * @property {Array} sessions
  * @property {Number} [concurrency]
  */
 
@@ -19,6 +20,7 @@ module.exports = class Envs {
     this._assertCount();
     this._assertIds();
     this._setLabels();
+    this._setSessions();
     return this._envs;
   }
 
@@ -55,5 +57,9 @@ module.exports = class Envs {
     this._envs.forEach(env => {
       env.label = env.label || this._config.createEnvLabel(env);
     });
+  }
+
+  _setSessions() {
+    this._envs.forEach(env => env.sessions = []);
   }
 };

@@ -5,7 +5,7 @@
 
 const {config} = require('../../configurator');
 const reporter = require('../../reporter');
-const Caller = require('./caller');
+const Caller = require('../caller');
 
 const {
   SESSION_START,
@@ -26,14 +26,14 @@ module.exports = class Session {
   /**
    * Constructor
    *
-   * @param {Number} index
    * @param {Object} env
    */
-  constructor(index, env) {
-    this._index = index;
+  constructor(env) {
     this._env = env;
     this._status = STATUS.CREATED;
     this._caller = new Caller(this);
+    this._env.sessions.push(this);
+    this._index = this._env.sessions.length - 1;
   }
 
   get env() {
@@ -48,6 +48,10 @@ module.exports = class Session {
     return this._status === STATUS.STARTED;
   }
 
+  get isStarting() {
+    return this._status === STATUS.STARTING;
+  }
+
   start() {
     this._starting();
     return Promise.resolve()
@@ -56,7 +60,7 @@ module.exports = class Session {
   }
 
   canRun(queue) {
-    return this._env === queue.suite.env;
+    return this._env === queue.env;
   }
 
   run(queue) {
@@ -64,7 +68,7 @@ module.exports = class Session {
   }
 
   end() {
-    if (!this._isStartingOrStarted()) {
+    if (!this.isStarting && !this.isStarted) {
       return Promise.resolve();
     }
 
@@ -87,10 +91,6 @@ module.exports = class Session {
       this._status = STATUS.STARTED;
       this._emit(SESSION_STARTED);
     }
-  }
-
-  _isStartingOrStarted() {
-    return this._status === STATUS.STARTING || this._status === STATUS.STARTED
   }
 
   _ending() {

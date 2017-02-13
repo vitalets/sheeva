@@ -30,11 +30,11 @@ describe('config envs', () => {
           ]
         },
         env2: {
-          session1: [
-            'SESSION_START 1',
+          session0: [
+            'SESSION_START 0',
             'TEST_END test 0',
             'TEST_END test 1',
-            'SESSION_END 1'
+            'SESSION_END 0'
           ]
         }
       }

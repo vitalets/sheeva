@@ -11,7 +11,7 @@ module.exports = class TempFiles {
     this._files = [];
     code = Array.isArray(code) ? code : [code];
     code.forEach((content, index) => {
-      const tempFile = `${TEMP_PATH}/temp-${session.index}-${index}.js`;
+      const tempFile = `${TEMP_PATH}/temp-${session.env.id}-${session.index}-${index}.js`;
       fs.writeFileSync(tempFile, content);
       clearRequireCache(tempFile);
       this._files.push(tempFile);

@@ -27,6 +27,10 @@ module.exports = class Queue {
     this.promised = new utils.Promised();
   }
 
+  get env() {
+    return this.suite.env;
+  }
+
   /**
    * Remaining tests count depends on if queue is running or not, because queue runs hooks considering next test,
    * and if this test will be splitted we will got error.

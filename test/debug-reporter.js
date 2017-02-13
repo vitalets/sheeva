@@ -4,7 +4,7 @@
 
 const events = require('../src/events');
 
-module.exports = class LogReporter {
+module.exports = class DebugReporter {
   handleEvent(event, data) {
     const env = data.env;
     const session = data.session ? `Session #${data.session.index}` : '';

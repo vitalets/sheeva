@@ -24,7 +24,7 @@ module.exports = class Emitter {
   }
 
   checkEnvEnd(env) {
-    if (this._hasQueues(env) && this._hasSlots(env)) {
+    if (!this._hasQueues(env) && !this._hasSlots(env)) {
       this._emitEnvEnd(env);
     }
   }
@@ -34,7 +34,7 @@ module.exports = class Emitter {
   }
 
   _hasSlots(env) {
-    return this._slots.getForEnv(env).length > 0;
+    return this._slots.toArray().some(slot => slot.isHoldingEnv(env));
   }
 
   _emitEnvStart(env) {
@@ -49,6 +49,10 @@ module.exports = class Emitter {
   }
 
   _calcTestsCount(env) {
-    return this._envFlatSuites.get(env).reduce((res, flatSuite) => res + flatSuite.tests.length, 0);
+    return this._envFlatSuites
+      .get(env)
+      .reduce((res, flatSuite) => {
+        return res + flatSuite.tests.length;
+      }, 0);
   }
 };

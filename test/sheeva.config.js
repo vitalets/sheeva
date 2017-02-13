@@ -11,7 +11,7 @@ module.exports = {
   newSessionPerFile: false,
   splitFiles: true,
   reporters: require('sheeva-reporter-progress'),
-  //reporters: require('./flat-reporter'),
+  //reporters: require('./debug-reporter'),
   createEnvs: function () {
     return [
       //{id: 'tests-async0', delay: 50},
