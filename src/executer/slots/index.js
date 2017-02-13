@@ -33,7 +33,7 @@ module.exports = class Slots {
     }
   }
 
-  remove(slot) {
+  delete(slot) {
     return slot.deleteSession()
       .then(() => {
         this._slots.delete(slot);

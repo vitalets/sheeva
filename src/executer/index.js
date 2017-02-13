@@ -11,17 +11,17 @@
 const utils = require('../utils');
 const Queues = require('./queues');
 const Slots = require('./slots');
-const Emitter = require('./emitter');
+const reporter = require('../reporter');
+const {ENV_START, ENV_END} = require('../events');
 
 module.exports = class Executer {
   /**
    * Constructor
    */
   constructor() {
-    this._envFlatSuites = null;
     this._queues = null;
-    this._emitter = null;
     this._slots = null;
+    this._startedEnvs = new Set();
     this._promised = new utils.Promised();
   }
 
@@ -31,35 +31,25 @@ module.exports = class Executer {
    * @param {Map<Env,Array<FlatSuite>>} envFlatSuites
    */
   run(envFlatSuites) {
-    this._envFlatSuites = envFlatSuites;
     return this._promised.call(() => {
-      this._init();
+      this._initSlots();
+      this._initQueues(envFlatSuites);
       this._slots.fill();
     });
-  }
-
-  _init() {
-    this._initSlots();
-    this._initQueues();
-    this._initEmitter();
   }
 
   _initSlots() {
     const handlers = {
       onFreeSlot: slot => this._handleFreeSlot(slot),
       onEmpty: () => this._end(),
-      onSessionStart: session => this._emitter.checkEnvStart(session.env),
-      onSessionEnd: session => this._emitter.checkEnvEnd(session.env),
+      onSessionStart: session => this._checkEnvStart(session.env),
+      onSessionEnd: session => this._checkEnvEnd(session.env),
     };
     this._slots = new Slots(handlers);
   }
 
-  _initQueues() {
-    this._queues = new Queues(this._slots, this._envFlatSuites);
-  }
-
-  _initEmitter() {
-    this._emitter = new Emitter(this._slots, this._queues, this._envFlatSuites);
+  _initQueues(envFlatSuites) {
+    this._queues = new Queues(this._slots, envFlatSuites);
   }
 
   _handleFreeSlot(slot) {
@@ -70,7 +60,7 @@ module.exports = class Executer {
         .then(() => this._handleFreeSlot(slot))
         .catch(e => this._terminate(e));
     } else {
-      this._slots.remove(slot)
+      this._slots.delete(slot)
         .catch(e => this._terminate(e));
     }
 
@@ -83,9 +73,27 @@ module.exports = class Executer {
 
   _terminate(error) {
     this._slots.terminate()
-      .then(
-        () => this._promised.reject(error),
-        () => this._promised.reject(error)
-      );
+      .finally(() => this._promised.reject(error))
+  }
+
+  _checkEnvStart(env) {
+    if (!this._startedEnvs.has(env)) {
+      this._startedEnvs.add(env);
+      reporter.handleEvent(ENV_START, {env});
+    }
+  }
+
+  _checkEnvEnd(env) {
+    if (!this._hasQueues(env) && !this._hasSlots(env)) {
+      reporter.handleEvent(ENV_END, {env});
+    }
+  }
+
+  _hasQueues(env) {
+    return this._queues.getQueuesForEnv(env).length > 0;
+  }
+
+  _hasSlots(env) {
+    return this._slots.toArray().some(slot => slot.isHoldingEnv(env));
   }
 };
