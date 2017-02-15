@@ -11,7 +11,7 @@ const Reader = require('./reader');
 const Filter = require('./filter');
 const Flattener = require('./flattener');
 const Executer = require('./executer');
-const {RUNNER_START, RUNNER_END} = require('./events');
+const {RUNNER_INIT, RUNNER_START, RUNNER_END} = require('./events');
 
 const config = configurator.config;
 
@@ -27,6 +27,7 @@ module.exports = class Sheeva {
     this._filter = new Filter();
     this._flattener = new Flattener();
     this._executer = new Executer();
+    this._error = null;
   }
 
   run() {
@@ -35,9 +36,11 @@ module.exports = class Sheeva {
       .then(() => this._readFiles())
       .then(() => this._applyFilter())
       .then(() => this._applyFlatten())
-      .then(() => this._startRunner())
+      .then(() => this._start())
       .then(() => this._execute())
-      .then(() => this._success(), e => this._fail(e));
+      .catch(error => this._storeError(error))
+      .finally(() => this._end())
+      .then(() => this._getResult())
   }
 
   getReporter(index) {
@@ -45,6 +48,7 @@ module.exports = class Sheeva {
   }
 
   _init() {
+    this._emitInit();
     configurator.init(this._rawConfig);
     reporter.init();
   }
@@ -65,29 +69,38 @@ module.exports = class Sheeva {
     return this._executer.run(this._flattener.envFlatSuites);
   }
 
-  _success() {
-    return this._endRunner();
+  /**
+   * Store error if it is not stored yet
+   * (because first error seems to be more important)
+   *
+   * @param {*} error
+   */
+  _storeError(error) {
+    if (!this._error) {
+      this._error = error || new Error('Empty rejection');
+    }
   }
 
-  _fail(e) {
-    return this._endRunner(e || new Error('Empty rejection'));
-  }
-
-  _startRunner() {
+  _start() {
     this._emitStart();
     return utils.thenCall(() => config.startRunner(config));
   }
 
-  _endRunner(runnerError) {
+  _end() {
     return Promise.resolve()
       .then(() => config.endRunner(config))
-      .then(() => {
-        this._emitEnd(runnerError);
-        return runnerError ? Promise.reject(runnerError) : reporter.getResult();
-      }, e => {
-        this._emitEnd(runnerError || e);
-        return Promise.reject(runnerError || e);
-      });
+      .catch(error => this._storeError(error))
+      .finally(() => this._emitEnd());
+  }
+
+  _getResult() {
+    return this._error ? Promise.reject(this._error) : reporter.getResult();
+  }
+
+  _emitInit() {
+    reporter.handleEvent(RUNNER_INIT, {
+      rawConfig: this._rawConfig
+    });
   }
 
   _emitStart() {
@@ -99,8 +112,10 @@ module.exports = class Sheeva {
     reporter.handleEvent(RUNNER_START, data);
   }
 
-  _emitEnd(error) {
-    reporter.handleEvent(RUNNER_END, {error});
+  _emitEnd() {
+    reporter.handleEvent(RUNNER_END, {
+      error: this._error
+    });
   }
 };
 
