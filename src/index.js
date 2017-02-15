@@ -108,6 +108,9 @@ module.exports = class Sheeva {
       config,
       files: this._reader.files,
       onlyFiles: this._filter.onlyFiles,
+      skippedSuites: this._filter.skippedSuites,
+      skippedTests: this._filter.skippedTests,
+      skippedInFiles: this._filter.skippedInFiles,
     };
     reporter.handleEvent(RUNNER_START, data);
   }

@@ -26,6 +26,18 @@ module.exports = class Filter {
     return this._only.files;
   }
 
+  get skippedSuites() {
+    return this._skip.suites;
+  }
+
+  get skippedTests() {
+    return this._skip.tests;
+  }
+
+  get skippedInFiles() {
+    return this._skip.files;
+  }
+
   run(envData) {
     this._envData = envData;
     this._init();
@@ -39,7 +51,7 @@ module.exports = class Filter {
   }
 
   _filter() {
-    if (this._only.exists) {
+    if (this._only.found) {
       this._processOnly();
     } else {
       this._tags.filter();
