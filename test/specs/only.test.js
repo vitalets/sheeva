@@ -129,7 +129,7 @@ describe('only', () => {
     });
   });
 
-  it('should report files with $only()', run => {
+  it('should report files with $only() in RUNNER_START', run => {
     const result = run([`
       $only();
       describe('suite 1', () => {
@@ -139,7 +139,7 @@ describe('only', () => {
       describe('suite 2', () => {
         it('test 2', noop);
       });
-    `], {events: true});
+    `], {raw: true});
 
     return expectResolve(result)
       .then(res => {

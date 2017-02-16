@@ -73,4 +73,29 @@ describe('skip', () => {
     ]);
   });
 
+  it('should report skipped items in RUNNER_START', run => {
+    const result = run([`
+      $skip();
+      describe('suite 1', () => {
+        it('test 1', noop);
+      });
+    `, `
+      describe('suite 2', () => {
+        $skip();
+        it('test 2', noop);
+      });
+    `, `
+      it('test 3', noop)
+    `], {raw: true});
+
+    return expectResolve(result)
+      .then(res => {
+        const runnerStart = res.find(item => item.event === 'RUNNER_START');
+        expect(runnerStart.data.skippedInFiles.length, 'to equal', 2);
+        expect(runnerStart.data.skippedSuites.length, 'to equal', 1);
+        expect(runnerStart.data.skippedTests.length, 'to equal', 1);
+      })
+  });
+
+
 });

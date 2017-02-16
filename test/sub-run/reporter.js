@@ -111,7 +111,7 @@ module.exports = class LogReporter {
     const loggedEnvs = Object.keys(this._treeLog);
     const flat = filter.flat || loggedEnvs.length === 0 || this._isSingleEnvAndSession();
 
-    if (filter.events) {
+    if (filter.raw) {
       return this._events;
     }
 
