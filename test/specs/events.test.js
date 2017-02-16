@@ -14,6 +14,7 @@ describe('events', () => {
       `]);
 
       return expectResolve(result, [
+        'RUNNER_INIT',
         'RUNNER_START',
         'RUNNER_END',
       ]);
@@ -22,6 +23,7 @@ describe('events', () => {
     it('should emit runner events for empty files', run => {
       const result = run(``);
       return expectResolve(result, [
+        'RUNNER_INIT',
         'RUNNER_START',
         'RUNNER_END',
       ]);
@@ -41,6 +43,7 @@ describe('events', () => {
       return expectReject(result, {
         message: 'err',
         report: [
+          'RUNNER_INIT',
           'RUNNER_START',
           'RUNNER_END err',
         ]

@@ -48,9 +48,9 @@ module.exports = class Sheeva {
   }
 
   _init() {
-    this._emitInit();
     configurator.init(this._rawConfig);
     reporter.init();
+    this._emitInit();
   }
 
   _readFiles() {
@@ -99,7 +99,7 @@ module.exports = class Sheeva {
 
   _emitInit() {
     reporter.handleEvent(RUNNER_INIT, {
-      rawConfig: this._rawConfig
+      config
     });
   }
 
