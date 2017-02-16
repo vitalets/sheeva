@@ -7,6 +7,7 @@
  */
 
 const utils = require('../../utils');
+const Caller = require('../caller');
 
 module.exports = class Queue {
   /**
@@ -51,15 +52,15 @@ module.exports = class Queue {
   }
 
   /**
-   * Runs queue
+   * Runs queue on session
    *
-   * @param {Caller} caller
+   * @param {Session} session
    * @returns {Promise}
    */
-  run(caller) {
+  runOn(session) {
     return this._promised.call(() => {
       this._isRunning = true;
-      this._caller = caller;
+      this._caller = new Caller(session);
       this._next()
         .catch(e => this._promised.reject(e));
     });

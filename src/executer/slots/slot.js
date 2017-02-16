@@ -71,11 +71,11 @@ module.exports = class Slot {
   }
 
   _needNewSession() {
-    return !this._session || config.newSessionPerFile || !this._session.canRun(this._queue);
+    return !this._session || config.newSessionPerFile || this._session.env !== this._queue.env;
   }
 
   _runQueue() {
-    return this._session.run(this._queue);
+    return this._queue.runOn(this._session);
   }
 
   _onSessionEnd() {

@@ -1,11 +1,9 @@
 /**
- * Session - single concurrent worker for particular env.
- * Session is located in Slot and runs Queues serially.
+ * Session - single concurrent worker for running queues on particular env.
  */
 
 const {config} = require('../../configurator');
 const reporter = require('../../reporter');
-const Caller = require('../caller');
 
 const {
   SESSION_START,
@@ -31,7 +29,6 @@ module.exports = class Session {
   constructor(env) {
     this._env = env;
     this._status = STATUS.CREATED;
-    this._caller = new Caller(this);
     this._env.sessions.push(this);
     this._index = this._env.sessions.length - 1;
   }
@@ -57,14 +54,6 @@ module.exports = class Session {
     return Promise.resolve()
       .then(() => config.startSession(this))
       .then(() => this._started());
-  }
-
-  canRun(queue) {
-    return this._env === queue.env;
-  }
-
-  run(queue) {
-    return queue.run(this._caller);
   }
 
   end() {
