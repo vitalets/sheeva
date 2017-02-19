@@ -102,7 +102,7 @@ module.exports = class Queue {
   }
 
   _handleSuiteChange() {
-    const commonSuite = this._getCommonSuite();
+    const commonSuite = this._getNearestCommonSuite();
     return this._caller.callAfter(this._suiteStack, commonSuite)
       .then(() => {
         this._incrementIndex();
@@ -148,7 +148,7 @@ module.exports = class Queue {
    */
   _isSuiteEnd(endSuitePos) {
     if (this._isSuiteChange()) {
-      const commonSuite = this._getCommonSuite();
+      const commonSuite = this._getNearestCommonSuite();
       const commonSuitePos = this._suiteStack.findIndex(suite => suite === commonSuite);
       return commonSuitePos < endSuitePos;
     } else {
@@ -164,30 +164,12 @@ module.exports = class Queue {
 
   /**
    * Finds common parent suite
-   * todo: maybe move to utils
    * todo: optimize for usual cases: 1. sub-suite, 2. same level suite
    *
    * @returns {Suite}
    */
-  _getCommonSuite() {
-    if (!this._currentTest || !this._nextTest) {
-      return null;
-    }
-
-    const maxLength = Math.max(
-      this._currentTest.parents.length,
-      this._nextTest.parents.length
-    );
-    for (let i = 0; i < maxLength; i++) {
-      const p1 = this._currentTest.parents[i];
-      const p2 = this._nextTest.parents[i];
-      if (p1 != p2) {
-        return this._currentTest.parents[i - 1];
-      }
-    }
-
-    // todo: warn
-    return this._currentTest.parent;
+  _getNearestCommonSuite() {
+    return utils.getNearestCommonParent(this._currentTest, this._nextTest);
   }
 };
 
