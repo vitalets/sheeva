@@ -55,8 +55,12 @@ module.exports = class Splitter {
       if (queue) {
         return queue;
       } else {
-        this._state.setCantSplit(candidate.env, this._stateOptions);
+        this._setCantSplit(candidate.env);
       }
     }
+  }
+
+  _setCantSplit(env) {
+    this._state.setCantSplit(env, this._stateOptions);
   }
 };
