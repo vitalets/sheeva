@@ -13,11 +13,12 @@
     "url": "git://github.com/vitalets/sheeva.git"
   },
   "scripts": {
-    "test": "node src/cli --config test/sheeva.config.js --env=tests-sync",
     "tt": "node src/cli --config test/sheeva.config.js",
-    "devtool": "devtool src/cli --config test/sheeva.config.js --env=tests-sync",
+    "test": "npm run tt -- --env=tests-sync",
     "norep": "npm t -- --reporters=",
-    "precommit": "npm run tt -- --no-only"
+    "devtool": "devtool src/cli --config test/sheeva.config.js --env=tests-sync",
+    "precommit": "npm run tt -- --no-only",
+    "prepush": "npm run tt -- --no-only"
   },
   "license": "MIT",
   "dependencies": {
