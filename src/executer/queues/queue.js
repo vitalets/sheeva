@@ -43,12 +43,14 @@ module.exports = class Queue {
   /**
    * Remaining tests count depends on if queue is running or not,
    * because queue runs hooks considering next test,
-   * and if this test will be splitted we will got error.
+   * and if this test will be splitted out we will got error.
    *
    * @returns {Number}
    */
   getRemainingTestsCount() {
-    return this._isRunning ? this._tests.length - this._currentIndex - 2 : this._tests.length;
+    return this._isRunning
+      ? this._tests.length - this._currentIndex - 2
+      : this._tests.length;
   }
 
   /**
@@ -67,17 +69,7 @@ module.exports = class Queue {
   }
 
   /**
-   * Splits out another queue out of this
-   *
-   * @param {Number} fromIndex
-   */
-  split(fromIndex) {
-    const tests = this._tests.splice(fromIndex);
-    return new Queue(tests);
-  }
-
-  /**
-   * Process next item in queue
+   * Process next test in queue
    */
   _next() {
     return Promise.resolve()
@@ -98,7 +90,6 @@ module.exports = class Queue {
   /**
    * Moves to next test.
    * If there is suite change, call needed `before|after` hooks.
-   *
    */
   _moveToNextTest() {
     return this._isSuiteChange()

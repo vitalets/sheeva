@@ -69,9 +69,9 @@ module.exports = {
   SUITE_END: 'SUITE_END',
 
   /**
-   * Triggered after suite's queue is splitted onto 2 concurrent queues
+   * Triggered when queue is splitted onto 2 concurrent queues
    */
-  SUITE_SPLIT: 'SUITE_SPLIT',
+  QUEUE_SPLIT: 'QUEUE_SPLIT',
 
   /**
    * Triggered before hook execution

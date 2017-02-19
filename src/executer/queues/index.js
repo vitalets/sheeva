@@ -1,7 +1,7 @@
 /**
  * Tries to get next queue for execution.
  *
- * Algorithm depends on following:
+ * Algorithm of tryGetNext() depends on following:
  * - If we have running session, try to get queue for the same env
  * - If there is no session (empty slot) - try to get queue from env by order
  * - If there are queues in env we always PICK next whole queue
@@ -11,7 +11,7 @@
 
 const {config} = require('../../configurator');
 const Picker = require('./picker');
-const Splitter = require('../splitter');
+const Splitter = require('./splitter');
 
 module.exports = class Queues {
   /**
@@ -101,9 +101,5 @@ module.exports = class Queues {
     return {
       isSessionStarted: Boolean(this._session && this._session.isStarted)
     };
-  }
-
-  _onBaseProps() {
-    this._splitter.setBaseProps(this);
   }
 };
