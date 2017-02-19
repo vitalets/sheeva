@@ -2,6 +2,7 @@
  * Candidate for splitting.
  */
 
+const utils = require('../../../utils');
 const reporter = require('../../../reporter');
 const Queue = require('../queue');
 const {QUEUE_SPLIT} = require('../../../events');
@@ -10,6 +11,7 @@ const MIN_REMAINING_TESTS_COUNT = 2;
 module.exports = class Candidate {
   constructor(queue) {
     this._queue = queue;
+    this._splittedQueue = null;
     this._remainingTestsCount = this._queue.getRemainingTestsCount();
     this._isSplittable = this._hasEnoughRemainingTests();
     this._remainingTime = this._calcRemainingTime();
@@ -28,19 +30,23 @@ module.exports = class Candidate {
   }
 
   /**
-   * Tries to split
-   * Current strategy is simple: just take half of remaining tests
-   * todo: make strategy more smart
+   * Tries to split out new Queue
    *
-   * @returns {Queue}
+   * @returns {Queue|undefined}
    */
   trySplit() {
-    const splittedTests = this._getSplittedTests();
-    const splittedQueue = splittedTests.length ? new Queue(splittedTests) : null;
-    if (splittedQueue) {
-      this._emitSplit(splittedQueue);
+    const testsCount = this._getTestsCountToSplit();
+    if (testsCount > 0) {
+      this._split(testsCount);
+      this._emitSplit();
+      return this._splittedQueue;
     }
-    return splittedQueue;
+  }
+
+  _split(testsCount) {
+    const fromIndex = this._queue.tests.length - testsCount;
+    const splittedTests = this._queue.tests.splice(fromIndex);
+    this._splittedQueue = new Queue(splittedTests);
   }
 
   _hasEnoughRemainingTests() {
@@ -54,18 +60,27 @@ module.exports = class Candidate {
     return this._remainingTestsCount;
   }
 
-  _getSplittedTests() {
-    const splitCount = Math.floor(this._remainingTestsCount / 2);
-    const fromIndex = this._queue.tests.length - splitCount;
-    return this._queue.tests.splice(fromIndex);
+  /**
+   * Current strategy is simple: just take half of remaining tests
+   * todo: make strategy more smart
+   */
+  _getTestsCountToSplit() {
+    return Math.floor(this._remainingTestsCount / 2);
   }
 
-  _emitSplit(splittedQueue) {
+  _emitSplit() {
     reporter.handleEvent(QUEUE_SPLIT, {
       queue: this._queue,
-      splittedQueue,
-      suites: [],
+      splittedQueue: this._splittedQueue,
+      suites: this._getSplittedSuites(),
       remainingTestsCount: this._remainingTestsCount,
     });
+  }
+
+  _getSplittedSuites() {
+    const test1 = this._queue.tests[this._queue.tests.length - 1];
+    const test2 = this._splittedQueue.tests[0];
+    const commonSuite = utils.getNearestCommonParent(test1, test2);
+    return commonSuite.parents.concat([commonSuite]);
   }
 };

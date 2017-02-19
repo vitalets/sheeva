@@ -147,6 +147,7 @@ describe('split files', () => {
       expect(res, 'to have length', 1);
       expect(res[0].data.remainingTestsCount, 'to equal', 3);
       expect(res[0].data.splittedQueue.tests, 'to have length', 1);
+      expect(res[0].data.suites, 'to have length', 2);
     });
   });
 

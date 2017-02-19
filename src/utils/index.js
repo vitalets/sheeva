@@ -80,5 +80,5 @@ exports.getNearestCommonParent = function(node1, node2) {
     }
   }
 
-  return null;
+  return node1.parents[node1.parents.length - 1];
 };
