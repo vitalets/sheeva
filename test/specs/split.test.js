@@ -130,4 +130,24 @@ describe('split files', () => {
     )
   });
 
+  it('should emit QUEUE_SPLIT event', run => {
+    const config = {
+      concurrency: 2,
+      splitFiles: true
+    };
+    const result = run([`
+      describe('suite 1', () => {
+        it('test 1', noop);
+        it('test 2', noop);
+        it('test 3', noop);
+      });
+    `], {config, include: ['QUEUE_SPLIT'], raw: true});
+
+    return expectResolve(result).then(res => {
+      expect(res, 'to have length', 1);
+      expect(res[0].data.remainingTestsCount, 'to equal', 3);
+      expect(res[0].data.splittedQueue.tests, 'to have length', 1);
+    });
+  });
+
 });

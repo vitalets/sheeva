@@ -139,12 +139,12 @@ describe('only', () => {
       describe('suite 2', () => {
         it('test 2', noop);
       });
-    `], {raw: true});
+    `], {include: ['RUNNER_START'], raw: true});
 
     return expectResolve(result)
       .then(res => {
-        const runnerStart = res.find(item => item.event === 'RUNNER_START');
-        expect(runnerStart.data.onlyFiles.length, 'to equal', 1);
+        expect(res, 'to have length', 1);
+        expect(res[0].data.onlyFiles, 'to have length', 1);
       })
   });
 });

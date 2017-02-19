@@ -71,8 +71,8 @@ module.exports = class LogReporter {
         this._add(data, `${event} ${suiteName}`);
         break;
       }
-      case events.SUITE_SPLIT: {
-        this._add(data, `${event} ${suiteName} ${data.splittedTestsCount} of ${data.remainingTestsCount}`);
+      case events.QUEUE_SPLIT: {
+        this._add(data, `${event} ${data.splittedQueue.tests.length} of ${data.remainingTestsCount}`);
         break;
       }
       case events.SUITE_END: {
@@ -98,29 +98,6 @@ module.exports = class LogReporter {
     }
   }
 
-  /**
-   *
-   * @param {Object} filter
-   * @param {Array} [filter.include]
-   * @param {Array} [filter.exclude]
-   * @param {Boolean} [filter.flat]
-   */
-  getResult(filter) {
-    this._setDefaultForEmptyFilter(filter);
-
-    const loggedEnvs = Object.keys(this._treeLog);
-    const flat = filter.flat || loggedEnvs.length === 0 || this._isSingleEnvAndSession();
-
-    if (filter.raw) {
-      return this._events;
-    }
-
-    if (flat) {
-      return applyFilter(this._flatLog, filter);
-    } else {
-      return this._applyFilterToTreeLog(filter);
-    }
-  }
   _add({session}, str) {
     this._flatLog.push(str);
     if (session) {
@@ -132,12 +109,39 @@ module.exports = class LogReporter {
     }
   }
 
+  /**
+   *
+   * @param {Object} filter
+   * @param {Array} [filter.include]
+   * @param {Array} [filter.exclude]
+   * @param {Boolean} [filter.flat]
+   */
+  getResult(filter = {}) {
+    this._setDefaultForEmptyFilter(filter);
+
+    const loggedEnvs = Object.keys(this._treeLog);
+    const flat = filter.flat || loggedEnvs.length === 0 || this._isSingleEnvAndSession();
+
+    if (filter.raw) {
+      return this._events
+        .filter(item => isPassingFilter(item.event, filter));
+    }
+
+    if (flat) {
+      return this._flatLog
+        .filter(eventName => isPassingFilter(eventName, filter));
+    } else {
+      return this._applyFilterToTreeLog(filter);
+    }
+  }
+
   _applyFilterToTreeLog(filter) {
     const treeLog = this._treeLog;
     this._treeLog = {};
     Object.keys(treeLog).forEach(envId => {
       Object.keys(treeLog[envId]).forEach(sessionName => {
-        treeLog[envId][sessionName] = applyFilter(treeLog[envId][sessionName], filter);
+        treeLog[envId][sessionName] = treeLog[envId][sessionName]
+          .filter(eventName => isPassingFilter(eventName, filter));
       })
     });
     return treeLog;
@@ -155,17 +159,13 @@ module.exports = class LogReporter {
   }
 };
 
-function applyFilter(log, filter) {
-  let res = log.slice();
-  if (filter.include) {
-    res = res.filter(line => {
-      return filter.include.some(str => line.startsWith(str));
-    });
-  }
+function isPassingFilter(eventName, filter) {
+  let result = true;
   if (filter.exclude) {
-    res = res.filter(line => {
-      return filter.exclude.every(str => !line.startsWith(str));
-    });
+    result = filter.exclude.every(str => !eventName.startsWith(str));
   }
-  return res;
+  if (filter.include) {
+    result = filter.include.some(str => eventName.startsWith(str));
+  }
+  return result;
 }

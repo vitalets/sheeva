@@ -2,7 +2,9 @@
  * Candidate for splitting.
  */
 
+const reporter = require('../../../reporter');
 const Queue = require('../queue');
+const {QUEUE_SPLIT} = require('../../../events');
 const MIN_REMAINING_TESTS_COUNT = 2;
 
 module.exports = class Candidate {
@@ -33,11 +35,12 @@ module.exports = class Candidate {
    * @returns {Queue}
    */
   trySplit() {
-    const splitCount = Math.floor(this._remainingTestsCount / 2);
-    const fromIndex = this._queue.tests.length - splitCount;
-    // console.log(`${item.env.id}: splitted ${splitCount} of ${item.remainingTestsCount} test(s) in ${queue.suite.name}`);
-    const splittedTests = this._queue.tests.splice(fromIndex);
-    return new Queue(splittedTests);
+    const splittedTests = this._getSplittedTests();
+    const splittedQueue = splittedTests.length ? new Queue(splittedTests) : null;
+    if (splittedQueue) {
+      this._emitSplit(splittedQueue);
+    }
+    return splittedQueue;
   }
 
   _hasEnoughRemainingTests() {
@@ -49,5 +52,20 @@ module.exports = class Candidate {
    */
   _calcRemainingTime() {
     return this._remainingTestsCount;
+  }
+
+  _getSplittedTests() {
+    const splitCount = Math.floor(this._remainingTestsCount / 2);
+    const fromIndex = this._queue.tests.length - splitCount;
+    return this._queue.tests.splice(fromIndex);
+  }
+
+  _emitSplit(splittedQueue) {
+    reporter.handleEvent(QUEUE_SPLIT, {
+      queue: this._queue,
+      splittedQueue,
+      suites: [],
+      remainingTestsCount: this._remainingTestsCount,
+    });
   }
 };

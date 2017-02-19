@@ -16,7 +16,7 @@
     "test": "node src/cli --config test/sheeva.config.js --env=tests-sync",
     "tt": "node src/cli --config test/sheeva.config.js",
     "devtool": "devtool src/cli --config test/sheeva.config.js --env=tests-sync",
-    "t-norep": "npm t -- --reporters=",
+    "norep": "npm t -- --reporters=",
     "precommit": "npm run tt -- --no-only"
   },
   "license": "MIT",

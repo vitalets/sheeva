@@ -2,10 +2,8 @@
  * Splitter for running queues
  */
 
-const reporter = require('../../../reporter');
 const State = require('./state');
 const Candidate = require('./candidate');
-const {QUEUE_SPLIT} = require('../../../events');
 
 module.exports = class Splitter {
   constructor(slots) {
@@ -23,7 +21,6 @@ module.exports = class Splitter {
    * @param {Boolean} options.isSessionStarted
    */
   trySplit(envs, options = {}) {
-    // require('../../configurator').config.log(`trying to split ${envs.length} envs with isSessionStarted = ${options.isSessionStarted}`);
     this._stateOptions = {isSessionStarted: options.isSessionStarted};
     const splittableEnvs = this._extractSplittableEnvs(envs);
     this._createCandidates(splittableEnvs);
@@ -56,20 +53,10 @@ module.exports = class Splitter {
     for (let candidate of this._candidates) {
       const queue = candidate.trySplit();
       if (queue) {
-        // this._emitSplit(candidate, queue);
         return queue;
       } else {
         this._state.setCantSplit(candidate.env, this._stateOptions);
       }
     }
-  }
-
-  _emitSplit(item, queue) {
-    reporter.handleEvent(SUITE_SPLIT, {
-      suite: item.queue.suite,
-      queue: item.queue,
-      remainingTestsCount: item.remainingTestsCount,
-      splittedTestsCount: splittedQueue.tests.length,
-    });
   }
 };

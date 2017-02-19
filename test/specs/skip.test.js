@@ -86,14 +86,14 @@ describe('skip', () => {
       });
     `, `
       it('test 3', noop)
-    `], {raw: true});
+    `], {include: ['RUNNER_START'], raw: true});
 
     return expectResolve(result)
       .then(res => {
-        const runnerStart = res.find(item => item.event === 'RUNNER_START');
-        expect(runnerStart.data.skippedInFiles.length, 'to equal', 2);
-        expect(runnerStart.data.skippedSuites.length, 'to equal', 1);
-        expect(runnerStart.data.skippedTests.length, 'to equal', 1);
+        expect(res, 'to have length', 1);
+        expect(res[0].data.skippedInFiles, 'to have length', 2);
+        expect(res[0].data.skippedSuites, 'to have length', 1);
+        expect(res[0].data.skippedTests, 'to have length', 1);
       })
   });
 
