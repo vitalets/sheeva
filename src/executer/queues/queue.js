@@ -163,10 +163,9 @@ module.exports = class Queue {
   }
 
   /**
-   * Finds common parent suite
-   * todo: optimize for usual cases: 1. sub-suite, 2. same level suite
+   * Finds nearest common parent suite of currentTest and nextTest
    *
-   * @returns {Suite}
+   * @returns {Suite|null}
    */
   _getNearestCommonSuite() {
     return utils.getNearestCommonParent(this._currentTest, this._nextTest);
