@@ -15,7 +15,7 @@
   "scripts": {
     "tt": "node src/cli --config test/sheeva.config.js",
     "test": "npm run tt -- --env=tests-sync",
-    "norep": "npm t -- --reporters=",
+    "debug": "npm t -- --reporters=./test/debug-reporter.js --debug",
     "devtool": "devtool src/cli --config test/sheeva.config.js --env=tests-sync",
     "precommit": "npm run tt -- --no-only",
     "prepush": "npm run tt -- --no-only"

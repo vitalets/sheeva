@@ -63,8 +63,7 @@ class Reporter {
   }
 
   _addTimestamp() {
-    // cumulative events already have timestamp
-    this._currentData.timestamp = this._currentData.timestamp || Date.now();
+    this._currentData.timestamp = Date.now();
   }
 
   _proxyToReporters() {

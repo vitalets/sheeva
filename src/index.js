@@ -47,6 +47,10 @@ module.exports = class Sheeva {
     return reporter.get(index);
   }
 
+  getConfig() {
+    return config;
+  }
+
   _init() {
     configurator.init(this._rawConfig);
     reporter.init();

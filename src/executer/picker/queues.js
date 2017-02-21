@@ -2,9 +2,9 @@
  * Picks whole queues from first suitable env
  */
 
-const Queue = require('./queue');
+const Queue = require('../queue');
 
-module.exports = class Picker {
+module.exports = class Queues {
   /**
    * Constructor
    *
@@ -15,7 +15,7 @@ module.exports = class Picker {
     this._createQueues(envFlatSuites);
   }
 
-  tryPick(envs) {
+  pickNext(envs) {
     for (let env of envs) {
       const queues = this._envQueues.get(env);
       if (queues.length) {
@@ -25,7 +25,7 @@ module.exports = class Picker {
     }
   }
 
-  getQueuesForEnv(env) {
+  getRemaining(env) {
     return this._envQueues.get(env);
   }
 

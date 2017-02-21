@@ -14,51 +14,64 @@ module.exports = class SuitesCollector {
   handleEvent(event, data) {
     switch (event) {
       case events.QUEUE_SPLIT: {
-        // todo: temporary just proxy
-        //this._emit(events.QUEUE_SPLIT, data);
-        //this._handleSessionSuiteStart(data);
+        // data.suites.forEach(suite => this._handleSuiteSplit(suite));
         break;
       }
       case events.SESSION_SUITE_START: {
-        this._emit(events.SUITE_START, data);
+        this._reporter.handleEvent(events.SUITE_START, data);
         //this._handleSessionSuiteStart(data);
         break;
       }
       case events.SESSION_SUITE_END: {
-        // todo: temporary just proxy
-        this._emit(events.SUITE_END, data);
+        this._reporter.handleEvent(events.SUITE_END, data);
         //this._handleSessionSuiteEnd(data);
         break;
       }
     }
   }
 
-  _emit(event, data) {
-    this._reporter.handleEvent(event, data);
+  _handleSessionSuiteStart(data) {
+    const suiteState = this._getSuiteState(data.suite);
+    if (!suiteState.started) {
+      suiteState.started = true;
+      this._emit(events.SUITE_START, data);
+    }
+  }
+
+  _handleSuiteSplit(suite) {
+    const suiteState = this._getSuiteState(suite);
+    suiteState.splits++;
+  }
+
+  _handleSessionSuiteEnd(data) {
+    const suiteState = this._getSuiteState(data.suite);
+    if (!suiteState.started) {
+      throw new Error(`Got SESSION_SUITE_END before suite start`);
+    }
+    suiteState.ends++;
+    if (suiteState.ends === suiteState.splits + 1) {
+      this._emit(events.SUITE_END, data);
+    }
   }
 
   _getSuiteState(suite) {
-    let suiteState = this._state.get(suite);
+    let suiteState = this._suites.get(suite);
     if (!suiteState) {
       suiteState = {
         started: false,
         ends: 0,
         splits: 0,
       };
-      this._state.set(suite, suiteState);
+      this._suites.set(suite, suiteState);
     }
     return suiteState;
   }
-  // _handleSessionSuiteStart(data) {
-  //   this._suiteCounter.handleStartEvent(data.suite);
-  //   if (this._suiteCounter.isFirstForId) {
-  //     this._emit(events.SUITE_START, data);
-  //   }
-  // }
-  // _handleSessionSuiteEnd(data) {
-  //   this._suiteCounter.handleEndEvent(data.suite);
-  //   if (this._suiteCounter.isLastForId) {
-  //     this._emit(events.SUITE_END, data);
-  //   }
-  // }
+
+  _emit(event, data) {
+    const newData = {
+      suite: data.suite,
+      env: data.env,
+    };
+    this._reporter.handleEvent(event, newData);
+  }
 };

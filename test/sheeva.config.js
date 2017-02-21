@@ -27,8 +27,8 @@ module.exports = {
   startSession: function (session) {
 
   },
-  callTestHookFn: function ({fn, session, context, hookType, env}) {
-    if (hookType) {
+  callTestHookFn: function ({fn, session, context, hook, env}) {
+    if (hook) {
       context.runOptions = context.runOptions || {};
       return fn(context);
     }

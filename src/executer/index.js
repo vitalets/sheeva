@@ -9,17 +9,17 @@
  */
 
 const utils = require('../utils');
-const Queues = require('./queues');
-const Slots = require('./slots');
 const reporter = require('../reporter');
 const {ENV_START, ENV_END} = require('../events');
+const Picker = require('./picker');
+const Slots = require('./slots');
 
 module.exports = class Executer {
   /**
    * Constructor
    */
   constructor() {
-    this._queues = null;
+    this._picker = null;
     this._slots = null;
     this._startedEnvs = new Set();
     this._promised = new utils.Promised();
@@ -33,7 +33,7 @@ module.exports = class Executer {
   run(envFlatSuites) {
     return this._promised.call(() => {
       this._initSlots();
-      this._initQueues(envFlatSuites);
+      this._initPicker(envFlatSuites);
       this._slots.fill();
     });
   }
@@ -48,12 +48,12 @@ module.exports = class Executer {
     this._slots = new Slots(handlers);
   }
 
-  _initQueues(envFlatSuites) {
-    this._queues = new Queues(this._slots, envFlatSuites);
+  _initPicker(envFlatSuites) {
+    this._picker = new Picker(this._slots, envFlatSuites);
   }
 
   _handleFreeSlot(slot) {
-    const queue = this._queues.tryGetNext(slot.session);
+    const queue = this._picker.pickNextQueue(slot.session);
 
     if (queue) {
       slot.run(queue)
@@ -90,7 +90,7 @@ module.exports = class Executer {
   }
 
   _hasQueues(env) {
-    return this._queues.getQueuesForEnv(env).length > 0;
+    return this._picker.getRemainingQueues(env).length > 0;
   }
 
   _hasSlots(env) {

@@ -27,11 +27,12 @@ module.exports = class Collector {
   }
 
   /**
-   * @param {Suite} parent
+   * @param {Suite} suite
    * @param {Suite|Test} child
    */
-  addChild(parent, child) {
-    this._setLink(parent, child);
+  addChild(suite, child) {
+    suite.children.push(child);
+    this._setParents(suite, child);
     this._processOnly(child);
     this._processSkip(child);
     this._processTags(child);
@@ -39,19 +40,18 @@ module.exports = class Collector {
 
   /**
    * @param {Suite} suite
-   * @param {String} type
-   * @param {Function} fn
+   * @param {Hook} hook
    */
-  addHook(suite, type, fn) {
-    suite[type].push(fn);
+  addHook(suite, hook) {
+    suite[hook.type].push(hook);
+    this._setParents(suite, hook);
   }
 
   /**
    * @param {Suite} parent
    * @param {Suite|Test} child
    */
-  _setLink(parent, child) {
-    parent.children.push(child);
+  _setParents(parent, child) {
     child.parents = parent.parents.concat([parent]);
     child.parent = parent;
   }

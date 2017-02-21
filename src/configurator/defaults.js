@@ -75,6 +75,12 @@ module.exports = {
   env: '',
 
   /**
+   * Debug mode
+   * @type {Boolean}
+   */
+  debug: false,
+
+  /**
    * Creates environments (shortly envs).
    * Each env should have `id` property and can overwrite some config fields.
    *
@@ -136,9 +142,9 @@ module.exports = {
    * @param {Function} params.fn
    * @param {Object} params.context
    * @param {Object} params.env
+   * @param {Suite} params.suite
    * @param {Test} [params.test]
-   * @param {Test} [params.suite]
-   * @param {String} [params.hookType]
+   * @param {Hook} [params.hook]
    *
    * @returns {Function}
    */

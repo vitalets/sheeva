@@ -37,8 +37,10 @@ module.exports = class Appender {
   }
 
   addHook(type, fn) {
-    this._addItem(suite => {
-      this._collector.addHook(suite, type, fn);
+    this._addItem((suite, options) => {
+      Object.assign(options, {type, fn, index: suite[type].length});
+      const hook = factory.createHook(options);
+      this._collector.addHook(suite, hook);
     });
   }
 

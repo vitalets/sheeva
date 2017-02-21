@@ -40,6 +40,17 @@ exports.thenCall = function(fn) {
 };
 
 /**
+ * Reduce array as promise chain
+ *
+ * @param {Array} arr
+ * @param {Function} fn
+ * @returns {Promise}
+ */
+exports.reduceWithPromises = function(arr, fn) {
+  return arr.reduce((res, item) => res.then(() => fn(item)), Promise.resolve());
+};
+
+/**
  * Converts single value to array if it's not array
  *
  * @param {*} value
@@ -81,4 +92,17 @@ exports.getNearestCommonParent = function(node1, node2) {
   }
 
   return node1.parents[node1.parents.length - 1];
+};
+
+/**
+ * Returns diff of two array stacks (having common base)
+ *
+ * @param {Array} stack1
+ * @param {Array} stack2
+ * @returns {Array}
+ */
+exports.getStackDiff = function(stack1, stack2) {
+  const minStack = stack2.length > stack1.length ? stack1 : stack2;
+  const maxStack = stack2.length > stack1.length ? stack2 : stack1;
+  return maxStack.slice(minStack.length);
 };

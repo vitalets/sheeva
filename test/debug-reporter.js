@@ -8,7 +8,7 @@ module.exports = class DebugReporter {
   handleEvent(event, data) {
     const env = data.env;
     const session = data.session ? `Session #${data.session.index}` : '';
-    //console.log('log-reporter:', event)
+    console.log('log-reporter:', event)
     //console.log('log-reporter:', new Date(data.timestamp), event)
     //console.log('\nlog-reporter:', new Date(data.timestamp), event, data.test && data.test.name, '\n')
     //log('log-reporter:', event, data.error)

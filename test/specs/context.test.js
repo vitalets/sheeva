@@ -46,15 +46,15 @@ describe('context', () => {
     `);
 
     return expectResolve(report, [
-      'HOOK_END suite 1 beforeEach 0',
+      'HOOK_END suite 1 beforeEach',
       'HOOK_END suite 1 beforeEach 1',
       'TEST_END test 1',
-      'HOOK_END suite 1 afterEach 0',
+      'HOOK_END suite 1 afterEach',
       'HOOK_END suite 1 afterEach 1'
     ])
   });
 
-  it('should not create suite context for before/after hooks', run => {
+  it('should not create context for before/after hooks', run => {
     const report = run(`
       describe('suite 1', () => {
         before((session, context) => {
@@ -74,9 +74,9 @@ describe('context', () => {
     `);
 
     return expectResolve(report, [
-      'HOOK_END suite 1 before 0',
+      'HOOK_END suite 1 before',
       'TEST_END test 1',
-      'HOOK_END suite 1 after 0',
+      'HOOK_END suite 1 after',
     ])
   });
 

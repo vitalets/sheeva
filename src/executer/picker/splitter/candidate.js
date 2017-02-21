@@ -4,7 +4,7 @@
 
 const utils = require('../../../utils');
 const reporter = require('../../../reporter');
-const Queue = require('../queue');
+const Queue = require('../../queue');
 const {QUEUE_SPLIT} = require('../../../events');
 const MIN_REMAINING_TESTS_COUNT = 2;
 

@@ -31,6 +31,21 @@ exports.createTest = function (options) {
   });
 };
 
+/**
+ * Creates hook object
+ *
+ * @param {Object} options
+ */
+exports.createHook = function (options) {
+  return extendBase(options, {
+    name: `${options.type} ${options.index}`,
+    type: options.type,
+    fn: options.fn,
+    index: options.index,
+    isPre: options.type.startsWith('before'),
+  });
+};
+
 function extendBase(options, extraOptions) {
   return Object.assign({
     name: options.name,

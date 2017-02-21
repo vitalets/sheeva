@@ -80,11 +80,11 @@ module.exports = class LogReporter {
         break;
       }
       case events.HOOK_START: {
-        this._add(data, `${event} ${suiteName} ${data.hookType} ${data.index}`);
+        this._add(data, `${event} ${suiteName} ${data.hook.index ? data.hook.name : data.hook.type}`);
         break;
       }
       case events.HOOK_END: {
-        this._add(data, `${event} ${suiteName} ${data.hookType} ${data.index}${errMessage}`);
+        this._add(data, `${event} ${suiteName} ${data.hook.index ? data.hook.name : data.hook.type}${errMessage}`);
         break;
       }
       case events.TEST_START: {
