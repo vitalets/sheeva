@@ -15,7 +15,7 @@ const {config} = require('../configurator');
 const factory = require('./factory');
 const Collector = require('./collector');
 const Appender = require('./appender');
-const Annotation = require('./annotation');
+const Annotator = require('./annotator');
 const Api = require('./api');
 
 module.exports = class Reader {
@@ -27,7 +27,7 @@ module.exports = class Reader {
     this._fnSuites = new Map();
     this._context = global;
     this._collector = new Collector();
-    this._annotation = new Annotation();
+    this._annotator = new Annotator();
     this._api = new Api();
     this._appender = null;
   }
@@ -78,7 +78,7 @@ module.exports = class Reader {
   }
 
   _injectApi() {
-    this._api.setAnnotation(this._annotation);
+    this._api.setAnnotator(this._annotator);
     this._api.inject(this._context);
   }
 
@@ -94,7 +94,7 @@ module.exports = class Reader {
   }
 
   _fillSuites(suites, fn) {
-    this._appender = new Appender(this._collector, this._annotation, suites);
+    this._appender = new Appender(this._collector, this._annotator, suites);
     this._api.setAppender(this._appender);
     fn();
   }

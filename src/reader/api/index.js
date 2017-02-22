@@ -17,8 +17,8 @@ module.exports = class Api {
     this._bddApi.setAppender(appender);
   }
 
-  setAnnotation(annotation) {
-    this._annotaionApi.setAnnotation(annotation);
+  setAnnotator(annotator) {
+    this._annotaionApi.setAnnotator(annotator);
   }
 
   inject(context) {

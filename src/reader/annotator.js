@@ -4,7 +4,7 @@
 
 const utils = require('../utils');
 
-module.exports = class Annotation {
+module.exports = class Annotator {
   constructor() {
     this._only = false;
     this._skip = false;
@@ -21,17 +21,18 @@ module.exports = class Annotation {
     this._if.length = 0;
   }
 
-  only() {
+  addOnly() {
     this._only = true;
   }
 
-  skip() {
+  addSkip() {
     this._skip = true;
   }
 
-  tags() {
-    const tags = [].slice.call(arguments);
-    this._tags = this._tags.concat(tags);
+  addTags(tags) {
+    if (Array.isArray(tags)) {
+      this._tags = this._tags.concat(tags);
+    }
   }
 
   addIgnore(fn) {
