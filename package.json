@@ -1,7 +1,7 @@
 {
   "name": "sheeva",
   "version": "0.1.0",
-  "description": "Multi-Hand Automation Test Runner",
+  "description": "Concurrent Automation Test Runner",
   "author": {
     "name": "Vitaliy Potapov",
     "email": "noginsk@rambler.ru"
