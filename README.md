@@ -1,12 +1,8 @@
 <h1 align="center">Sheeva</h1>
 
 <p align="center">
-  <a title='npm version' href="https://npmjs.org/package/sheeva">
-    <img src='http://img.shields.io/npm/v/sheeva.svg' />
-  </a>
-  <a title='License' href="https://opensource.org/licenses/MIT">
-    <img src='https://img.shields.io/badge/license-MIT-blue.svg' />
-  </a>
+  <a title='npm version' href="https://npmjs.org/package/sheeva"><img src='http://img.shields.io/npm/v/sheeva.svg'/></a>
+  <a title='License' href="https://opensource.org/licenses/MIT"><img src='https://img.shields.io/badge/license-MIT-blue.svg'/></a>
 </p>
 
 <h4 align="center">
