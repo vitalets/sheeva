@@ -24,8 +24,6 @@ module.exports = class Queue {
     assertTests(tests);
     this._suiteStack = [];
     this._cursor = new Cursor(tests);
-    // todo: fileSuite
-    this._suite = tests[0].parents[0];
     this._session = null;
     this._suiteHooksCaller = null;
     this._isRunning = false;
@@ -36,12 +34,12 @@ module.exports = class Queue {
     return this._cursor.tests;
   }
 
-  get suite() {
-    return this._suite;
+  get fileSuite() {
+    return this.tests[0].parents[0];
   }
 
   get env() {
-    return this._suite.env;
+    return this.fileSuite.env;
   }
 
   /**
