@@ -13,6 +13,7 @@ module.exports = class TestCaller {
     this._test = test;
     this._context = {};
     this._hooksCaller = new TestHooksCaller(session, this._context);
+    this._testError = null;
   }
 
   /**
@@ -25,7 +26,7 @@ module.exports = class TestCaller {
       .then(() => this._hooksCaller.callBeforeEach(this._test))
       .then(() => this._callTest())
       .finally(() => this._hooksCaller.callAfterEach())
-      .finally(() => this._rejectForHooksError());
+      .finally(() => this._rejectIfError());
   }
 
   _callTest() {
@@ -36,11 +37,21 @@ module.exports = class TestCaller {
   }
 
   _storeError(error) {
-    this._error = error;
+    this._testError = error;
+    // todo: use TestError class
+    Object.defineProperty(error, 'test', {
+      value: this._test
+    });
   }
 
-  _rejectForHooksError() {
-    return this._hooksCaller.firstError ? Promise.reject(this._hooksCaller.firstError) : null;
+  /**
+   * Reject in two cases:
+   *  - error in test and breakOnError enabled
+   *  - error in hooks
+   */
+  _rejectIfError() {
+    const error = config.breakOnError && this._testError || this._hooksCaller.firstError;
+    return error ? Promise.reject(error) : null;
   }
 
   _callFn() {
@@ -61,7 +72,7 @@ module.exports = class TestCaller {
       session: this._session,
       env: this._session.env,
       test: this._test,
-      error: this._error,
+      error: this._testError,
     };
     reporter.handleEvent(event, data);
   }

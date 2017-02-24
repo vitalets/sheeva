@@ -30,19 +30,17 @@ module.exports = class Cursor {
   }
 
   moveToNextText() {
-    if (this._currentIndex > this._tests.length) {
-      const lastTest = this._tests[this._tests.length - 1];
-      throw new Error(`Going out of queue in ${lastTest.parents[0].name}`);
-    }
-    this._currentIndex++;
-    this._currentTest = this._tests[this._currentIndex];
-    this._nextTest = this._tests[this._currentIndex + 1];
+    this._setCurrentIndex(this._currentIndex + 1);
   }
 
   moveToSuiteEnd(suite) {
     while (!this._isSuiteEnd(suite)) {
       this.moveToNextText();
     }
+  }
+
+  moveToQueueEnd() {
+    this._setCurrentIndex(this._tests.length - 1);
   }
 
   isSuiteBoundary() {
@@ -83,5 +81,17 @@ module.exports = class Cursor {
     } else {
       return false;
     }
+  }
+
+  _setCurrentIndex(index) {
+    // not this._tests.length - 1 as we move cursor to +1 test to call after hooks for the last test
+    const maxIndex = this._tests.length;
+    if (index > maxIndex) {
+      const filename = this._tests[0].parents[0].name;
+      throw new Error(`Going out of queue: set index = ${index}, but max = ${maxIndex} in ${filename}`);
+    }
+    this._currentIndex = index;
+    this._currentTest = this._tests[this._currentIndex];
+    this._nextTest = this._tests[this._currentIndex + 1];
   }
 };

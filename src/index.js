@@ -27,7 +27,7 @@ module.exports = class Sheeva {
     this._filter = new Filter();
     this._flattener = new Flattener();
     this._executer = new Executer();
-    this._error = null;
+    this._breakingError = null;
   }
 
   run() {
@@ -77,11 +77,11 @@ module.exports = class Sheeva {
    * Store error if it is not stored yet
    * (because first error seems to be more important)
    *
-   * @param {*} error
+   * @param {Error} error
    */
   _storeError(error) {
-    if (!this._error) {
-      this._error = error || new Error('Empty rejection');
+    if (!this._breakingError) {
+      this._breakingError = error || new Error('Empty rejection');
     }
   }
 
@@ -98,7 +98,7 @@ module.exports = class Sheeva {
   }
 
   _getResult() {
-    return this._error ? Promise.reject(this._error) : reporter.getResult();
+    return this._breakingError ? Promise.reject(this._breakingError) : reporter.getResult();
   }
 
   _emitInit() {
@@ -121,7 +121,7 @@ module.exports = class Sheeva {
 
   _emitEnd() {
     reporter.handleEvent(RUNNER_END, {
-      error: this._error
+      error: this._breakingError
     });
   }
 };

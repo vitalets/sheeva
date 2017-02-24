@@ -16,7 +16,7 @@ program
   .option('--env <string>', 'environment id to run')
   .option('--split-suites', 'allows split of suites between parallel sessions')
   .option('--no-only', 'disallow ONLY tests. Useful for pre-commit / pre-push hooks')
-  .option('--debug', 'debug mode')
+  .option('--break-on-error', 'break on first error')
   .parse(process.argv);
 
 run();
@@ -26,18 +26,18 @@ function run() {
   const sheeva = new Sheeva(inConfig);
   sheeva
     .run()
-    .then(res => success(res), e => fail(sheeva, e));
+    .then(res => success(res), error => fail(sheeva, error));
 }
 
 function success(res) {
   exit(res.errors.length);
 }
 
-function fail(sheeva, e) {
-  // if there is no reporter or debug mode --> show sheeva error in console
+function fail(sheeva, error) {
+  // if there is no reporter --> show sheeva error in console
   try {
-    if (!sheeva.getReporter(0) || sheeva.getConfig().debug) {
-      console.error(e);
+    if (!sheeva.getReporter(0)) {
+      console.error(error);
     }
   } catch (err) {
     console.error(err);

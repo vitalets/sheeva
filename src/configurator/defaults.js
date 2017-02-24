@@ -37,15 +37,9 @@ module.exports = {
   splitFiles: false,
 
   /**
-   * todo:
-   * Action when test/hook fails:
-   * - stop
-   * - continue-env (default)
-   * - continue-all
-   *
-   * or just bail?
+   * Break runner on first error
    */
-  //onError: 'continue-env',
+  breakOnError: false,
 
   /**
    * Reporters
@@ -73,12 +67,6 @@ module.exports = {
    * @type {String}
    */
   env: '',
-
-  /**
-   * Debug mode
-   * @type {Boolean}
-   */
-  debug: false,
 
   /**
    * Creates environments (shortly envs).

@@ -25,19 +25,19 @@ module.exports = function (code, options) {
   const sheeva = new Sheeva(config);
   return sheeva.run()
     .then(() => sheeva.getReporter(0).getResult(options))
-    .catch(e => attachReportToError(e, sheeva, options))
+    .catch(error => attachReportToError(error, sheeva, options))
     .finally(() => tempFiles.cleanup());
 };
 
-function attachReportToError(e, sheeva, options) {
+function attachReportToError(error, sheeva, options) {
   try {
-    Object.defineProperty(e, 'report', {
+    Object.defineProperty(error, 'report', {
       value: sheeva.getReporter(0).getResult(options)
     });
   } catch (err) {
     // reporter may not exist
   }
-  return Promise.reject(e);
+  return Promise.reject(error);
 }
 
 /**

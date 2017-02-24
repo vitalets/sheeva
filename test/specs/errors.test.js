@@ -411,4 +411,93 @@ describe('errors', () => {
 
   });
 
+  describe('config.breakOnError', () => {
+
+    it('should break runner in case of error in nested suite before hook', run => {
+      const config = {
+        breakOnError: true,
+      };
+      const result = run(`
+        describe('suite 1', () => {
+          after(() => noop);
+          beforeEach(() => noop);
+          afterEach(() => noop);
+          
+          describe('suite 2', () => {
+            before(() => { throw new Error('err') });
+            it('test 1', noop);
+          });
+          
+          describe('suite 3', () => {
+            it('test 2', noop);
+          });
+        });
+      `, {config});
+
+      return expectReject(result, 'err')
+        .then(res => expect(res.report, 'to equal', [
+          'HOOK_END suite 2 before err',
+          'HOOK_END suite 1 after'
+        ]));
+    });
+
+    it('should break runner in case of error in nested suite beforeEach hook', run => {
+      const config = {
+        breakOnError: true,
+      };
+      const result = run(`
+        describe('suite 1', () => {
+          after(() => noop);
+          beforeEach(() => noop);
+          afterEach(() => noop);
+          
+          describe('suite 2', () => {
+            beforeEach(() => { throw new Error('err') });
+            it('test 1', noop);
+          });
+          
+          describe('suite 3', () => {
+            it('test 2', noop);
+          });
+        });
+      `, {config});
+
+      return expectReject(result, 'err')
+        .then(res => expect(res.report, 'to equal', [
+          'HOOK_END suite 1 beforeEach',
+          'HOOK_END suite 2 beforeEach err',
+          'HOOK_END suite 1 afterEach',
+          'HOOK_END suite 1 after'
+        ]));
+    });
+
+    it('should break runner in case of test error', run => {
+      const config = {
+        breakOnError: true,
+      };
+      const result = run(`
+        describe('suite 1', () => {
+          after(() => noop);
+          
+          describe('suite 2', () => {
+            after(() => noop);
+            it('test 1', () => { throw new Error('err') });
+          });
+          
+          describe('suite 3', () => {
+            it('test 2', noop);
+          });
+        });
+      `, {config});
+
+      return expectReject(result, 'err')
+        .then(res => expect(res.report, 'to equal', [
+          'TEST_END test 1 err',
+          'HOOK_END suite 2 after',
+          'HOOK_END suite 1 after'
+        ]));
+    });
+
+  });
+
 });

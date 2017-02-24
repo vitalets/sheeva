@@ -9,7 +9,7 @@ describe('config runner', () => {
       describe('suite 1', () => {
         it('test 1', noop);
       });
-      `], {config});
+    `], {config});
 
     return expectResolve(result)
       .then(() => expect(a, 'to equal', 1))
@@ -91,7 +91,7 @@ describe('config runner', () => {
       describe('suite 1', () => {
         it('test 1', () => { throw new Error('err') });
       });
-      `], {config});
+    `], {config});
 
     return expectResolve(result).then(() => {
       expect(a, 'to equal', 1);

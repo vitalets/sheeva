@@ -83,7 +83,7 @@ module.exports = class Queue {
     Promise.resolve()
       .then(() => this._moveCursor())
       .then(() => this._callTest())
-      .catch(error => this._handleHooksError(error))
+      .catch(error => this._handleError(error))
       .then(() => this._hasCurrentTest() ? this._handleNextTest() : this._promised.resolve())
       .catch(error => this._promised.reject(error));
   }
@@ -100,19 +100,32 @@ module.exports = class Queue {
     }
   }
 
-  _handleHooksError(error) {
-    if (error.suite) {
-      if (!this._suiteHooksCaller.firstError) {
-        this._suiteHooksCaller.storeEachHooksError(error);
-      }
+  _handleError(error) {
+    const isHooksError = Boolean(error.suite);
+    if (isHooksError && this._handleHooksError(error)) {
+      return Promise.resolve();
+    } else {
+      return this._terminate(error);
+    }
+  }
 
-      if (!config.debug) {
-        this._cursor.moveToSuiteEnd(error.suite);
-        return;
-      }
+  _handleHooksError(error) {
+    if (!this._suiteHooksCaller.firstError) {
+      this._suiteHooksCaller.storeEachHooksError(error);
     }
 
-    return Promise.reject(error);
+    if (!config.breakOnError) {
+      this._cursor.moveToSuiteEnd(error.suite);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  _terminate(error) {
+    this._cursor.moveToQueueEnd();
+    return this._moveCursor()
+      .finally(() => Promise.reject(error));
   }
 
   _hasCurrentTest() {
