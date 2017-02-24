@@ -3,7 +3,7 @@
  */
 
 const path = require('path');
-
+require('promise.prototype.finally').shim();
 const baseConfig = require('./sheeva.config');
 const TempFiles = require('./tempfiles');
 
@@ -25,17 +25,11 @@ module.exports = function (code, options) {
   const sheeva = new Sheeva(config);
   return sheeva.run()
     .then(() => sheeva.getReporter(0).getResult(options))
-    .then(res => {
-      tempFiles.cleanup();
-      return res;
-    }, e => {
-      tempFiles.cleanup();
-      addReportToError(e, sheeva, options);
-      return Promise.reject(e);
-    });
+    .catch(e => attachReportToError(e, sheeva, options))
+    .finally(() => tempFiles.cleanup());
 };
 
-function addReportToError(e, sheeva, options) {
+function attachReportToError(e, sheeva, options) {
   try {
     Object.defineProperty(e, 'report', {
       value: sheeva.getReporter(0).getResult(options)
@@ -43,6 +37,7 @@ function addReportToError(e, sheeva, options) {
   } catch (err) {
     // reporter may not exist
   }
+  return Promise.reject(e);
 }
 
 /**
@@ -56,7 +51,7 @@ function requireSheeva() {
 function clearSrcCache() {
   Object.keys(require.cache).forEach(key => {
     const relpath = path.relative('.', key);
-    if (relpath.startsWith('src')) {
+    if (relpath.startsWith('src/')) {
       delete require.cache[key];
     }
   });
