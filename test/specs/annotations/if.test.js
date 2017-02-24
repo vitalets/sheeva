@@ -1,4 +1,4 @@
-describe('meta if', () => {
+describe('annotation: if', () => {
 
   it('should exclude/include test for particular env', run => {
     const config = {

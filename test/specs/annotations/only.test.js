@@ -1,7 +1,7 @@
 
 const escapeRe = require('escape-string-regexp');
 
-describe('only', () => {
+describe('annotation: only', () => {
 
   it('should run only test by $only()', run => {
     const result = run(`

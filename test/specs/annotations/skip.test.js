@@ -1,4 +1,4 @@
-describe('skip', () => {
+describe('annotation: skip', () => {
 
   it('should skip test', run => {
     const result = run(`

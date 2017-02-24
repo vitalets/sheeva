@@ -1,4 +1,4 @@
-describe('meta-ignore', () => {
+describe('annotation: ignore', () => {
 
   it('should exclude/include test for particular env', run => {
     const config = {

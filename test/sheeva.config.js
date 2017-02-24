@@ -6,7 +6,7 @@ require('./sub-run');
 
 module.exports = {
   concurrency: 5,
-  files: './test/specs/*.test.js',
+  files: './test/specs/**/*.test.js',
   //files: './test/specs/only.test.js',
   newSessionPerFile: false,
   splitFiles: true,
