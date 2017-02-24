@@ -42,7 +42,7 @@ module.exports = class SuiteFlattener {
 
   _flattenSubSuites() {
     this._suite.children
-      .filter(item => isSuite(item))
+      .filter(item => item.isSuite)
       .map(suite => this._flattenSubSuite(suite))
   }
 
@@ -52,7 +52,7 @@ module.exports = class SuiteFlattener {
   }
 
   _flattenTests() {
-    const tests = this._suite.children.filter(item => !isSuite(item));
+    const tests = this._suite.children.filter(item => !item.isSuite);
     const flatSuite = createFlatSuite(tests);
     this._flatSuites.push(flatSuite);
   }
@@ -97,8 +97,4 @@ module.exports = class SuiteFlattener {
 
 function createFlatSuite(tests, baCount = 0) {
   return {tests, baCount};
-}
-
-function isSuite(item) {
-  return Boolean(item.children);
 }

@@ -39,7 +39,7 @@ module.exports = class Includer {
   }
 
   _includeChildrenWithFlag(item) {
-    if (item.children) {
+    if (item.isSuite) {
       item.children = this._includeWithFlag(item.children);
     }
   }

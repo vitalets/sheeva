@@ -18,6 +18,7 @@ exports.createSuite = function (options, parent = null) {
     beforeEach: [],
     after: [],
     afterEach: [],
+    isSuite: true,
   });
   if (parent) {
     linkItems(suite, parent);
