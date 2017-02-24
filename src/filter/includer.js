@@ -1,18 +1,18 @@
 /**
- * Includes only specified items in fileSuites, removing all other
+ * Includes only specified items in topSuites, removing all other
  */
 
 module.exports = class Includer {
 
-  constructor(fileSuites) {
-    this._fileSuites = fileSuites;
+  constructor(topSuites) {
+    this._topSuites = topSuites;
     this._items = null;
   }
 
   include(items) {
     this._items = items;
     this._setIncludeFlag();
-    return this._includeWithFlag(this._fileSuites);
+    return this._includeWithFlag(this._topSuites);
   }
 
   _setIncludeFlag() {

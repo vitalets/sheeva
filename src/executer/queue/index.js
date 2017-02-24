@@ -34,12 +34,12 @@ module.exports = class Queue {
     return this._cursor.tests;
   }
 
-  get fileSuite() {
+  get topSuite() {
     return this.tests[0].parents[0];
   }
 
   get env() {
-    return this.fileSuite.env;
+    return this.topSuite.env;
   }
 
   /**

@@ -25,7 +25,7 @@ module.exports = class Tags {
   _includeTagged() {
     this._envData.forEach(data => {
       const taggedItems = this._concatTagItems(data.tags);
-      data.fileSuites = new Includer(data.fileSuites).include(taggedItems);
+      data.topSuites = new Includer(data.topSuites).include(taggedItems);
     });
   }
 

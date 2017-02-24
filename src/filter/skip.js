@@ -33,7 +33,7 @@ module.exports = class Skip {
 
   _updateEnvData() {
     this._envData.forEach(data => {
-      data.fileSuites = new Excluder(data.fileSuites).exclude(data.skip);
+      data.topSuites = new Excluder(data.topSuites).exclude(data.skip);
     });
   }
 

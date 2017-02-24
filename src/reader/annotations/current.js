@@ -1,10 +1,10 @@
 /**
- * Holds annotation info for nearest test/suite
+ * Holds current annotation about nearest test/suite/hook
  */
 
-const utils = require('../utils');
+const utils = require('../../utils');
 
-module.exports = class Annotator {
+module.exports = class Current {
   constructor() {
     this._only = false;
     this._skip = false;
@@ -45,19 +45,22 @@ module.exports = class Annotator {
     this._if.push(fn);
   }
 
-  getOptions(env) {
-    return this._isIgnored(env) ? null : this._createOptions();
-  };
+  get(env) {
+    if (this._isIgnored(env)) {
+      return {
+        ignored: true
+      };
+    } else {
+      return {
+        env,
+        tags: this._tags,
+        only: this._only,
+        skip: this._skip,
+      };
+    }
+  }
 
   _isIgnored(env) {
     return this._ignore.some(fn => fn(env)) || this._if.some(fn => !fn(env));
-  }
-
-  _createOptions() {
-    return {
-      tags: this._tags,
-      only: this._only,
-      skip: this._skip,
-    };
   }
 };

@@ -2,7 +2,7 @@
  * Read test files into suites structure
  *
  * @typedef {Object} EnvData
- * @property {Array<Suite>} roots
+ * @property {Array<Suite>} topSuites
  * @property {Array<Suite|Test>} only
  * @property {Array<Suite|Test>} skip
  * @property {Map<String, Array<Suite|Test>>} tags
@@ -10,13 +10,10 @@
 
 const path = require('path');
 const glob = require('glob');
-const utils = require('../utils');
 const {config} = require('../configurator');
-const factory = require('./factory');
-const Collector = require('./collector');
-const Appender = require('./appender');
-const Annotator = require('./annotator');
-const Api = require('./api');
+const PropsInjector = require('../utils/props-injector');
+const Annotations = require('./annotations');
+const Suites = require('./suites');
 
 module.exports = class Reader {
   /**
@@ -24,12 +21,11 @@ module.exports = class Reader {
    */
   constructor() {
     this._files = [];
-    this._fnSuites = new Map();
     this._context = global;
-    this._collector = new Collector();
-    this._annotator = new Annotator();
-    this._api = new Api();
-    this._appender = null;
+    this._annotations = new Annotations();
+    this._suites = new Suites(this._annotations);
+    this._propsInjector = new PropsInjector();
+    this._data = new Map();
   }
 
   /**
@@ -44,8 +40,8 @@ module.exports = class Reader {
   /**
    * @returns {Map<Env,EnvData>}
    */
-  get envData() {
-    return this._collector.envData;
+  get data() {
+    return this._data;
   }
 
   /**
@@ -53,10 +49,11 @@ module.exports = class Reader {
    */
   read() {
     this._expandPatterns();
-    this._createFileSuites();
+    this._createTopSuites();
     this._injectApi();
     this._readFiles();
     this._cleanupApi();
+    this._mergeResult();
   }
 
   _expandPatterns() {
@@ -66,45 +63,33 @@ module.exports = class Reader {
     }, []);
   }
 
-  _createFileSuites() {
+  _createTopSuites() {
     this._files.forEach(file => {
       const fn = () => readFile(file);
-      config.envs.forEach(env => {
-        const fileSuite = factory.createSuite({name: file, env});
-        utils.pushToMap(this._fnSuites, fn, fileSuite);
-        this._collector.addFileSuite(fileSuite);
-      });
+      config.envs.forEach(env => this._suites.addTopSuite(env, file, fn));
     });
   }
 
   _injectApi() {
-    this._api.setAnnotator(this._annotator);
-    this._api.inject(this._context);
+    const methods = Object.assign({}, this._annotations.api, this._suites.api);
+    this._propsInjector.inject(this._context, methods);
   }
 
   _readFiles() {
-    this._fillSuitesRecursive(this._fnSuites);
-  }
-
-  _fillSuitesRecursive(fnSuites) {
-    fnSuites.forEach((suites, fn) => {
-      this._fillSuites(suites, fn);
-      this._fillChildSuites();
-    });
-  }
-
-  _fillSuites(suites, fn) {
-    this._appender = new Appender(this._collector, this._annotator, suites);
-    this._api.setAppender(this._appender);
-    fn();
-  }
-
-  _fillChildSuites() {
-    this._fillSuitesRecursive(this._appender.childFnSuites);
+    this._suites.fill();
   }
 
   _cleanupApi() {
-    this._api.cleanup();
+    this._propsInjector.cleanup();
+  }
+
+  _mergeResult() {
+    config.envs.forEach(env => {
+      const topSuites = this._suites.getForEnv(env);
+      const annotationData = this._annotations.getForEnv(env);
+      const envData = Object.assign({topSuites}, annotationData);
+      this._data.set(env, envData);
+    });
   }
 };
 
@@ -117,3 +102,5 @@ function readFile(file) {
 function expandPattern(pattern) {
   return glob.sync(pattern);
 }
+
+

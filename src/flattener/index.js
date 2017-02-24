@@ -20,7 +20,7 @@ module.exports = class Flattener {
 
   run(envData) {
     envData.forEach((data, env) => {
-      const flatSuites = new SuiteFlattener({children: data.fileSuites}).flatten();
+      const flatSuites = new SuiteFlattener({children: data.topSuites}).flatten();
       this._envFlatSuites.set(env, flatSuites);
       this._calcTestsCount(env, flatSuites);
     });

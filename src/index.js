@@ -62,7 +62,7 @@ module.exports = class Sheeva {
   }
 
   _applyFilter() {
-    return this._filter.run(this._reader.envData);
+    return this._filter.run(this._reader.data);
   }
 
   _applyFlatten() {

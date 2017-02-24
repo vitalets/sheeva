@@ -42,13 +42,13 @@ module.exports = class Only {
 
   _updateEnvData() {
     this._envData.forEach(data => {
-      data.fileSuites = new Includer(data.fileSuites).include(data.only);
+      data.topSuites = new Includer(data.topSuites).include(data.only);
     });
   }
 
   _updateFiles() {
     this._envData.forEach(data => {
-      data.fileSuites.forEach(suite => this._files.add(suite.name));
+      data.topSuites.forEach(suite => this._files.add(suite.name));
     });
   }
 };
