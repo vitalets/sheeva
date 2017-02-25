@@ -32,7 +32,6 @@
     "escape-string-regexp": "^1.0.5",
     "eslint": "^3.15.0",
     "husky": "^0.13.1",
-    "mocha": "^3.1.2",
     "treeify": "^1.0.1",
     "unexpected": "^10.25.0"
   },
