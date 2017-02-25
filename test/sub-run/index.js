@@ -5,6 +5,9 @@
 
 Object.assign(
   global,
-  require('./globals'),
-  {run: require('./run')}
+  require('./assertions'),
+  {
+    noop: function () {},
+    run: require('./run'),
+  }
 );

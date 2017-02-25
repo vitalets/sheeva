@@ -5,7 +5,6 @@
 const expect = require('unexpected');
 
 exports.expect = expect;
-exports.noop = function () {};
 exports.expectResolve = function (promise, value) {
   return value === undefined
     ? expect(promise, 'to be fulfilled')
