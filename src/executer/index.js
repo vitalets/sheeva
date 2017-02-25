@@ -1,9 +1,13 @@
 /**
- * Main class for executing tests.
- * It creates Slots and keep their number under concurrency limit.
- * Each slot execute sessions serially.
- * Session takes Queue and executes it.
- * Queues are spread per available sessions via Queue-picker.
+ * Main class for executing tests:
+ *
+ * - Executor creates slots and keeps their count below concurrency limit.
+ * - Slots are working concurrently.
+ * - Each slot executes sessions serially.
+ * - Session takes queue after queue from picker and executes it.
+ * - Picker returns whole queues or tries split when reasonable.
+ * - Queue moves internal cursor test by test and executes them via caller.
+ * - Caller calls test function with needed hooks.
  *
  * @type {Executer}
  */

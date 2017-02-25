@@ -1,5 +1,5 @@
 /**
- * Sheeva
+ * Sheeva entry point
  */
 
 require('promise.prototype.finally').shim();
