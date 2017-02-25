@@ -22,10 +22,11 @@ program
 run();
 
 function run() {
-  const inConfig = applyFlags(tryReadConfigFile());
+  processCliValues();
+  const inConfig = tryReadConfigFile() || {};
+  setValues(inConfig);
   const sheeva = new Sheeva(inConfig);
-  sheeva
-    .run()
+  sheeva.run()
     .then(res => success(res), error => fail(sheeva, error));
 }
 
@@ -50,6 +51,19 @@ function exit(exitCode) {
   process.on('exit', () => process.exit(exitCode));
 }
 
+function processCliValues() {
+  // see https://github.com/tj/commander.js/issues/238
+  program.noOnly = !program.only;
+
+  if (program.args.length) {
+    program.files = program.args;
+  }
+
+  if (program.reporters) {
+    program.reporters = require(path.resolve(program.reporters))
+  }
+}
+
 function tryReadConfigFile() {
   if (program.config) {
     return require(path.resolve(program.config));
@@ -58,36 +72,14 @@ function tryReadConfigFile() {
       return require(path.resolve(DEFAULT_CONFIG));
     } catch(e) {}
   }
-  return {};
 }
 
-function applyFlags(inConfig) {
-  // see https://github.com/tj/commander.js/issues/238
-  program.noOnly = !program.only;
-  mergeDefaults(inConfig);
-  applyFiles(inConfig);
-  applyReporters(inConfig);
-  return inConfig;
-}
-
-function mergeDefaults(inConfig) {
+function setValues(inConfig) {
   Object.keys(defaults).forEach(key => {
-    if (typeof defaults[key] !== 'function' && program[key] !== undefined) {
-      inConfig[key] = Array.isArray(defaults[key])
-        ? program[key].split(',')
-        : program[key];
+    const defaultValue = defaults[key];
+    const cliValue = program[key];
+    if (typeof defaultValue !== 'function' && cliValue !== undefined) {
+      inConfig[key] = cliValue;
     }
   });
-}
-
-function applyFiles(inConfig) {
-  if (program.args.length) {
-    inConfig.files = program.args;
-  }
-}
-
-function applyReporters(inConfig) {
-  if (typeof inConfig.reporters === 'string') {
-    inConfig.reporters = require(path.resolve(inConfig.reporters));
-  }
 }

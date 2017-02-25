@@ -8,7 +8,6 @@ module.exports = class DebugReporter {
   handleEvent(event, data) {
     const env = data.env;
     const session = data.session ? `Session #${data.session.index}` : '';
-    console.log('log-reporter:', event)
     //console.log('log-reporter:', new Date(data.timestamp), event)
     //console.log('\nlog-reporter:', new Date(data.timestamp), event, data.test && data.test.name, '\n')
     //log('log-reporter:', event, data.error)
@@ -36,15 +35,15 @@ module.exports = class DebugReporter {
       }
 
       case events.SUITE_START: {
-        log(`${event} ${session} ${suiteName}`);
+        //log(`${event} ${session} ${suiteName}`);
         break;
       }
       case events.SUITE_END: {
-        log(`${event} ${session} ${suiteName}${errMessage}`);
+        //log(`${event} ${session} ${suiteName}${errMessage}`);
         break;
       }
-      case events.SUITE_SPLIT: {
-        log(`${event} ${session} ${suiteName}${errMessage}`);
+      case events.QUEUE_SPLIT: {
+        //log(`${event} ${session} ${suiteName}${errMessage}`);
         break;
       }
       case events.HOOK_START: {
@@ -52,7 +51,7 @@ module.exports = class DebugReporter {
         break;
       }
       case events.HOOK_END: {
-        log(`${event} ${session} ${suiteName} ${data.hookType} ${data.index}${errMessage}`);
+        // log(`${event} ${session} ${suiteName} ${data.hookType} ${data.index}${errMessage}`);
         break;
       }
       case events.TEST_START: {
