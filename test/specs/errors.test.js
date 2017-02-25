@@ -434,11 +434,10 @@ describe('errors', () => {
         });
       `, {config});
 
-      return expectReject(result, 'err')
-        .then(res => expect(res.report, 'to equal', [
-          'HOOK_END suite 2 before err',
-          'HOOK_END suite 1 after'
-        ]));
+      return expectResolve(result, [
+        'HOOK_END suite 2 before err',
+        'HOOK_END suite 1 after'
+      ]);
     });
 
     it('should break runner in case of error in nested suite beforeEach hook', run => {
@@ -462,13 +461,12 @@ describe('errors', () => {
         });
       `, {config});
 
-      return expectReject(result, 'err')
-        .then(res => expect(res.report, 'to equal', [
-          'HOOK_END suite 1 beforeEach',
-          'HOOK_END suite 2 beforeEach err',
-          'HOOK_END suite 1 afterEach',
-          'HOOK_END suite 1 after'
-        ]));
+      return expectResolve(result, [
+        'HOOK_END suite 1 beforeEach',
+        'HOOK_END suite 2 beforeEach err',
+        'HOOK_END suite 1 afterEach',
+        'HOOK_END suite 1 after'
+      ]);
     });
 
     it('should break runner in case of test error', run => {
@@ -490,12 +488,11 @@ describe('errors', () => {
         });
       `, {config});
 
-      return expectReject(result, 'err')
-        .then(res => expect(res.report, 'to equal', [
-          'TEST_END test 1 err',
-          'HOOK_END suite 2 after',
-          'HOOK_END suite 1 after'
-        ]));
+      return expectResolve(result, [
+        'TEST_END test 1 err',
+        'HOOK_END suite 2 after',
+        'HOOK_END suite 1 after'
+      ]);
     });
 
   });

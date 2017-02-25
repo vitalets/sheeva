@@ -49,6 +49,12 @@ class Reporter {
     this._reporters = config.reporters
       .filter(Boolean)
       .map(customReporter => typeof customReporter === 'function' ? new customReporter() : customReporter)
+      .map(customReporter => {
+        if (typeof customReporter.handleEvent !== 'function') {
+          throw new Error('Each reporter should have `handleEvent()` method');
+        }
+        return customReporter;
+      })
   }
 
   _initCollectors() {
@@ -68,9 +74,11 @@ class Reporter {
 
   _proxyToReporters() {
     this._reporters.forEach(customReporter => {
-      if (typeof customReporter.handleEvent === 'function') {
+      //try {
         customReporter.handleEvent(this._currentEvent, this._currentData);
-      }
+      // } catch (e) {
+      //   console.log('_proxyToReporters', e)
+      // }
     });
   }
 

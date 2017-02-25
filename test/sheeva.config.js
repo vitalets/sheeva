@@ -7,11 +7,12 @@ require('./sub-run');
 module.exports = {
   concurrency: 5,
   files: './test/specs/**/*.test.js',
-  //files: './test/specs/only.test.js',
   newSessionPerFile: false,
   splitFiles: true,
-  reporters: require('sheeva-reporter-progress'),
-  //reporters: require('./debug-reporter'),
+  reporters: [
+    // require('./errors-reporter'),
+    require('sheeva-reporter-progress'),
+  ],
   createEnvs: function () {
     return [
       //{id: 'tests-async0', delay: 50},
@@ -42,10 +43,6 @@ module.exports = {
     };
     return fn(run);
   },
-  // for debug
-  log: function() {
-    // console.log.apply(console, arguments);
-  }
 };
 
 function callSync({fn, session, context}) {

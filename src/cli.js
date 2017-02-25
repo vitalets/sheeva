@@ -26,23 +26,15 @@ function run() {
   const inConfig = tryReadConfigFile() || {};
   setValues(inConfig);
   const sheeva = new Sheeva(inConfig);
-  sheeva.run()
-    .then(res => success(res), error => fail(sheeva, error));
+  sheeva.run().then(success, fail);
 }
 
 function success(res) {
   exit(res.errors.length);
 }
 
-function fail(sheeva, error) {
-  // if there is no reporter --> show sheeva error in console
-  try {
-    if (!sheeva.getReporter(0)) {
-      console.error(error);
-    }
-  } catch (err) {
-    console.error(err);
-  }
+function fail(error) {
+  console.error(error);
   exit(1);
 }
 

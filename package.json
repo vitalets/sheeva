@@ -17,7 +17,8 @@
     "test": "npm run tt -- --env=tests-sync --break-on-error",
     "norep": "npm t -- --reporters=",
     "debug": "npm t -- --reporters=./test/debug-reporter.js",
-    "devtool": "devtool src/cli --config test/sheeva.config.js --env=tests-sync --reporters=./test/debug-reporter.js",
+    "errors": "npm t -- --reporters=./test/errors-reporter.js",
+    "devtool": "devtool src/cli --config test/sheeva.config.js --env=tests-sync",
     "precommit": "npm run tt -- --no-only",
     "prepush": "npm run tt -- --no-only && npm run copy-stable",
     "copy-stable": "cp -R src/ src-stable/"

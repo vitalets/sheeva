@@ -55,7 +55,7 @@ module.exports = class Slots {
   }
 
   _add() {
-    const slot = new Slot(this._handlers);
+    const slot = new Slot(this._slots.size, this._handlers);
     this._slots.add(slot);
     return slot;
   }

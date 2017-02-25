@@ -27,7 +27,7 @@ module.exports = class Sheeva {
     this._filter = new Filter();
     this._flattener = new Flattener();
     this._executer = new Executer();
-    this._breakingError = null;
+    this._runnerError = null;
   }
 
   run() {
@@ -38,7 +38,7 @@ module.exports = class Sheeva {
       .then(() => this._applyFlatten())
       .then(() => this._start())
       .then(() => this._execute())
-      .catch(error => this._storeError(error))
+      .catch(error => this._storeRunnerError(error))
       .finally(() => this._end())
       .then(() => this._getResult())
   }
@@ -74,14 +74,16 @@ module.exports = class Sheeva {
   }
 
   /**
-   * Store error if it is not stored yet
-   * (because first error seems to be more important)
+   * Store runner error.
+   * When config.breakOnError is enabled, errors from tests/hooks are also come here,
+   * but we filter them as they should be already reported
    *
    * @param {Error} error
    */
-  _storeError(error) {
-    if (!this._breakingError) {
-      this._breakingError = error || new Error('Empty rejection');
+  _storeRunnerError(error) {
+    const isErrorInHookOrTest = config.breakOnError && (error.suite || error.test);
+    if (!isErrorInHookOrTest) {
+      this._runnerError = error || new Error('Empty rejection');
     }
   }
 
@@ -94,11 +96,11 @@ module.exports = class Sheeva {
     return Promise.resolve()
       .then(() => config.endRunner(config))
       .catch(error => this._storeError(error))
-      .finally(() => this._emitEnd());
+      .finally(() => this._emitEnd())
   }
 
   _getResult() {
-    return this._breakingError ? Promise.reject(this._breakingError) : reporter.getResult();
+    return this._runnerError ? Promise.reject(this._runnerError) : reporter.getResult();
   }
 
   _emitInit() {
@@ -121,7 +123,7 @@ module.exports = class Sheeva {
 
   _emitEnd() {
     reporter.handleEvent(RUNNER_END, {
-      error: this._breakingError
+      error: this._runnerError
     });
   }
 };

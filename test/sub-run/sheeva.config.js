@@ -9,8 +9,4 @@ module.exports = {
   createEnvs: function () {
     return [{id: 'env1'}];
   },
-  // for debug
-  log: function() {
-    console.log.apply(console, arguments);
-  }
 };

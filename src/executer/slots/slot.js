@@ -9,14 +9,20 @@ module.exports = class Slot {
   /**
    * Constructor
    *
+   * @param {Number} index
    * @param {Object} handlers
    * @param {Function} handlers.onSessionStart
    * @param {Function} handlers.onSessionEnd
    */
-  constructor(handlers) {
+  constructor(index, handlers) {
+    this._index = index;
     this._handlers = handlers;
     this._session = null;
     this._queue = null;
+  }
+
+  get index() {
+    return this._index;
   }
 
   get session() {
@@ -65,7 +71,7 @@ module.exports = class Slot {
   }
 
   _createSession() {
-    this._session = new Session(this._queue.env);
+    this._session = new Session(this._index, this._queue.env);
     this._handlers.onSessionStart(this._session);
     return this._session.start();
   }
