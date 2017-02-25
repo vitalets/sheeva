@@ -8,7 +8,7 @@ const baseConfig = require('./sheeva.config');
 const TempFiles = require('./tempfiles');
 
 /**
- * Runs specified code with tests
+ * Runs specified code in fresh instance of Sheeva
  *
  * @param {String|Array} code
  * @param {Object} options
@@ -18,11 +18,10 @@ const TempFiles = require('./tempfiles');
  * @param {Array} [options.exclude]
  * @returns {Promise}
  */
-module.exports = function (code, options) {
+exports.run = function (code, options) {
   const tempFiles = new TempFiles(code, options.session);
   const config = Object.assign({}, baseConfig, options.config, {files: tempFiles.files});
-  const Sheeva = requireSheeva();
-  const sheeva = new Sheeva(config);
+  const sheeva = createFreshSheeva(config);
   return sheeva.run()
     .then(() => sheeva.getReporter(0).getResult(options))
     .catch(error => attachReportToError(error, sheeva, options))
@@ -41,11 +40,12 @@ function attachReportToError(error, sheeva, options) {
 }
 
 /**
- * Clear src cache to have fresh instance of Sheeva for testing
+ * Clear src cache to have fresh instance of Sheeva for concurrent testing
  */
-function requireSheeva() {
+function createFreshSheeva(config) {
   clearSrcCache();
-  return require('../../src');
+  const Sheeva = require('../../src');
+  return new Sheeva(config);
 }
 
 function clearSrcCache() {

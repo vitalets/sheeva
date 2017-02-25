@@ -2,7 +2,8 @@
  * Main selftest runner
  */
 
-require('./sub-run');
+require('./globals');
+const subSheeva = require('./sub-sheeva');
 
 module.exports = {
   concurrency: 5,
@@ -15,14 +16,8 @@ module.exports = {
   ],
   createEnvs: function () {
     return [
-      //{id: 'tests-async0', delay: 50},
-      {id: 'tests-sync'},
-      {id: 'tests-async', delay: 10},
-     // {id: 'tests-async1', delay: 10},
-      //{id: 'tests-async2', delay: 30},
-      //{id: 'tests-async3', delay: 50},
-      //{id: 'tests-sync'},
-      //{id: 'tests-async4', delay: 100},
+      {id: 'sync-env'},
+      {id: 'async-env', delay: 10},
     ];
   },
   startSession: function (session) {
@@ -33,13 +28,15 @@ module.exports = {
       context.runOptions = context.runOptions || {};
       return fn(context);
     }
-    const baseConfig = {
+
+    const subConfig = {
       callTestHookFn: env.delay === undefined ? callSync : callAsync.bind(null, env.delay)
     };
+
     const run = function (code, options = {}) {
-      options.config = Object.assign({}, baseConfig, options.config);
+      options.config = Object.assign(subConfig, options.config);
       const finalOptions = Object.assign({session}, context.runOptions, options);
-      return global.run(code, finalOptions);
+      return subSheeva.run(code, finalOptions);
     };
     return fn(run);
   },
@@ -50,6 +47,9 @@ function callSync({fn, session, context}) {
 }
 
 function callAsync(delay, {fn, session, context}) {
+  if (fn !== noop) {
+    return fn(session, context);
+  }
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       try {

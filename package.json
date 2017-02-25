@@ -14,11 +14,11 @@
   },
   "scripts": {
     "tt": "node src-stable/cli --config test/sheeva.config.js",
-    "test": "npm run tt -- --env=tests-sync --break-on-error",
+    "test": "npm run tt -- --env=sync-env --break-on-error",
     "norep": "npm t -- --reporters=",
     "debug": "npm t -- --reporters=./test/debug-reporter.js",
     "errors": "npm t -- --reporters=./test/errors-reporter.js",
-    "devtool": "devtool src/cli --config test/sheeva.config.js --env=tests-sync",
+    "devtool": "devtool src/cli --config test/sheeva.config.js --env=sync-env",
     "precommit": "npm run tt -- --no-only",
     "prepush": "npm run tt -- --no-only && npm run copy-stable",
     "copy-stable": "cp -R src/ src-stable/"

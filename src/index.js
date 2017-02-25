@@ -97,6 +97,7 @@ module.exports = class Sheeva {
       .then(() => config.endRunner(config))
       .catch(error => this._storeError(error))
       .finally(() => this._emitEnd())
+      .finally(() => reporter.stopListen())
   }
 
   _getResult() {

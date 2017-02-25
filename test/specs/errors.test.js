@@ -419,9 +419,9 @@ describe('errors', () => {
       };
       const result = run(`
         describe('suite 1', () => {
-          after(() => noop);
-          beforeEach(() => noop);
-          afterEach(() => noop);
+          after(noop);
+          beforeEach(noop);
+          afterEach(noop);
           
           describe('suite 2', () => {
             before(() => { throw new Error('err') });
@@ -446,9 +446,9 @@ describe('errors', () => {
       };
       const result = run(`
         describe('suite 1', () => {
-          after(() => noop);
-          beforeEach(() => noop);
-          afterEach(() => noop);
+          after(noop);
+          beforeEach(noop);
+          afterEach(noop);
           
           describe('suite 2', () => {
             beforeEach(() => { throw new Error('err') });
@@ -475,10 +475,10 @@ describe('errors', () => {
       };
       const result = run(`
         describe('suite 1', () => {
-          after(() => noop);
+          after(noop);
           
           describe('suite 2', () => {
-            after(() => noop);
+            after(noop);
             it('test 1', () => { throw new Error('err') });
           });
           
@@ -492,6 +492,34 @@ describe('errors', () => {
         'TEST_END test 1 err',
         'HOOK_END suite 2 after',
         'HOOK_END suite 1 after'
+      ]);
+    });
+
+    $if(env => env.id === 'sync-env');
+    it('should terminate all sessions in case of test error', run => {
+      const config = {
+        breakOnError: true,
+        concurrency: 2,
+      };
+      const result = run([`
+        describe('suite 1', () => {
+          it('test 1', () => sleepError(1, 'err'));
+        });
+      `, `
+        describe('suite 2', () => {
+          it('test 2', () => sleep(5));
+        });
+      `], {config, flat: true, include: ['RUNNER_END', 'SESSION', 'TEST']});
+
+      return expectResolve(result, [
+        'SESSION_START 0',
+        'SESSION_START 1',
+        'TEST_START test 1',
+        'TEST_START test 2',
+        'TEST_END test 1 err',
+        'SESSION_END 0',
+        'SESSION_END 1',
+        'RUNNER_END'
       ]);
     });
 

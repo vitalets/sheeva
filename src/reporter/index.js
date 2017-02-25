@@ -16,6 +16,7 @@ class Reporter {
     this._collectors = new Map();
     this._currentEvent = null;
     this._currentData = null;
+    this._listen = true;
   }
 
   init() {
@@ -28,11 +29,13 @@ class Reporter {
   }
 
   handleEvent(event, data = {}) {
-    this._currentEvent = event;
-    this._currentData = Object.assign({}, data);
-    this._addTimestamp();
-    this._proxyToReporters();
-    this._proxyToCollectors();
+    if (this._listen) {
+      this._currentEvent = event;
+      this._currentData = Object.assign({}, data);
+      this._addTimestamp();
+      this._proxyToReporters();
+      this._proxyToCollectors();
+    }
   }
 
   getResult() {
@@ -43,6 +46,10 @@ class Reporter {
       result.errors = result.errors.concat(envCollectors.errors.errors);
     });
     return result;
+  }
+
+  stopListen() {
+    this._listen = false;
   }
 
   _initReporters() {
