@@ -21,63 +21,16 @@ module.exports = class DebugReporter {
   handleEvent(event, data) {
     data = data || {};
 
-    const session = data.session ? ` session #${data.session.index}` : '';
-    const name = this._getName(data);
-    console.log(`${event}${session}${name}`);
+    if (INCLUDE_EVENTS.indexOf(event) >= 0) {
+      const session = data.session ? ` session #${data.session.index}` : '';
+      const name = this._getName(data);
+      console.log(`${event}${session}${name}`);
+    }
+
     if (data.error) {
-      console.error(event === events.TEST_END ? data.error.message : data.error);
+      const error = event === events.TEST_END ? data.error.message : data.error;
+      console.error(error);
     }
-
-    /*
-    switch (event) {
-      case events.RUNNER_START: {
-        log(`${event}`);
-        break;
-      }
-      case events.RUNNER_END: {
-        log(`${event}`, data.error);
-        break;
-      }
-
-      case events.SESSION_START: {
-        log(`${event} ${session}`);
-        break;
-      }
-      case events.SESSION_END: {
-        log(`${event} ${session}`);
-        break;
-      }
-
-      case events.SUITE_START: {
-        //log(`${event} ${session} ${suiteName}`);
-        break;
-      }
-      case events.SUITE_END: {
-        //log(`${event} ${session} ${suiteName}${errMessage}`);
-        break;
-      }
-      case events.QUEUE_SPLIT: {
-        //log(`${event} ${session} ${suiteName}${errMessage}`);
-        break;
-      }
-      case events.HOOK_START: {
-        // log(`${event} ${suiteName} ${data.hookType} ${data.index}`);
-        break;
-      }
-      case events.HOOK_END: {
-        // log(`${event} ${session} ${suiteName} ${data.hookType} ${data.index}${errMessage}`);
-        break;
-      }
-      case events.TEST_START: {
-        // log(`${event} ${data.test.name}`);
-        break;
-      }
-      case events.TEST_END: {
-        log(`${event} ${session} ${data.test.name}${errMessage}`);
-        break;
-      }
-    }
-    */
   }
 
   _getName(data) {

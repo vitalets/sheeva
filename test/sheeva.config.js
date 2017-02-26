@@ -10,18 +10,12 @@ module.exports = {
   files: './test/specs/**/*.test.js',
   newSessionPerFile: false,
   splitFiles: true,
-  reporters: [
-    // require('./errors-reporter'),
-    require('sheeva-reporter-progress'),
-  ],
+  reporters: require('sheeva-reporter-progress'),
   createEnvs: function () {
     return [
       {id: 'sync-env'},
       {id: 'async-env', delay: 10},
     ];
-  },
-  startSession: function (session) {
-
   },
   callTestHookFn: function ({fn, session, context, hook, env}) {
     if (hook) {
