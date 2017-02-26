@@ -3,7 +3,6 @@
  */
 
 const {config} = require('../configurator');
-const SuitesCollector = require('./collectors/suites');
 const TimeCollector = require('./collectors/time');
 const ErrorsCollector = require('./collectors/errors');
 
@@ -68,7 +67,6 @@ class Reporter {
     this._collectors.clear();
     config.envs.forEach(env => {
       this._collectors.set(env, {
-        suites: new SuitesCollector(this),
         //time: new TimeCollector(),
         errors: new ErrorsCollector(),
       });

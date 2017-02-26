@@ -49,22 +49,14 @@ module.exports = {
   SESSION_END: 'SESSION_END',
 
   /**
-   * Triggered before suite is executed on particular session
-   */
-  SESSION_SUITE_START: 'SESSION_SUITE_START',
-
-  /**
-   * Triggered after suite is executed on particular session
-   */
-  SESSION_SUITE_END: 'SESSION_SUITE_END',
-
-  /**
-   * Triggered before the first test of suite is executed
+   * Triggered when suite is started.
+   * Note that there can be many SUITE_START events due to parallel execution.
    */
   SUITE_START: 'SUITE_START',
 
   /**
-   * Triggered after the last test of suite is executed
+   * Triggered when suite is ended.
+   * Note that there can be many SUITE_END events due to parallel execution.
    */
   SUITE_END: 'SUITE_END',
 

@@ -3,7 +3,7 @@
  */
 
 const reporter = require('../../../reporter');
-const {SESSION_SUITE_START, SESSION_SUITE_END} = require('../../../events');
+const {SUITE_START, SUITE_END} = require('../../../events');
 const BaseHooksCaller = require('./base');
 
 module.exports = class SuiteHooksCaller extends BaseHooksCaller {
@@ -41,11 +41,11 @@ module.exports = class SuiteHooksCaller extends BaseHooksCaller {
   }
 
   _onSuiteHooksStart(suite) {
-    this._emit(SESSION_SUITE_START, {suite});
+    this._emit(SUITE_START, {suite});
   }
 
   _onSuiteHooksEnd(suite) {
-    this._emit(SESSION_SUITE_END, {suite, error: this.firstError});
+    this._emit(SUITE_END, {suite, error: this.firstError});
   }
 
   _emit(event, data) {
