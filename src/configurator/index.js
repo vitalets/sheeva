@@ -21,7 +21,7 @@ class Configurator {
   init(rawConfig) {
     this._clear();
     this._merge(rawConfig);
-    this._ensurePropTypes();
+    this._validate();
     this._createEnvs();
   }
 
@@ -29,7 +29,8 @@ class Configurator {
     this._config.envs = new Envs(this._config).create();
   }
 
-  _ensurePropTypes() {
+  _validate() {
+    utils.assertNotEmpty(this._config.timeout, 'Global timeout can not be empty');
     this._config.files = utils.ensureArray(this._config.files);
     this._config.reporters = utils.ensureArray(this._config.reporters);
   }

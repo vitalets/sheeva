@@ -63,6 +63,13 @@ module.exports = {
   noOnly: false,
 
   /**
+   * Default test/hook timeout in ms
+   *
+   * @type {Number}
+   */
+  timeout: 10000,
+
+  /**
    * Run env with particular id
    * @type {String}
    */

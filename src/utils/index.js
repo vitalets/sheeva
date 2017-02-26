@@ -30,6 +30,18 @@ exports.assertFn = function(value, msg) {
 };
 
 /**
+ * Asserts that value is not empty
+ *
+ * @param {*} value
+ * @param {String} msg
+ */
+exports.assertNotEmpty = function(value, msg) {
+  if (!value) {
+    throw new Error(msg);
+  }
+};
+
+/**
  * Calls function in Promise.resolve().then
  *
  * @param {Function} fn

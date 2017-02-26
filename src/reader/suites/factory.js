@@ -3,6 +3,7 @@
  *
  * @typedef {Object} Test
  * @typedef {Object} Suite
+ * @typedef {Object} Hook
  */
 
 /**
@@ -64,6 +65,9 @@ function linkItems(child, parent, childrenField = 'children') {
   child.parent = parent;
   child.parents = parent.parents.concat([parent]);
   parent[childrenField].push(child);
+  if (parent.timeout && !child.timeout) {
+    child.timeout = parent.timeout;
+  }
 }
 
 function extendBase(options, extraOptions) {
@@ -75,5 +79,6 @@ function extendBase(options, extraOptions) {
     tags: options.tags || [],
     parents: [],
     parent: undefined,
+    timeout: options.timeout,
   }, extraOptions);
 }

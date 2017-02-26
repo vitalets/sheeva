@@ -19,6 +19,7 @@ module.exports = class AnnotationAPI {
       $tags: this._addTags.bind(this),
       $ignore: fn => this._currentAnnotation.addIgnore(fn),
       $if: fn => this._currentAnnotation.addIf(fn),
+      $timeout: ms => this._currentAnnotation.addTimeout(ms),
     };
   }
 

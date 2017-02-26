@@ -4,13 +4,14 @@
 
 const utils = require('../../utils');
 
-module.exports = class Current {
+module.exports = class CurrentAnnotation {
   constructor() {
     this._only = false;
     this._skip = false;
     this._tags = [];
     this._ignore = [];
     this._if = [];
+    this._timeout = 0;
   }
 
   clear() {
@@ -19,6 +20,7 @@ module.exports = class Current {
     this._tags.length = 0;
     this._ignore.length = 0;
     this._if.length = 0;
+    this._timeout = 0;
   }
 
   addOnly() {
@@ -45,6 +47,11 @@ module.exports = class Current {
     this._if.push(fn);
   }
 
+  addTimeout(ms) {
+    utils.assertNotEmpty(ms, 'Zero timeout is bad idea');
+    this._timeout = ms;
+  }
+
   get(env) {
     if (this._isIgnored(env)) {
       return {
@@ -56,6 +63,7 @@ module.exports = class Current {
         tags: this._tags,
         only: this._only,
         skip: this._skip,
+        timeout: this._timeout,
       };
     }
   }

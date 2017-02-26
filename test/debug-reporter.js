@@ -3,19 +3,33 @@
  */
 
 const events = require('../src/events');
+const INCLUDE_EVENTS = [
+  events.RUNNER_START,
+  events.RUNNER_END,
+  events.SESSION_START,
+  events.SESSION_END,
+  //events.SUITE_START,
+  //events.SUITE_END,
+  //events.QUEUE_SPLIT,
+  //events.HOOK_START,
+  //events.HOOK_END,
+  //events.TEST_START,
+  events.TEST_END,
+];
 
 module.exports = class DebugReporter {
   handleEvent(event, data) {
-    const env = data.env;
-    const session = data.session ? `Session #${data.session.index}` : '';
-    //console.log('log-reporter:', new Date(data.timestamp), event)
-    //console.log('\nlog-reporter:', new Date(data.timestamp), event, data.test && data.test.name, '\n')
-    //log('log-reporter:', event, data.error)
-    //const errMessage = data && data.error ? ` ${data.error.message}` : '';
-    const errMessage = data && data.error ? ` err` : '';
-    const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
-    switch (event) {
+    data = data || {};
 
+    const session = data.session ? ` session #${data.session.index}` : '';
+    const name = this._getName(data);
+    console.log(`${event}${session}${name}`);
+    if (data.error) {
+      console.error(event === events.TEST_END ? data.error.message : data.error);
+    }
+
+    /*
+    switch (event) {
       case events.RUNNER_START: {
         log(`${event}`);
         break;
@@ -63,9 +77,18 @@ module.exports = class DebugReporter {
         break;
       }
     }
+    */
+  }
+
+  _getName(data) {
+    if (data.suite) {
+      return ' ' + data.suite.name;
+    } else if (data.test) {
+      return ' ' + data.test.name;
+    } else if (data.hook) {
+      return ' ' + data.hook.name;
+    } else {
+      return '';
+    }
   }
 };
-
-function log() {
-  console.log.apply(console, arguments);
-}

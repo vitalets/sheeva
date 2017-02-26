@@ -6,6 +6,7 @@ const {config} = require('../../configurator');
 const reporter = require('../../reporter');
 const {TEST_START, TEST_END} = require('../../events');
 const {TestHooksCaller} = require('./hooks');
+const FnCaller = require('./fn');
 
 module.exports = class TestCaller {
   constructor(session, test) {
@@ -63,8 +64,7 @@ module.exports = class TestCaller {
       suite: this._test.parent,
       context: this._context,
     };
-    return Promise.resolve()
-      .then(() => config.callTestHookFn(params));
+    return new FnCaller({timeout: this._test.timeout}).call(params);
   }
 
   _emit(event) {
