@@ -12,7 +12,7 @@ describe('annotation: retry', () => {
         afterEach(noop);
         
         $retry();
-        it('test 0', () => { throw new Error('err') });
+        it('test 0', (ctx, session, attempt) => { throw new Error('err' + attempt) });
       });
     `, {include});
 
@@ -20,11 +20,11 @@ describe('annotation: retry', () => {
       'HOOK_END suite 1 before',
       'HOOK_END suite 1 beforeEach',
       'TEST_START test 0',
-      'TEST_RETRY test 0 err',
+      'TEST_RETRY test 0 err0',
       'HOOK_END suite 1 afterEach',
       'HOOK_END suite 1 beforeEach',
       'TEST_START test 0',
-      'TEST_END test 0 err',
+      'TEST_END test 0 err1',
       'HOOK_END suite 1 afterEach',
       'HOOK_END suite 1 after'
     ]);
@@ -39,7 +39,7 @@ describe('annotation: retry', () => {
         afterEach(noop);
         
         $retry(2);
-        it('test 0', () => { throw new Error('err') });
+        it('test 0', (ctx, session, attempt) => { throw new Error('err' + attempt) });
       });
     `, {include});
 
@@ -47,15 +47,15 @@ describe('annotation: retry', () => {
       'HOOK_END suite 1 before',
       'HOOK_END suite 1 beforeEach',
       'TEST_START test 0',
-      'TEST_RETRY test 0 err',
+      'TEST_RETRY test 0 err0',
       'HOOK_END suite 1 afterEach',
       'HOOK_END suite 1 beforeEach',
       'TEST_START test 0',
-      'TEST_RETRY test 0 err',
+      'TEST_RETRY test 0 err1',
       'HOOK_END suite 1 afterEach',
       'HOOK_END suite 1 beforeEach',
       'TEST_START test 0',
-      'TEST_END test 0 err',
+      'TEST_END test 0 err2',
       'HOOK_END suite 1 afterEach',
       'HOOK_END suite 1 after'
     ]);
