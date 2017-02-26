@@ -1,10 +1,11 @@
 /**
  * Calls tests fn with beforeEach / afterEach hooks
+ * Used in Queue.
  */
 
 const {config} = require('../../configurator');
 const reporter = require('../../reporter');
-const {TEST_START, TEST_END} = require('../../events');
+const {TEST_START, TEST_RETRY, TEST_END} = require('../../events');
 const {TestHooksCaller} = require('./hooks');
 const FnCaller = require('./fn');
 
@@ -12,9 +13,10 @@ module.exports = class TestCaller {
   constructor(session, test) {
     this._session = session;
     this._test = test;
-    this._context = {};
-    this._hooksCaller = new TestHooksCaller(session, this._context);
+    this._context = null;
+    this._hooksCaller = null;
     this._testError = null;
+    this._attempt = 0;
   }
 
   /**
@@ -24,17 +26,33 @@ module.exports = class TestCaller {
    */
   call() {
     return Promise.resolve()
-      .then(() => this._hooksCaller.callBeforeEach(this._test))
+      .then(() => this._reset())
+      .then(() => this._callBeforeEach())
       .then(() => this._callTest())
-      .finally(() => this._hooksCaller.callAfterEach())
-      .finally(() => this._rejectIfError());
+      .finally(() => this._callAfterEach())
+      .finally(() => this._rejectIfError())
+      .then(() => this._checkRetry());
+  }
+
+  _reset() {
+    this._context = {};
+    this._hooksCaller = new TestHooksCaller(this._session, this._context);
+    this._testError = null;
+  }
+
+  _callBeforeEach() {
+    return this._hooksCaller.callBeforeEach(this._test);
+  }
+
+  _callAfterEach() {
+    return this._hooksCaller.callAfterEach();
   }
 
   _callTest() {
     this._emit(TEST_START);
     return this._callFn()
       .catch(error => this._storeError(error))
-      .finally(() => this._emit(TEST_END));
+      .finally(() => this._emit(this._canRetry() ? TEST_RETRY : TEST_END));
   }
 
   _storeError(error) {
@@ -43,6 +61,23 @@ module.exports = class TestCaller {
     Object.defineProperty(error, 'test', {
       value: this._test
     });
+  }
+
+  _checkRetry() {
+    if (this._canRetry()) {
+      return this._retry();
+    }
+  }
+
+  _canRetry() {
+    const isOnlyTestError = this._testError && !this._hooksCaller.firstError;
+    const hasAttempts = this._test.retry && this._attempt < this._test.retry;
+    return isOnlyTestError && hasAttempts;
+  }
+
+  _retry() {
+    this._attempt++;
+    return this.call();
   }
 
   /**
@@ -63,6 +98,7 @@ module.exports = class TestCaller {
       test: this._test,
       suite: this._test.parent,
       context: this._context,
+      attempt: this._attempt,
     };
     return new FnCaller({timeout: this._test.timeout}).call(params);
   }

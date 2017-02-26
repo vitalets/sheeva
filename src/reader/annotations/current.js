@@ -6,21 +6,17 @@ const utils = require('../../utils');
 
 module.exports = class CurrentAnnotation {
   constructor() {
+    this.reset();
+  }
+
+  reset() {
     this._only = false;
     this._skip = false;
     this._tags = [];
     this._ignore = [];
     this._if = [];
     this._timeout = 0;
-  }
-
-  clear() {
-    this._only = false;
-    this._skip = false;
-    this._tags.length = 0;
-    this._ignore.length = 0;
-    this._if.length = 0;
-    this._timeout = 0;
+    this._retry = 0;
   }
 
   addOnly() {
@@ -52,6 +48,10 @@ module.exports = class CurrentAnnotation {
     this._timeout = ms;
   }
 
+  addRetry(count = 1) {
+    this._retry = count;
+  }
+
   get(env) {
     if (this._isIgnored(env)) {
       return {
@@ -64,6 +64,7 @@ module.exports = class CurrentAnnotation {
         only: this._only,
         skip: this._skip,
         timeout: this._timeout,
+        retry: this._retry,
       };
     }
   }

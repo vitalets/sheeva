@@ -84,4 +84,9 @@ module.exports = {
    * Triggered after test fn execution
    */
   TEST_END: 'TEST_END',
+
+  /**
+   * Triggered instead of TEST_END when test is going to be retried
+   */
+  TEST_RETRY: 'TEST_RETRY',
 };

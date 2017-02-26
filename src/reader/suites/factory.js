@@ -36,6 +36,7 @@ exports.createSuite = function (options, parent = null) {
 exports.createTest = function (options, parent) {
   const test = extendBase(options, {
     fn: options.fn,
+    retry: options.retry,
   });
   linkItems(test, parent);
   return test;

@@ -1,10 +1,5 @@
 /**
- * Annotation API:
- * - $only()
- * - $skip()
- * - $tags()
- * - $ignore()
- * - $if()
+ * Annotation API
  */
 
 module.exports = class AnnotationAPI {
@@ -20,6 +15,7 @@ module.exports = class AnnotationAPI {
       $ignore: fn => this._currentAnnotation.addIgnore(fn),
       $if: fn => this._currentAnnotation.addIf(fn),
       $timeout: ms => this._currentAnnotation.addTimeout(ms),
+      $retry: count => this._currentAnnotation.addRetry(count),
     };
   }
 

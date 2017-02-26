@@ -28,38 +28,44 @@ module.exports = class Current {
   }
 
   addChildSuite(name, fn) {
-    this._forEachSuites((suite, annotation) => {
+    this._forEachSuites((parentSuite, annotation) => {
       const options = Object.assign({}, annotation, {name});
-      const childSuite = factory.createSuite(options, suite);
+      const childSuite = factory.createSuite(options, parentSuite);
       this._annotations.storeInfo(childSuite);
       utils.pushToMap(this._childFnSuites, fn, childSuite);
     });
+    this._resetAnnotation();
   }
 
   addTest(name, fn) {
-    this._forEachSuites((suite, annotation) => {
+    this._forEachSuites((parentSuite, annotation) => {
       const options = Object.assign({}, annotation, {name, fn});
-      const test = factory.createTest(options, suite);
+      const test = factory.createTest(options, parentSuite);
       this._annotations.storeInfo(test);
     });
+    this._resetAnnotation();
   }
 
   addHook(type, fn) {
-    this._forEachSuites((suite, annotation) => {
+    this._forEachSuites((parentSuite, annotation) => {
       const options = Object.assign({}, annotation, {type, fn});
-      factory.createHook(options, suite);
+      factory.createHook(options, parentSuite);
     });
+    this._resetAnnotation();
   }
 
   _forEachSuites(iterator) {
-    this._suites.forEach(suite => this._callWithAnnotation(suite, iterator));
-    this._annotations.current.clear();
+    this._suites.forEach(suite => this._callForSuite(suite, iterator));
   }
 
-  _callWithAnnotation(suite, iterator) {
+  _callForSuite(suite, iterator) {
     const annotation = this._annotations.current.get(suite.env);
     if (!annotation.ignored) {
       iterator(suite, annotation);
     }
+  }
+
+  _resetAnnotation() {
+    this._annotations.current.reset();
   }
 };

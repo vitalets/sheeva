@@ -91,6 +91,10 @@ module.exports = class LogReporter {
         this._add(data, `${event} ${data.test.name}`);
         break;
       }
+      case events.TEST_RETRY: {
+        this._add(data, `${event} ${data.test.name}${errMessage}`);
+        break;
+      }
       case events.TEST_END: {
         this._add(data, `${event} ${data.test.name}${errMessage}`);
         break;

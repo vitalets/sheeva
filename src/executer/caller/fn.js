@@ -18,6 +18,12 @@ module.exports = class FnCaller {
     this._result = null;
   }
 
+  /**
+   * Calls test/hook function
+   *
+   * @param {Object} params
+   * @returns {Promise}
+   */
   call(params) {
     try {
       this._result = config.callTestHookFn(params);

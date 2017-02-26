@@ -138,13 +138,14 @@ module.exports = {
    * @param {Object} params.context
    * @param {Object} params.env
    * @param {Suite} params.suite
+   * @param {Number} params.attempt
    * @param {Test} [params.test]
    * @param {Hook} [params.hook]
    *
    * @returns {Function}
    */
   callTestHookFn: function (params) {
-    return params.fn(params.session, params.context);
+    return params.fn(params.context, params.env, params.attempt);
   },
 
   /**
