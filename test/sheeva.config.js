@@ -17,18 +17,17 @@ module.exports = {
       {id: 'async-env', delay: 10},
     ];
   },
+  startRunner: function(config) {
+    config.envs.forEach(env => env.delay ? createSubConfig(env) : null);
+  },
   callTestHookFn: function ({fn, session, context, hook, env}) {
     if (hook) {
       context.runOptions = context.runOptions || {};
       return fn(context);
     }
 
-    const subConfig = {
-      callTestHookFn: env.delay === undefined ? callSync : callAsync.bind(null, env.delay)
-    };
-
     const run = function (code, options = {}) {
-      options.config = Object.assign(subConfig, options.config);
+      options.config = Object.assign({}, env.subConfig, options.config);
       const finalOptions = Object.assign({session}, context.runOptions, options);
       return subSheeva.run(code, finalOptions);
     };
@@ -36,18 +35,22 @@ module.exports = {
   },
 };
 
-function callSync({fn, session, context}) {
-  return fn(session, context);
+function createSubConfig(env) {
+  env.subConfig = {
+    callTestHookFn: function (params) {
+      const {fn, session, context, attempt} = params;
+      return params !== noop
+        ? fn(context, session, attempt)
+        : callAsync(env.delay, params)
+    }
+  };
 }
 
-function callAsync(delay, {fn, session, context}) {
-  if (fn !== noop) {
-    return fn(session, context);
-  }
+function callAsync(delay, {fn, session, context, attempt}) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       try {
-        fn(session, context);
+        fn(context, session, attempt);
         resolve();
       } catch(e) {
         reject(e);

@@ -145,11 +145,12 @@ module.exports = {
    * @returns {Function}
    */
   callTestHookFn: function (params) {
-    return params.fn(params.context, params.env, params.attempt);
+    const {fn, context, session, attempt} = params;
+    return fn(context, session, attempt);
   },
 
   /**
-   * Start runner hook
+   * Start runner hook, called after tests are read and transformed, but before execution
    * For Webdriver tests it may be starting local selenium server
    *
    * @param {Config} config

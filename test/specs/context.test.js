@@ -8,34 +8,34 @@ describe('context', () => {
   it('should create test context and pass it to each hooks', run => {
     const report = run(`
       describe('suite 1', () => {
-        beforeEach((session, context) => {
+        beforeEach((context, session) => {
           if (!context) {
             throw new Error('test context not created')
           }
           context.be1 = 1;
         });
         
-        beforeEach((session, context) => {
+        beforeEach((context, session) => {
           if (!context.be1) {
             throw new Error('beforeEach1 was not called with context')
           }
           context.be2 = 1;
         });
         
-        afterEach((session, context) => {
+        afterEach((context, session) => {
           if (!context.be1 || !context.be2 || !context.test1) {
             throw new Error('beforeEach1 or beforeEach2 or test1 was not called with context')
           }
           context.ae1 = 1;
         });
         
-         afterEach((session, context) => {
+         afterEach((context, session) => {
           if (!context.be1 || !context.be2 || !context.test1 || !context.ae1) {
             throw new Error('beforeEach1 or beforeEach2 or test1 or afterEach1 was not called with context')
           }
         });
         
-        it('test 1', (session, context) => {
+        it('test 1', (context, session) => {
           if (!context.be1 || !context.be2) {
             throw new Error('beforeEach1 or beforeEach2 was not called with context')
           }
@@ -57,13 +57,13 @@ describe('context', () => {
   it('should not create context for before/after hooks', run => {
     const report = run(`
       describe('suite 1', () => {
-        before((session, context) => {
+        before((context, session) => {
           if (context) {
             throw new Error('suite context not supported in before hook yet')
           }
         });
         
-        after((session, context) => {
+        after((context, session) => {
           if (context) {
             throw new Error('suite context not supported in after hook yet')
           }
