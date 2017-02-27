@@ -82,7 +82,7 @@ module.exports = class Sheeva {
    */
   _storeRunnerError(error) {
     const isErrorInHookOrTest = config.breakOnError && (error.suite || error.test);
-    if (!isErrorInHookOrTest) {
+    if (!isErrorInHookOrTest && !this._runnerError) {
       this._runnerError = error || new Error('Empty rejection');
     }
   }
@@ -95,9 +95,10 @@ module.exports = class Sheeva {
   _end() {
     return Promise.resolve()
       .then(() => config.endRunner(config))
-      .catch(error => this._storeError(error))
+      .catch(error => this._storeRunnerError(error))
       .finally(() => this._emitEnd())
       .finally(() => reporter.stopListen())
+      .catch(error => this._storeRunnerError(error))
   }
 
   _getResult() {
