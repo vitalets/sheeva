@@ -24,7 +24,7 @@ module.exports = class HookCaller {
   call() {
     this._emit(HOOK_START);
     return this._callFn()
-      .catch(error => this._storeErrorAndReject(error))
+      .catch(e => this._storeErrorAndReject(e))
       .finally(() => this._emit(HOOK_END));
   }
 

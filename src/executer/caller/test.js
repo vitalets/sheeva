@@ -51,7 +51,7 @@ module.exports = class TestCaller {
   _callTest() {
     this._emit(TEST_START);
     return this._callFn()
-      .catch(error => this._storeError(error))
+      .catch(e => this._storeError(e))
       .finally(() => this._emit(this._canRetry() ? TEST_RETRY : TEST_END));
   }
 

@@ -38,7 +38,7 @@ module.exports = class Sheeva {
       .then(() => this._applyFlatten())
       .then(() => this._start())
       .then(() => this._execute())
-      .catch(error => this._storeRunnerError(error))
+      .catch(e => this._storeRunnerError(e))
       .finally(() => this._end())
       .then(() => this._getResult())
   }
@@ -95,10 +95,10 @@ module.exports = class Sheeva {
   _end() {
     return Promise.resolve()
       .then(() => config.endRunner(config))
-      .catch(error => this._storeRunnerError(error))
+      .catch(e => this._storeRunnerError(e))
       .finally(() => this._emitEnd())
       .finally(() => reporter.stopListen())
-      .catch(error => this._storeRunnerError(error))
+      .catch(e => this._storeRunnerError(e))
   }
 
   _getResult() {
