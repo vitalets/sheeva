@@ -8,8 +8,7 @@ const utils = require('./utils');
 const configurator = require('./configurator');
 const reporter = require('./reporter');
 const Reader = require('./reader');
-const Filter = require('./filter');
-const Flattener = require('./flattener');
+const Transformer = require('./transformer');
 const Executer = require('./executer');
 const {RUNNER_INIT, RUNNER_START, RUNNER_END} = require('./events');
 
@@ -24,18 +23,21 @@ module.exports = class Sheeva {
   constructor(rawConfig) {
     this._rawConfig = rawConfig;
     this._reader = new Reader();
-    this._filter = new Filter();
-    this._flattener = new Flattener();
+    this._transformer = new Transformer();
     this._executer = new Executer();
     this._runnerError = null;
   }
 
+  /**
+   * Run tests execution
+   *
+   * @returns {Promise}
+   */
   run() {
     return Promise.resolve()
       .then(() => this._init())
       .then(() => this._readFiles())
-      .then(() => this._applyFilter())
-      .then(() => this._applyFlatten())
+      .then(() => this._transform())
       .then(() => this._start())
       .then(() => this._execute())
       .catch(e => this._storeRunnerError(e))
@@ -61,16 +63,13 @@ module.exports = class Sheeva {
     return this._reader.read();
   }
 
-  _applyFilter() {
-    return this._filter.run(this._reader.data);
-  }
-
-  _applyFlatten() {
-    return this._flattener.run(this._filter.envData);
+  _transform() {
+    // todo: use this._reader.result
+    this._transformer.transform(this._reader.data);
   }
 
   _execute() {
-    return this._executer.run(this._flattener.envFlatSuites);
+    return this._executer.run(this._transformer.result);
   }
 
   /**
@@ -106,27 +105,23 @@ module.exports = class Sheeva {
   }
 
   _emitInit() {
-    reporter.handleEvent(RUNNER_INIT, {
-      config
-    });
+    const data = {config};
+    reporter.handleEvent(RUNNER_INIT, data);
   }
 
   _emitStart() {
     const data = {
       config,
       files: this._reader.files,
-      onlyFiles: this._filter.onlyFiles,
-      skippedSuites: this._filter.skippedSuites,
-      skippedTests: this._filter.skippedTests,
-      skippedInFiles: this._filter.skippedInFiles,
+      only: this._transformer.meta.only,
+      skip: this._transformer.meta.skip,
     };
     reporter.handleEvent(RUNNER_START, data);
   }
 
   _emitEnd() {
-    reporter.handleEvent(RUNNER_END, {
-      error: this._runnerError
-    });
+    const data = {error: this._runnerError};
+    reporter.handleEvent(RUNNER_END, data);
   }
 };
 

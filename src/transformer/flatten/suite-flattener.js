@@ -12,7 +12,7 @@
  * @property {Number} baCount max number of before / after hooks
  */
 
-const {config} = require('../configurator');
+const {config} = require('../../configurator');
 
 module.exports = class SuiteFlattener {
   /**

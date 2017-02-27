@@ -5,7 +5,7 @@
  * - tags
  */
 
-const {config} = require('../configurator');
+const {config} = require('../../configurator');
 const Only = require('./only');
 const Skip = require('./skip');
 const Tags = require('./tags');
@@ -18,24 +18,21 @@ module.exports = class Filter {
     this._tags = null;
   }
 
-  get envData() {
+  get result() {
     return this._envData;
   }
 
-  get onlyFiles() {
-    return this._only.files;
-  }
-
-  get skippedSuites() {
-    return this._skip.suites;
-  }
-
-  get skippedTests() {
-    return this._skip.tests;
-  }
-
-  get skippedInFiles() {
-    return this._skip.files;
+  get meta() {
+    return {
+      only: {
+        files: this._only.files
+      },
+      skip: {
+        files: this._skip.files,
+        suites: this._skip.suites,
+        tests: this._skip.tests,
+      }
+    };
   }
 
   run(envData) {

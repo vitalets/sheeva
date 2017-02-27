@@ -62,3 +62,5 @@ Their requirements to runner are:
    Group and run tests by tags (e.g. *smoke*, *normal*, *full*) 
       
 Sheeva tries to fulfill all these requirements.
+
+## Handling errors

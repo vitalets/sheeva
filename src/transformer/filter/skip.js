@@ -2,7 +2,7 @@
  * Filters suites by skip
  */
 
-const ExtraSet = require('../utils/extra-set');
+const ExtraSet = require('../../utils/extra-set');
 const Excluder = require('./excluder');
 
 module.exports = class Skip {

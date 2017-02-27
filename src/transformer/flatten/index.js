@@ -9,12 +9,12 @@
 
 const SuiteFlattener = require('./suite-flattener');
 
-module.exports = class Flattener {
+module.exports = class Flatten {
   constructor() {
     this._envFlatSuites = new Map();
   }
 
-  get envFlatSuites() {
+  get result() {
     return this._envFlatSuites;
   }
 

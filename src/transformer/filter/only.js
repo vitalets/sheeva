@@ -2,7 +2,7 @@
  * Filters suites by only
  */
 
-const ExtraSet = require('../utils/extra-set');
+const ExtraSet = require('../../utils/extra-set');
 const Includer = require('./includer');
 
 module.exports = class Only {

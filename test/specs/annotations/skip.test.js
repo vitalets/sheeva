@@ -91,9 +91,9 @@ describe('annotation: skip', () => {
     return expectResolve(result)
       .then(res => {
         expect(res, 'to have length', 1);
-        expect(res[0].data.skippedInFiles, 'to have length', 2);
-        expect(res[0].data.skippedSuites, 'to have length', 1);
-        expect(res[0].data.skippedTests, 'to have length', 1);
+        expect(res[0].data.skip.files, 'to have length', 2);
+        expect(res[0].data.skip.suites, 'to have length', 1);
+        expect(res[0].data.skip.tests, 'to have length', 1);
       })
   });
 
