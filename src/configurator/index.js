@@ -25,18 +25,31 @@ class Configurator {
     this._createEnvs();
   }
 
+  _merge(rawConfig) {
+    Object.assign(this._config, defaults, rawConfig);
+  }
+
+  _validate() {
+    // todo: move to separate fn
+    this._config.files = utils.ensureArray(this._config.files);
+    this._config.reporters = utils.ensureArray(this._config.reporters);
+    this._config.concurrency = parseInt(this._config.concurrency, 10);
+    this._config.timeout = parseInt(this._config.timeout, 10);
+    this._validateTypes();
+  }
+
   _createEnvs() {
     this._config.envs = new Envs(this._config).create();
   }
 
-  _validate() {
-    utils.assertNotEmpty(this._config.timeout, 'Global timeout can not be empty');
-    this._config.files = utils.ensureArray(this._config.files);
-    this._config.reporters = utils.ensureArray(this._config.reporters);
-  }
-
-  _merge(rawConfig) {
-    Object.assign(this._config, defaults, rawConfig);
+  _validateTypes() {
+    Object.keys(defaults).forEach(key => {
+      const defaultValueType = typeof defaults[key];
+      const valueType = typeof this._config[key];
+      if (defaultValueType !== valueType) {
+        throw new Error(`Config key type mismatch for ${key}`);
+      }
+    })
   }
 
   _clear() {

@@ -34,17 +34,17 @@ module.exports = class CurrentAnnotation {
   }
 
   addIgnore(fn) {
-    utils.assertFn(fn, '$ignore() should accept function as parameter');
+    utils.assertType(fn, 'function', '$ignore() should accept function as parameter');
     this._ignore.push(fn);
   }
 
   addIf(fn) {
-    utils.assertFn(fn, '$if() should accept function as parameter');
+    utils.assertType(fn, 'function', '$if() should accept function as parameter');
     this._if.push(fn);
   }
 
   addTimeout(ms) {
-    utils.assertNotEmpty(ms, 'Zero timeout is bad idea');
+    utils.assertType(ms, 'number', 'Timeout should be number');
     this._timeout = ms;
   }
 

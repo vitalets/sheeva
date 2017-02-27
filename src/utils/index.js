@@ -21,10 +21,11 @@ exports.pushToMap = function (map, key, item) {
  * Asserts that value is function
  *
  * @param {*} value
+ * @param {String} type
  * @param {String} msg
  */
-exports.assertFn = function(value, msg) {
-  if (typeof value !== 'function') {
+exports.assertType = function(value, type, msg) {
+  if (typeof value !== type) {
     throw new Error(msg);
   }
 };
@@ -35,7 +36,7 @@ exports.assertFn = function(value, msg) {
  * @param {*} value
  * @param {String} msg
  */
-exports.assertNotEmpty = function(value, msg) {
+exports.assertOk = function(value, msg) {
   if (!value) {
     throw new Error(msg);
   }

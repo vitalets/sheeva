@@ -4,7 +4,7 @@
 
 const reporter = require('../../../reporter');
 const {SUITE_START, SUITE_END} = require('../../../events');
-const BaseHooksCaller = require('./base');
+const BaseHooksCaller = require('./base-hooks');
 
 module.exports = class SuiteHooksCaller extends BaseHooksCaller {
   /**
@@ -31,21 +31,12 @@ module.exports = class SuiteHooksCaller extends BaseHooksCaller {
     return this._callPostHooks('after', newSuiteStack);
   }
 
-  /**
-   * Store error occured in middle beforeEach / afterEach hooks to emit it later in after hooks
-   *
-   * @param {Error} error
-   */
-  storeEachHooksError(error) {
-    this._errors.handleMiddleError(error);
-  }
-
   _onSuiteHooksStart(suite) {
     this._emit(SUITE_START, {suite});
   }
 
   _onSuiteHooksEnd(suite) {
-    this._emit(SUITE_END, {suite, error: this.firstError});
+    this._emit(SUITE_END, {suite, error: this.error});
   }
 
   _emit(event, data) {

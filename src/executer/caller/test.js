@@ -57,10 +57,7 @@ module.exports = class TestCaller {
 
   _storeError(error) {
     this._testError = error;
-    // todo: use TestError class
-    Object.defineProperty(error, 'test', {
-      value: this._test
-    });
+    Object.defineProperty(error, 'test', {value: this._test});
   }
 
   _checkRetry() {
@@ -70,7 +67,7 @@ module.exports = class TestCaller {
   }
 
   _canRetry() {
-    const isOnlyTestError = this._testError && !this._hooksCaller.firstError;
+    const isOnlyTestError = this._testError && !this._hooksCaller.error;
     const hasAttempts = this._test.retry && this._attempt < this._test.retry;
     return isOnlyTestError && hasAttempts;
   }
@@ -86,7 +83,7 @@ module.exports = class TestCaller {
    *  - error in hooks
    */
   _rejectIfError() {
-    const error = config.breakOnError && this._testError || this._hooksCaller.firstError;
+    const error = config.breakOnError && this._testError || this._hooksCaller.error;
     return error ? Promise.reject(error) : null;
   }
 

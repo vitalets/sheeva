@@ -82,10 +82,18 @@ module.exports = class Queue {
   _handleNextTest() {
     Promise.resolve()
       .then(() => this._moveCursor())
-      .then(() => this._callTest())
-      .catch(error => this._handleError(error))
-      .then(() => this._hasCurrentTest() ? this._handleNextTest() : this._promised.resolve())
-      .catch(error => this._promised.reject(error));
+      .then(() => this._executeTest())
+      .catch(e => this._handleError(e))
+      .then(() => this._tryHandleNextTest())
+      .catch(e => this._promised.reject(e));
+  }
+
+  _tryHandleNextTest() {
+    if (this._hasCurrentTest()) {
+      this._handleNextTest();
+    } else {
+      this._promised.resolve();
+    }
   }
 
   _moveCursor() {
@@ -94,7 +102,26 @@ module.exports = class Queue {
       : this._moveCursorWithoutHooks();
   }
 
-  _callTest() {
+  _moveCursorWithHooks() {
+    return Promise.resolve()
+      .then(() => this._executeAfterHooks())
+      .then(() => this._moveCursorWithoutHooks())
+      .then(() => this._executeBeforeHooks())
+  }
+
+  _executeBeforeHooks() {
+    if (this._hasCurrentTest()) {
+      this._suiteHooksCaller = this._createHooksCaller();
+      return this._suiteHooksCaller.callBefore(this._cursor.currentTest);
+    }
+  }
+
+  _executeAfterHooks() {
+    const stopSuite = this._cursor.findCommonSuiteWithNextTest();
+    return this._suiteHooksCaller.callAfter(stopSuite);
+  }
+
+  _executeTest() {
     if (this._hasCurrentTest()) {
       return new TestCaller(this._session, this._cursor.currentTest).call();
     }
@@ -102,24 +129,14 @@ module.exports = class Queue {
 
   _handleError(error) {
     const isHooksError = Boolean(error.suite);
-    if (isHooksError && this._handleHooksError(error)) {
-      return Promise.resolve();
-    } else {
-      return this._terminate(error);
+    if (isHooksError) {
+      this._suiteHooksCaller.addError(error.suite, error);
+      if (!config.breakOnError) {
+        this._cursor.moveToSuiteEnd(error.suite);
+        return;
+      }
     }
-  }
-
-  _handleHooksError(error) {
-    if (!this._suiteHooksCaller.firstError) {
-      this._suiteHooksCaller.storeEachHooksError(error);
-    }
-
-    if (!config.breakOnError) {
-      this._cursor.moveToSuiteEnd(error.suite);
-      return true;
-    } else {
-      return false;
-    }
+    return this._terminate(error);
   }
 
   _terminate(error) {
@@ -128,35 +145,16 @@ module.exports = class Queue {
       .finally(() => Promise.reject(error));
   }
 
-  _hasCurrentTest() {
-    return Boolean(this._cursor.currentTest);
-  }
-
-  _moveCursorWithHooks() {
-    return Promise.resolve()
-      .then(() => this._callAfterHooks())
-      .then(() => this._moveCursorWithoutHooks())
-      .then(() => this._callBeforeHooks())
-  }
-
   _moveCursorWithoutHooks() {
     return this._cursor.moveToNextText();
   }
 
-  _callBeforeHooks() {
-    if (this._hasCurrentTest()) {
-      this._suiteHooksCaller = this._createHooksCaller();
-      return this._suiteHooksCaller.callBefore(this._cursor.currentTest);
-    }
-  }
-
-  _callAfterHooks() {
-    const stopSuite = this._cursor.findCommonSuiteWithNextTest();
-    return this._suiteHooksCaller.callAfter(stopSuite);
-  }
-
   _createHooksCaller() {
     return new SuiteHooksCaller(this._session, null, this._suiteStack);
+  }
+
+  _hasCurrentTest() {
+    return Boolean(this._cursor.currentTest);
   }
 };
 

@@ -27,7 +27,9 @@ module.exports = class FnCaller {
   call(params) {
     try {
       this._result = config.callTestHookFn(params);
-      return this._isPromise() ? this._raceWithTimeout() : Promise.resolve(this._result);
+      return this._isPromise() && this._hasTimeout()
+        ? this._raceWithTimeout()
+        : Promise.resolve(this._result);
     } catch (e) {
       return Promise.reject(e);
     }
@@ -35,6 +37,10 @@ module.exports = class FnCaller {
 
   _isPromise() {
     return this._result && typeof this._result.then === 'function';
+  }
+
+  _hasTimeout() {
+    return Boolean(this._timeout);
   }
 
   _raceWithTimeout() {

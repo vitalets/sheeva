@@ -17,6 +17,7 @@ program
   .option('--split-suites', 'allows split of suites between parallel sessions')
   .option('--no-only', 'disallow ONLY tests. Useful for pre-commit / pre-push hooks')
   .option('--break-on-error', 'break on first error')
+  .option('--timeout <number>', 'global timeout')
   .parse(process.argv);
 
 run();

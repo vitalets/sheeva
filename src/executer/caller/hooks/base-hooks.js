@@ -4,7 +4,6 @@
 
 const utils = require('../../../utils');
 const HookCaller = require('./hook');
-const Errors = require('./errors');
 
 module.exports = class BaseHooksCaller {
   /**
@@ -18,7 +17,7 @@ module.exports = class BaseHooksCaller {
     this._session = session;
     this._context = context;
     this._suiteStack = suiteStack;
-    this._errors = new Errors();
+    this._errors = [];
   }
 
   /**
@@ -26,8 +25,19 @@ module.exports = class BaseHooksCaller {
    *
    * @returns {Error|null}
    */
-  get firstError() {
-    return this._errors.firstError;
+  get error() {
+    return this._errors[0];
+  }
+
+  /**
+   * Add suite error to errors stack
+   *
+   * @param {Suite} suite
+   * @param {Error} error
+   */
+  addError(suite, error) {
+    Object.defineProperty(error, 'suite', {value: suite});
+    this._errors.push(error);
   }
 
   _callPreHooks(hookType, newSuiteStack) {
@@ -36,6 +46,7 @@ module.exports = class BaseHooksCaller {
   }
 
   _callPostHooks(hookType, newSuiteStack) {
+    utils.assertOk(newSuiteStack.length <= this._suiteStack.length, 'New suite stack should be less than current');
     const suites = utils.getStackDiff(this._suiteStack, newSuiteStack);
     const reversedSuites = suites.reverse();
     return utils.reduceWithPromises(reversedSuites, suite => this._callSuitePostHooks(suite, hookType));
@@ -46,17 +57,15 @@ module.exports = class BaseHooksCaller {
     this._suiteStack.push(suite);
     this._onSuiteHooksStart(suite);
     return this._callHooks(hooks)
-      .catch(error => this._errors.handlePreHookError(suite, error))
+      .catch(e => this._addPreHookError(suite, e))
   }
 
   _callSuitePostHooks(suite, hookType) {
     const hooks = suite[hookType];
     const popedSuite = this._suiteStack.pop();
-    if (popedSuite !== suite) {
-      throw new Error('Something goes wrong');
-    }
+    utils.assertOk(popedSuite === suite, `Something wrong with suite stack`);
     return this._callHooks(hooks)
-      .catch(error => this._errors.handlePostHookError(suite, error))
+      .catch(e => this._addPostHookError(suite, e))
       .finally(() => this._onSuiteHooksEnd(suite));
   }
 
@@ -64,6 +73,15 @@ module.exports = class BaseHooksCaller {
     return utils.reduceWithPromises(hooks, hook => {
       return new HookCaller(this._session, this._context, hook).call();
     });
+  }
+
+  _addPreHookError(suite, error) {
+    this.addError(suite, error);
+    return Promise.reject(error);
+  }
+
+  _addPostHookError(suite, error) {
+    this.addError(suite, error);
   }
 
   _onSuiteHooksStart() { }

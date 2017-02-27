@@ -13,15 +13,15 @@
     "url": "git://github.com/vitalets/sheeva.git"
   },
   "scripts": {
-    "tt": "node src-stable/cli --config test/sheeva.config.js",
-    "test": "npm run tt -- --env=sync-env --break-on-error",
+    "tt": "node src-stable/cli --config=test/sheeva.config.js",
+    "test": "npm run tt -- --env=sync-env --break-on-error --timeout=0",
     "norep": "npm t -- --reporters=",
     "debug": "npm t -- --reporters=./test/debug-reporter.js",
     "errors": "npm t -- --reporters=./test/errors-reporter.js",
-    "devtool": "devtool src-stable/cli --config test/sheeva.config.js --env=sync-env --reporters=./test/debug-reporter.js",
+    "devtool": "devtool src-stable/cli -- --config=test/sheeva.config.js --env=sync-env --reporters=./test/debug-reporter.js --timeout=0",
     "precommit": "npm run tt -- --no-only",
     "prepush": "npm run tt -- --no-only && npm run copy-stable",
-    "copy-stable": "cp -R src/ src-stable/"
+    "copy": "cp -R src/ src-stable/"
   },
   "dependencies": {
     "commander": "^2.9.0",

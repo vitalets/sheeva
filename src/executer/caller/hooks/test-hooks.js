@@ -2,7 +2,7 @@
  * Calls test-level hooks (beforeEach/afterEach)
  */
 
-const BaseHooksCaller = require('./base');
+const BaseHooksCaller = require('./base-hooks');
 
 module.exports = class EachHooksCaller extends BaseHooksCaller {
   /**
