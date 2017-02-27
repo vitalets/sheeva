@@ -20,7 +20,7 @@
     "errors": "npm t -- --reporters=./test/errors-reporter.js",
     "devtool": "devtool src-stable/cli -- --config=test/sheeva.config.js --env=sync-env --reporters=./test/debug-reporter.js --timeout=0",
     "precommit": "npm run tt -- --no-only",
-    "prepush": "npm run tt -- --no-only && npm run copy-stable",
+    "prepush": "npm run tt -- --no-only && npm run copy",
     "copy": "cp -R src/ src-stable/"
   },
   "dependencies": {
