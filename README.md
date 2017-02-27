@@ -68,18 +68,15 @@ There are 3 types of errors during execution:
 
 1. **Error in test**  
   It can be assertion error or error in test code itself. In that case all `afterEach` hooks are called,
-  error is reported via `TEST_END` event and runner goes to the next test.  
-  Reporter is responsible for displaying such error.
+  error is reported via `TEST_END` event and runner goes to the next test. Reporter is responsible for displaying such error.
  
 2. **Error in hook**  
   When error occurs in hook of some suite there is no sense to continue running tests of that suite. 
   So runner goes to the end of suite, calls needed `after` hooks, emits `SUITE_END` event with error
-  and takes next suite.  
-  Reporter is responsible for displaying such error.
+  and takes next suite. Reporter is responsible for displaying such error.
 
 3. **Error in runner**  
-  This is error owned by developers of Sheeva. In that case runner terminates immediately and rejects with that error.  
-  Reporter is not responsible for displaying such error, it will be shown in console until you catch it.
+  This is error owned by developers of Sheeva. In that case runner terminates immediately and rejects with that error. Reporter is not responsible for displaying such error, it will be shown in console until you catch it.
   
 *Note 1:* if `config.breakOnError` is enabled then runner will terminate on any error.  
 *Note 2:* there can be several errors at once, e.g. error in `before` hook can cause error in `after` hook.  
