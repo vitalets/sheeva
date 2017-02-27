@@ -64,7 +64,8 @@ Their requirements to runner are:
 Sheeva tries to fulfill all these requirements.
 
 ## Handling errors
-There are 3 types of errors during execution:
+There are 3 types of errors during execution:  
+
 1. **Error in test**  
   It can be assertion error or error in test code itself. In that case all `afterEach` hooks are called,
   error is reported via `TEST_END` event and runner goes to the next test.  
