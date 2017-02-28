@@ -12,7 +12,7 @@ module.exports = class Time {
     this.hooks = new Map();
     this.tests = new Map();
   }
-  handleEvent(event, data) { // eslint-disable-line complexity
+  handleEvent(event, data) { // eslint-disable-line complexity, max-statements
     switch (event) {
       case events.SESSION_START: {
         this.sessionStart.handleStartEvent(event, data);

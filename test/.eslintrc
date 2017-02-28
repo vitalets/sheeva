@@ -1,8 +1,4 @@
 {
-  "env": {
-    "browser": true
-  },
-
   "globals": {
     "describe": false,
     "it": false,
@@ -17,5 +13,9 @@
     "$only": false,
     "$skip": false,
     "$if": false
+  },
+
+  "rules": {
+    "max-statements": 0
   }
 }
