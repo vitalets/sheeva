@@ -60,6 +60,11 @@ module.exports = class Sheeva {
     this._transformer.transform(this._reader.data);
   }
 
+  _start() {
+    this._emitStart();
+    return utils.thenCall(() => config.startRunner(config));
+  }
+
   _execute() {
     return this._executer.run(this._transformer.result);
   }
@@ -76,11 +81,6 @@ module.exports = class Sheeva {
     if (!isErrorInHookOrTest && !this._runnerError) {
       this._runnerError = error || new Error('Empty rejection');
     }
-  }
-
-  _start() {
-    this._emitStart();
-    return utils.thenCall(() => config.startRunner(config));
   }
 
   _end() {
