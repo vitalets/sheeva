@@ -17,7 +17,7 @@ module.exports = {
       {id: 'async-env', delay: 10},
     ];
   },
-  startRunner: function(config) {
+  startRunner: function (config) {
     config.envs.forEach(env => env.delay ? createSubConfig(env) : null);
   },
   callTestHookFn: function ({fn, session, context, hook, env}) {

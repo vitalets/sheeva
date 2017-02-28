@@ -24,7 +24,7 @@ exports.pushToMap = function (map, key, item) {
  * @param {String} type
  * @param {String} msg
  */
-exports.assertType = function(value, type, msg) {
+exports.assertType = function (value, type, msg) {
   if (typeof value !== type) {
     throw new Error(msg);
   }
@@ -36,7 +36,7 @@ exports.assertType = function(value, type, msg) {
  * @param {*} value
  * @param {String} msg
  */
-exports.assertOk = function(value, msg) {
+exports.assertOk = function (value, msg) {
   if (!value) {
     throw new Error(msg);
   }
@@ -48,7 +48,7 @@ exports.assertOk = function(value, msg) {
  * @param {Function} fn
  * @returns {Promise}
  */
-exports.thenCall = function(fn) {
+exports.thenCall = function (fn) {
   return Promise.resolve().then(fn);
 };
 
@@ -59,7 +59,7 @@ exports.thenCall = function(fn) {
  * @param {Function} fn
  * @returns {Promise}
  */
-exports.reduceWithPromises = function(arr, fn) {
+exports.reduceWithPromises = function (arr, fn) {
   return arr.reduce((res, item) => res.then(() => fn(item)), Promise.resolve());
 };
 
@@ -69,7 +69,7 @@ exports.reduceWithPromises = function(arr, fn) {
  * @param {*} value
  * @returns {Array}
  */
-exports.ensureArray = function(value) {
+exports.ensureArray = function (value) {
   return Array.isArray(value) ? value : [value];
 };
 
@@ -96,7 +96,7 @@ exports.Promised = class {
  * @param {Array} stack1
  * @param {Array} stack2
  */
-exports.getCommonNode = function(stack1, stack2) {
+exports.getCommonNode = function (stack1, stack2) {
   const minLength = Math.min(stack1.length, stack2.length);
   for (let i = minLength - 1; i >= 0; i--) {
     if (stack1[i] === stack2[i]) {
@@ -114,7 +114,7 @@ exports.getCommonNode = function(stack1, stack2) {
  * @param {Array} stack2
  * @returns {Array}
  */
-exports.getStackDiff = function(stack1, stack2) {
+exports.getStackDiff = function (stack1, stack2) {
   const minStack = stack2.length > stack1.length ? stack1 : stack2;
   const maxStack = stack2.length > stack1.length ? stack2 : stack1;
   return maxStack.slice(minStack.length);
