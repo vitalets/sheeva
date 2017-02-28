@@ -6,6 +6,7 @@
       "impliedStrict": true
      }
   },
+
   "env": {
     "commonjs": true,
     "browser": true,
@@ -21,5 +22,4 @@
     "max-statements": ["error", {"max" : 7}, {"ignoreTopLevelFunctions": false}],
     "space-before-function-paren": ["error", {"anonymous": "always", "named": "never", "asyncArrow": "always"}]
   }
-
 }
