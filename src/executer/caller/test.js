@@ -10,6 +10,8 @@ const {TestHooksCaller} = require('./hooks');
 const FnCaller = require('./fn');
 const errors = require('./errors');
 
+const TIMEOUT_INCREASE_FACTOR = 1.5;
+
 module.exports = class TestCaller {
   constructor(session, test) {
     this._session = session;
@@ -18,6 +20,7 @@ module.exports = class TestCaller {
     this._hooksCaller = null;
     this._testError = null;
     this._attempt = 0;
+    this._timeout = this._test.timeout || config.timeout;
   }
 
   /**
@@ -74,7 +77,14 @@ module.exports = class TestCaller {
 
   _retry() {
     this._attempt++;
+    this._increaseTimeoutIfNeeded();
     return this.call();
+  }
+
+  _increaseTimeoutIfNeeded() {
+    if (this._timeout && this._testError instanceof FnCaller.TimeoutError) {
+      this._timeout = Math.round(this._timeout * TIMEOUT_INCREASE_FACTOR);
+    }
   }
 
   /**
@@ -97,7 +107,7 @@ module.exports = class TestCaller {
       context: this._context,
       attempt: this._attempt,
     };
-    return new FnCaller({timeout: this._test.timeout}).call(params);
+    return new FnCaller({timeout: this._timeout}).call(params);
   }
 
   _emit(event) {

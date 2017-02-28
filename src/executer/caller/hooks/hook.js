@@ -2,6 +2,7 @@
  * Calls hook fn
  */
 
+const {config} = require('../../../configurator');
 const reporter = require('../../../reporter');
 const {HOOK_START, HOOK_END} = require('../../../events');
 const FnCaller = require('../fn');
@@ -19,6 +20,7 @@ module.exports = class HookCaller {
     this._context = context;
     this._hook = hook;
     this._error = null;
+    this._timeout = this._hook.timeout || config.timeout;
   }
 
   call() {
@@ -37,7 +39,7 @@ module.exports = class HookCaller {
       suite: this._hook.parent,
       context: this._context,
     };
-    return new FnCaller({timeout: this._hook.timeout}).call(params);
+    return new FnCaller({timeout: this._timeout}).call(params);
   }
 
   _storeErrorAndReject(error) {

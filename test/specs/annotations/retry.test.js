@@ -61,4 +61,21 @@ describe('annotation: retry', () => {
     ]);
   });
 
+  it('should retry with increased timeout of test failed by timeout', run => {
+    const result = run(`
+      describe('suite 1', () => {
+        $retry();
+        $timeout(10)
+        it('test 0', () => sleep(12));
+      });
+    `, {include: ['TEST']});
+
+    return expectResolve(result, [
+      'TEST_START test 0',
+      'TEST_RETRY test 0 Timeout 10 ms exceeded',
+      'TEST_START test 0',
+      'TEST_END test 0',
+    ]);
+  });
+
 });

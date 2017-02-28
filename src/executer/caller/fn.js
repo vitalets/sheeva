@@ -5,7 +5,7 @@
 
 const {config} = require('../../configurator');
 
-module.exports = class FnCaller {
+const FnCaller = module.exports = class FnCaller {
   /**
    * Constructor
    *
@@ -13,7 +13,7 @@ module.exports = class FnCaller {
    * @param {Number} options.timeout
    */
   constructor(options = {}) {
-    this._timeout = options.timeout || config.timeout;
+    this._timeout = options.timeout;
     this._timer = null;
     this._result = null;
   }
@@ -63,7 +63,9 @@ module.exports = class FnCaller {
 
   _rejectByTimeout(reject) {
     this._timer = null;
-    const error = new Error(`Timeout ${this._timeout} ms exceeded`);
+    const error = new FnCaller.TimeoutError(`Timeout ${this._timeout} ms exceeded`);
     reject(error);
   }
 };
+
+FnCaller.TimeoutError = class TimeoutError extends Error {};
