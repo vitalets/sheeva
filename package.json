@@ -13,15 +13,17 @@
     "url": "git://github.com/vitalets/sheeva.git"
   },
   "scripts": {
-    "lint": "eslint src test",
+    "code": "npm run lint-all",
+    "lint-all": "eslint src test",
+    "lint-staged": "lint-staged",
     "tt": "node src-stable/cli --config=test/sheeva.config.js",
     "test": "npm run tt -- --env=sync-env --break-on-error --timeout=0",
     "norep": "npm t -- --reporters=",
     "debug": "npm t -- --reporters=./test/debug-reporter.js",
     "errors": "npm t -- --reporters=./test/errors-reporter.js",
     "devtool": "devtool src-stable/cli -- --config=test/sheeva.config.js --env=sync-env --reporters=./test/debug-reporter.js --timeout=0",
-    "precommit": "npm run tt -- --no-only",
-    "prepush": "npm run tt -- --no-only && npm run copy",
+    "precommit": "npm run lint-staged && npm run tt -- --no-only",
+    "prepush": "npm run code && npm run tt -- --no-only && npm run copy",
     "copy": "cp -R src/ src-stable/"
   },
   "dependencies": {
@@ -33,8 +35,12 @@
     "escape-string-regexp": "^1.0.5",
     "eslint": "^3.16.1",
     "husky": "^0.13.1",
+    "lint-staged": "^3.3.1",
     "treeify": "^1.0.1",
     "unexpected": "^10.26.1"
+  },
+  "lint-staged": {
+    "*.js": "eslint"
   },
   "license": "MIT"
 }
