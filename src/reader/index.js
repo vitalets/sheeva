@@ -25,7 +25,7 @@ module.exports = class Reader {
     this._annotations = new Annotations();
     this._suites = new Suites(this._annotations);
     this._propsInjector = new PropsInjector();
-    this._data = new Map();
+    this._result = new Map();
   }
 
   /**
@@ -40,8 +40,8 @@ module.exports = class Reader {
   /**
    * @returns {Map<Env,EnvData>}
    */
-  get data() {
-    return this._data;
+  get result() {
+    return this._result;
   }
 
   /**
@@ -88,7 +88,7 @@ module.exports = class Reader {
       const topSuites = this._suites.getForEnv(env);
       const annotationData = this._annotations.getForEnv(env);
       const envData = Object.assign({topSuites}, annotationData);
-      this._data.set(env, envData);
+      this._result.set(env, envData);
     });
   }
 };

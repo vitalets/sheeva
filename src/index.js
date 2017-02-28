@@ -56,8 +56,7 @@ module.exports = class Sheeva {
   }
 
   _transform() {
-    // todo: use this._reader.result
-    this._transformer.transform(this._reader.data);
+    this._transformer.transform(this._reader.result);
   }
 
   _start() {
