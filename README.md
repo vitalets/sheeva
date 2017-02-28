@@ -77,7 +77,8 @@ There are 3 types of errors occured during execution:
   and takes next suite. Reporter is responsible for displaying such error.
 
 3. **Error in runner**  
-  This is error owned by developers of Sheeva. In that case runner terminates immediately and rejects with that error. Reporter is not responsible for displaying such error, it will be shown in console until you catch it.
+  This may be internal error in Sheeva itself or in config methods e.g. `config.startSession`. 
+  In that case runner terminates immediately and rejects with that error. Reporter is not responsible for displaying such error, it will be shown in console until you catch it.
   
 *Note 1:* if `config.breakOnError` is enabled then runner will terminate on any error.  
 *Note 2:* there can be several errors at once, e.g. error in `before` hook can cause error in `after` hook.  
