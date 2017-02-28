@@ -1,58 +1,79 @@
 /**
- * Exports run() function passed to all tests
+ * Runs specified code in fresh instance of Sheeva
  */
 
 const path = require('path');
 require('promise.prototype.finally').shim();
-const baseConfig = require('./sheeva.config');
 const TempFiles = require('./tempfiles');
+const Reporter = require('./reporter');
 
-/**
- * Runs specified code in fresh instance of Sheeva
- *
- * @param {String|Array} code
- * @param {Object} options
- * @param {Object} options.session
- * @param {Object} [options.config]
- * @param {Array} [options.include]
- * @param {Array} [options.exclude]
- * @returns {Promise}
- */
-exports.run = function (code, options) {
-  const tempFiles = new TempFiles(code, options.session);
-  const config = Object.assign({}, baseConfig, options.config, {files: tempFiles.files});
-  const sheeva = createFreshSheeva(config);
-  return sheeva.run()
-    .then(() => sheeva.getReporter(0).getResult(options))
-    .catch(error => attachReportToError(error, sheeva, options))
-    .finally(() => tempFiles.cleanup());
+const BASE_CONFIG = {
+  concurrency: 1,
+  splitFiles: false,
+  createEnvs: function () {
+    return [{id: 'env1'}];
+  },
+};
+const SHEEVA_PATH = '../../src/';
+
+module.exports = class SubSheeva {
+  /**
+   * Constructor
+   *
+   * @param {String|Array} code
+   * @param {Object} options
+   * @param {Object} options.session
+   * @param {Object} [options.config]
+   * @param {Array} [options.include]
+   * @param {Array} [options.exclude]
+   * @param {Boolean} [options.flat]
+   * @param {Boolean} [options.raw]
+   * @returns {Promise}
+   */
+  constructor(code, options) {
+    this._tempFiles = new TempFiles(code, options.session);
+    this._reporter = new Reporter(options);
+    this._config = this._createConfig(options.config);
+    this._sheeva = null;
+  }
+
+  run() {
+    this._sheeva = this._createSheeva();
+    return this._sheeva.run()
+      .then(() => this._reporter.getResult())
+      .catch(e => this._attachReportToError(e))
+      .finally(() => this._tempFiles.cleanup());
+  }
+
+  _createConfig(config) {
+    return Object.assign({}, BASE_CONFIG, config, {
+      files: this._tempFiles.files,
+      reporters: this._reporter,
+    });
+  }
+
+  /**
+   * Clear src cache to have fresh instance of Sheeva for concurrent testing
+   */
+  _createSheeva() {
+    this._clearRequireCache();
+    const Sheeva = require(SHEEVA_PATH);
+    return new Sheeva(this._config);
+  }
+
+  _attachReportToError(error) {
+    Object.defineProperty(error, 'report', { value: this._reporter.getResult() });
+    return Promise.reject(error);
+  }
+
+  _clearRequireCache() {
+    Object.keys(require.cache).forEach(key => {
+      const relpath = path.relative(__dirname, key);
+      if (relpath.startsWith(SHEEVA_PATH)) {
+        delete require.cache[key];
+      }
+    });
+  }
 };
 
-function attachReportToError(error, sheeva, options) {
-  try {
-    Object.defineProperty(error, 'report', {
-      value: sheeva.getReporter(0).getResult(options)
-    });
-  } catch (err) {
-    // reporter may not exist
-  }
-  return Promise.reject(error);
-}
 
-/**
- * Clear src cache to have fresh instance of Sheeva for concurrent testing
- */
-function createFreshSheeva(config) {
-  clearSrcCache();
-  const Sheeva = require('../../src');
-  return new Sheeva(config);
-}
-
-function clearSrcCache() {
-  Object.keys(require.cache).forEach(key => {
-    const relpath = path.relative('.', key);
-    if (relpath.startsWith('src/')) {
-      delete require.cache[key];
-    }
-  });
-}

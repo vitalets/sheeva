@@ -3,7 +3,7 @@
  */
 
 require('./globals');
-const subSheeva = require('./sub-sheeva');
+const SubSheeva = require('./sub-sheeva');
 
 module.exports = {
   concurrency: 5,
@@ -29,7 +29,7 @@ module.exports = {
     const run = function (code, options = {}) {
       options.config = Object.assign({}, env.subConfig, options.config);
       const finalOptions = Object.assign({session}, context.runOptions, options);
-      return subSheeva.run(code, finalOptions);
+      return new SubSheeva(code, finalOptions).run();
     };
     return fn(run);
   },

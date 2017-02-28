@@ -4,36 +4,27 @@
 
 const events = require('../../src/events');
 
-module.exports = class LogReporter {
-  constructor() {
-    /*
-      treeLog:
+const DEFAULT_INCLUDE = ['TEST_END'];
 
-      env1: {
-        session1: [
-          SESSION_START,
-          SUITE_START,
-          ...
-        ],
-        session2: [
-          SESSION_START,
-          SUITE_START,
-          ...
-        ],
-      },
-      env2: {
-        ...
-      }
-    */
+module.exports = class LogReporter {
+  /**
+   * Constructor
+   *
+   * @param {Object} options
+   * @param {Array} [options.include]
+   * @param {Array} [options.exclude]
+   * @param {Boolean} [options.flat]
+   * @param {Boolean} [options.raw]
+   */
+  constructor(options) {
+    this._options = {};
     this._flatLog = [];
     this._treeLog = {};
     this._events = [];
+    this._setOptions(options);
   }
+
   handleEvent(event, data) {
-    //console.log('\n\n\n\n\nlog-reporter:', event)
-    //console.log('log-reporter:', new Date(data.timestamp), event)
-    //console.log('\nlog-reporter:', new Date(data.timestamp), event, data.test && data.test.name, '\n')
-    //console.log('log-reporter:', event, data.error)
     this._events.push({event, data});
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
     const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
@@ -113,42 +104,51 @@ module.exports = class LogReporter {
     }
   }
 
-  /**
-   *
-   * @param {Object} filter
-   * @param {Array} [filter.include]
-   * @param {Array} [filter.exclude]
-   * @param {Boolean} [filter.flat]
-   */
-  getResult(filter = {}) {
-    this._setDefaultForEmptyFilter(filter);
-
+  getResult() {
     const loggedEnvs = Object.keys(this._treeLog);
-    const flat = filter.flat || loggedEnvs.length === 0 || this._isSingleEnvAndSession();
+    const flat = this._options.flat || loggedEnvs.length === 0 || this._isSingleEnvAndSession();
 
-    if (filter.raw) {
-      return this._events
-        .filter(item => isPassingFilter(item.event, filter));
-    }
-
-    if (flat) {
-      return this._flatLog
-        .filter(eventName => isPassingFilter(eventName, filter));
+    if (this._options.raw) {
+      return this._getRawLog();
+    } else if (flat) {
+      return this._getFlatLog();
     } else {
-      return this._applyFilterToTreeLog(filter);
+      return this._getTreeLog();
     }
   }
 
-  _applyFilterToTreeLog(filter) {
+  _getRawLog() {
+    return this._events
+      .filter(item => this._isPassingFilter(item.event));
+  }
+
+  _getFlatLog() {
+    return this._flatLog
+      .filter(eventName => this._isPassingFilter(eventName));
+  }
+
+  _getTreeLog() {
     const treeLog = this._treeLog;
     this._treeLog = {};
     Object.keys(treeLog).forEach(envId => {
       Object.keys(treeLog[envId]).forEach(sessionName => {
         treeLog[envId][sessionName] = treeLog[envId][sessionName]
-          .filter(eventName => isPassingFilter(eventName, filter));
+          .filter(eventName => this._isPassingFilter(eventName));
       })
     });
     return treeLog;
+  }
+
+  _isPassingFilter(eventName) {
+    let result = true;
+    const {include, exclude} = this._options;
+    if (exclude) {
+      result = exclude.every(str => !eventName.startsWith(str));
+    }
+    if (include) {
+      result = include.some(str => eventName.startsWith(str));
+    }
+    return result;
   }
 
   _isSingleEnvAndSession() {
@@ -156,20 +156,10 @@ module.exports = class LogReporter {
     return (loggedEnvs.length === 1 && Object.keys(this._treeLog[loggedEnvs[0]]).length <= 1);
   }
 
-  _setDefaultForEmptyFilter(filter) {
-    if (!filter.include && !filter.exclude) {
-      filter.include = ['TEST_END'];
+  _setOptions(options) {
+    if (!options.include && !options.exclude) {
+      options.include = DEFAULT_INCLUDE;
     }
+    this._options = options;
   }
 };
-
-function isPassingFilter(eventName, filter) {
-  let result = true;
-  if (filter.exclude) {
-    result = filter.exclude.every(str => !eventName.startsWith(str));
-  }
-  if (filter.include) {
-    result = filter.include.some(str => eventName.startsWith(str));
-  }
-  return result;
-}
