@@ -80,7 +80,9 @@ module.exports = class Candidate {
   _getSplittedSuites() {
     const test1 = this._queue.tests[this._queue.tests.length - 1];
     const test2 = this._splittedQueue.tests[0];
-    const commonSuite = utils.getNearestCommonParent(test1, test2);
+    const parents1 = test1 && test1.parents || [];
+    const parents2 = test2 && test2.parents || [];
+    const commonSuite = utils.getCommonNode(parents1, parents2);
     return commonSuite.parents.concat([commonSuite]);
   }
 };

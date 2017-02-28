@@ -5,7 +5,7 @@
 /* eslint-disable no-console */
 
 const events = require('../src/events');
-const INCLUDE_EVENTS = [
+const INCLUDE_EVENTS = new Set([
   events.RUNNER_START,
   events.RUNNER_END,
   events.SESSION_START,
@@ -17,22 +17,28 @@ const INCLUDE_EVENTS = [
   //events.HOOK_END,
   //events.TEST_START,
   events.TEST_END,
-];
+]);
 
 module.exports = class DebugReporter {
-  handleEvent(event, data) {
-    data = data || {};
-
-    if (INCLUDE_EVENTS.indexOf(event) >= 0) {
-      const session = data.session ? ` session #${data.session.index}` : '';
-      const name = this._getName(data);
-      console.log(`${event}${session}${name}`);
+  handleEvent(event, data = {}) {
+    if (INCLUDE_EVENTS.has(event)) {
+      this._printEvent(event, data);
     }
 
     if (data.error) {
-      const error = event === events.TEST_END ? data.error.message : data.error;
-      console.error(error);
+      this._printError(event, data);
     }
+  }
+
+  _printEvent(event, data) {
+    const session = data.session ? ` session #${data.session.index}` : '';
+    const name = this._getName(data);
+    console.log(`${event}${session}${name}`);
+  }
+
+  _printError(event, data) {
+    const error = event === events.TEST_END ? data.error.message : data.error;
+    console.error(error);
   }
 
   _getName(data) {

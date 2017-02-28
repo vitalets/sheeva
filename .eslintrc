@@ -11,26 +11,12 @@
     "browser": true,
     "node": true,
     "es6": true
-  }
-
- // "parser": "babel-eslint",
-/*
-  "ecmaFeatures": {
-    "modules": true,
-    "impliedStrict": true
-  },
-
-  "env": {
-    "es6": true,
-    "commonjs": true,
-    "node": true
   },
 
   "rules": {
-    "no-console": 0
-   // "comma-dangle": ["error", "only-multiline"],
-   // "no-multi-spaces": 2,
+    "max-depth": ["error", {"max" : 2}],
+    "complexity": ["error", {"max" : 4}]
    // "space-before-function-paren": [2, {"anonymous": "always", "named": "never"}]
   }
-*/
+
 }

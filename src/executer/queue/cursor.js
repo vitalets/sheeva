@@ -53,7 +53,9 @@ module.exports = class Cursor {
    * @returns {Suite|null}
    */
   findCommonSuiteWithNextTest() {
-    return utils.getNearestCommonParent(this._currentTest, this._nextTest);
+    const parents1 = this._currentTest && this._currentTest.parents || [];
+    const parents2 = this._nextTest && this._nextTest.parents || [];
+    return utils.getCommonNode(parents1, parents2);
   }
 
   /**

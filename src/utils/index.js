@@ -87,28 +87,28 @@ exports.Promised = class {
 };
 
 /**
- * Finds nearest common parent of two nodes.
- * Each node should have `parents` property
+ * Finds nearest common node of two stacks.
+ *
+ * Examples:
+ * [1,2,3,4] and [1,2,5] --> 2
+ * [1,2] and [3,4] --> undefined
+ *
+ * @param {Array} stack1
+ * @param {Array} stack2
  */
-exports.getNearestCommonParent = function(node1, node2) {
-  if (!node1 || !node2) {
-    return null;
-  }
-
-  const maxLength = Math.max(node1.parents.length, node2.parents.length);
-  for (let i = 0; i < maxLength; i++) {
-    const p1 = node1.parents[i];
-    const p2 = node2.parents[i];
-    if (p1 != p2) {
-      return node1.parents[i - 1];
+exports.getCommonNode = function(stack1, stack2) {
+  const minLength = Math.min(stack1.length, stack2.length);
+  for (let i = minLength - 1; i >= 0; i--) {
+    if (stack1[i] === stack2[i]) {
+      return stack1[i];
     }
   }
-
-  return node1.parents[node1.parents.length - 1];
 };
 
 /**
  * Returns diff of two array stacks (having common base)
+ * Example:
+ * [1,2,3,4] and [1,2] --> [3,4]
  *
  * @param {Array} stack1
  * @param {Array} stack2

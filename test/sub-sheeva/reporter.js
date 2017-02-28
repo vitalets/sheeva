@@ -1,6 +1,9 @@
 /**
  * Reporter that just put events into log
+ *
  */
+
+/* eslint-disable complexity */
 
 const events = require('../../src/events');
 
@@ -24,7 +27,7 @@ module.exports = class LogReporter {
     this._setOptions(options);
   }
 
-  handleEvent(event, data) {
+  handleEvent(event, data) { // eslint-disable-line complexity
     this._events.push({event, data});
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
     const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
@@ -41,7 +44,6 @@ module.exports = class LogReporter {
         this._add(data, `${event}${errMessage}`);
         break;
       }
-
       case events.ENV_START: {
         this._add(data, `${event} ${data.env.id}`);
         break;
