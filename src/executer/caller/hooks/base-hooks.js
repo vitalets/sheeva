@@ -4,6 +4,7 @@
 
 const utils = require('../../../utils');
 const HookCaller = require('./hook');
+const errors = require('../errors');
 
 module.exports = class BaseHooksCaller {
   /**
@@ -36,7 +37,7 @@ module.exports = class BaseHooksCaller {
    * @param {Error} error
    */
   addError(suite, error) {
-    Object.defineProperty(error, 'suite', {value: suite});
+    errors.attachSuiteToError(error, suite);
     this._errors.push(error);
   }
 

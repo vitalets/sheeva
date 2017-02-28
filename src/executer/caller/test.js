@@ -8,6 +8,7 @@ const reporter = require('../../reporter');
 const {TEST_START, TEST_RETRY, TEST_END} = require('../../events');
 const {TestHooksCaller} = require('./hooks');
 const FnCaller = require('./fn');
+const errors = require('./errors');
 
 module.exports = class TestCaller {
   constructor(session, test) {
@@ -56,8 +57,7 @@ module.exports = class TestCaller {
   }
 
   _storeError(error) {
-    this._testError = error;
-    Object.defineProperty(error, 'test', {value: this._test});
+    this._testError = errors.attachTestToError(error, this._test);
   }
 
   _checkRetry() {

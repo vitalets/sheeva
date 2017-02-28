@@ -76,8 +76,10 @@ module.exports = class Sheeva {
    * @param {Error} error
    */
   _storeRunnerError(error) {
-    const isErrorInHookOrTest = config.breakOnError && (error.suite || error.test);
-    if (!isErrorInHookOrTest && !this._runnerError) {
+    if (config.breakOnError && Executer.errors.isTestOrHookError(error)) {
+      return;
+    }
+    if (!this._runnerError) {
       this._runnerError = error || new Error('Empty rejection');
     }
   }

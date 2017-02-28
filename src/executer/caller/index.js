@@ -13,3 +13,8 @@ exports.SuiteHooksCaller = require('./hooks').SuiteHooksCaller;
  * Used in Queue.
  */
 exports.TestCaller = require('./test');
+
+/**
+ * Utils for handling errors in tests / hooks
+ */
+exports.errors = require('./errors');

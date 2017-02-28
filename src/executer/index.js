@@ -17,8 +17,9 @@ const reporter = require('../reporter');
 const {ENV_START, ENV_END} = require('../events');
 const Picker = require('./picker');
 const Slots = require('./slots');
+const {errors} = require('./caller');
 
-module.exports = class Executer {
+const Executer = module.exports = class Executer {
   /**
    * Constructor
    */
@@ -101,3 +102,5 @@ module.exports = class Executer {
     return this._slots.toArray().some(slot => slot.isHoldingEnv(env));
   }
 };
+
+Executer.errors = errors;

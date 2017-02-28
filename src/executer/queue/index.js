@@ -11,7 +11,7 @@
 
 const utils = require('../../utils');
 const {config} = require('../../configurator');
-const {TestCaller, SuiteHooksCaller} = require('../caller');
+const {TestCaller, SuiteHooksCaller, errors} = require('../caller');
 const Cursor = require('./cursor');
 
 module.exports = class Queue {
@@ -128,11 +128,11 @@ module.exports = class Queue {
   }
 
   _handleError(error) {
-    const isHooksError = Boolean(error.suite);
-    if (isHooksError) {
-      this._suiteHooksCaller.addError(error.suite, error);
+    if (errors.isHookError(error)) {
+      const suite = errors.getSuiteFromError(error);
+      this._suiteHooksCaller.addError(suite, error);
       if (!config.breakOnError) {
-        this._cursor.moveToSuiteEnd(error.suite);
+        this._cursor.moveToSuiteEnd(suite);
         return;
       }
     }
