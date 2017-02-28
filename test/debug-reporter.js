@@ -2,6 +2,8 @@
  * Reporter that just logs events to console (for debug)
  */
 
+/* eslint-disable no-console */
+
 const events = require('../src/events');
 const INCLUDE_EVENTS = [
   events.RUNNER_START,

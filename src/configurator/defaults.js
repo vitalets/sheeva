@@ -115,7 +115,7 @@ module.exports = {
    * @param {Session} session
    * @returns {Promise}
    */
-  startSession: function (session) { },
+  startSession: function (session) { }, // eslint-disable-line no-unused-vars
 
   /**
    * Cleanup session data.
@@ -124,7 +124,7 @@ module.exports = {
    * @param {Session} session
    * @returns {Promise}
    */
-  endSession: function (session) { },
+  endSession: function (session) { }, // eslint-disable-line no-unused-vars
 
   /**
    * Function that actually calls each test and hook.
@@ -156,7 +156,7 @@ module.exports = {
    * @param {Config} config
    * @returns {Promise}
    */
-  startRunner: function (config) { },
+  startRunner: function (config) { }, // eslint-disable-line no-unused-vars
 
   /**
    * End runner hook
@@ -165,5 +165,5 @@ module.exports = {
    * @param {Config} config
    * @returns {Promise}
    */
-  endRunner: function (config) { },
+  endRunner: function (config) { }, // eslint-disable-line no-unused-vars
 };

@@ -35,7 +35,7 @@ function success(res) {
 }
 
 function fail(error) {
-  console.error(error);
+  console.error(error); // eslint-disable-line no-console
   exit(1);
 }
 
@@ -63,7 +63,9 @@ function tryReadConfigFile() {
   } else {
     try {
       return require(path.resolve(DEFAULT_CONFIG));
-    } catch(e) {}
+    } catch(e) {
+      // default config may not exist
+    }
   }
 }
 

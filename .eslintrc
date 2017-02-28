@@ -1,8 +1,20 @@
 {
   "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "impliedStrict": true
+     }
+  },
+  "env": {
+    "commonjs": true,
+    "browser": true,
+    "node": true,
+    "es6": true
+  }
 
  // "parser": "babel-eslint",
-
+/*
   "ecmaFeatures": {
     "modules": true,
     "impliedStrict": true
@@ -20,5 +32,5 @@
    // "no-multi-spaces": 2,
    // "space-before-function-paren": [2, {"anonymous": "always", "named": "never"}]
   }
-
+*/
 }

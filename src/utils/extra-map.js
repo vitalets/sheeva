@@ -49,5 +49,5 @@ module.exports = class ExtraMap extends Map {
     } else {
       this.set(key, [value]);
     }
-  };
+  }
 };

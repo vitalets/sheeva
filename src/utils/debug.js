@@ -1,7 +1,9 @@
 /**
  * Debug how tests read
+ * todo: move to separate reporter
  */
 
+/*
 const treeify = require('treeify');
 
 exports.printTree = function (suite) {
@@ -23,3 +25,4 @@ function getTree(suite) {
     )
   };
 }
+*/

@@ -13,6 +13,7 @@
     "url": "git://github.com/vitalets/sheeva.git"
   },
   "scripts": {
+    "lint": "eslint src test",
     "tt": "node src-stable/cli --config=test/sheeva.config.js",
     "test": "npm run tt -- --env=sync-env --break-on-error --timeout=0",
     "norep": "npm t -- --reporters=",

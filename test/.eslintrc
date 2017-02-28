@@ -1,16 +1,21 @@
 {
   "env": {
-    "browser": true,
-    "mocha": true
+    "browser": true
   },
 
   "globals": {
+    "describe": false,
+    "it": false,
+    "before": false,
+    "beforeEach": false,
+    "after": false,
+    "afterEach": false,
+    "noop": true,
+    "expect": true,
+    "expectResolve": true,
+    "expectReject": true,
     "$only": false,
     "$skip": false,
-    "$if": false,
-    "$serial": false,
-    "tags": false,
-    "fn": false,
-    "expect": false
+    "$if": false
   }
 }
