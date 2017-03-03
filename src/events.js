@@ -29,6 +29,16 @@ module.exports = {
   ENV_END: 'ENV_END',
 
   /**
+   * Triggered when new slot is coming into game
+   */
+  SLOT_ADD: 'SLOT_ADD',
+
+  /**
+   * Triggered when slot leaves the game
+   */
+  SLOT_DELETE: 'SLOT_DELETE',
+
+  /**
    * Triggered before session start
    */
   SESSION_START: 'SESSION_START',

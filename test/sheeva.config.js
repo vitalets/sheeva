@@ -15,6 +15,8 @@ module.exports = {
     return [
       {id: 'sync-env'},
       {id: 'async-env', delay: 10},
+      //{id: 'async-env1', delay: 40},
+      //{id: 'async-env2', delay: 50},
     ];
   },
   startRunner: function (config) {
@@ -27,7 +29,9 @@ module.exports = {
     }
 
     const run = function (code, options = {}) {
-      options.config = Object.assign({}, env.subConfig, options.config);
+      const configFromHooks = context.runOptions && context.runOptions.config;
+      const configFromTest = options.config;
+      options.config = Object.assign({}, env.subConfig, configFromHooks, configFromTest);
       const finalOptions = Object.assign({session}, context.runOptions, options);
       return new SubSheeva(code, finalOptions).run();
     };

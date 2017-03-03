@@ -84,6 +84,33 @@ describe('events', () => {
 
   });
 
+  describe('slot', () => {
+    beforeEach(context => {
+      context.runOptions.include = ['SLOT'];
+      context.runOptions.config = {concurrency: 2};
+      context.runOptions.flat = true;
+    });
+
+    it('should emit SLOT events', run => {
+      const result = run([`
+        describe('suite 1', () => {
+          it('test 1', noop);
+        });
+      `, `
+        describe('suite 2', () => {
+          it('test 2', noop);
+        });
+      `]);
+
+      return expectResolve(result, [
+        'SLOT_ADD 0',
+        'SLOT_ADD 1',
+        'SLOT_DELETE 0',
+        'SLOT_DELETE 1',
+      ])
+    });
+  });
+
   describe('session', () => {
     // todo
   });

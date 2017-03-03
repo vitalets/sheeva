@@ -4,6 +4,8 @@
 
 const ExtraSet = require('../../utils/extra-set');
 const {config} = require('../../configurator');
+const reporter = require('../../reporter');
+const {SLOT_ADD, SLOT_DELETE} = require('../../events');
 const Slot = require('./slot');
 
 module.exports = class Slots {
@@ -17,6 +19,7 @@ module.exports = class Slots {
   constructor(handlers) {
     this._handlers = handlers;
     this._slots = new ExtraSet();
+    this._terminating = false;
   }
 
   toArray() {
@@ -25,7 +28,7 @@ module.exports = class Slots {
 
   fill() {
     while (!this._isConcurrencyReached()) {
-      const slot = this._add();
+      const slot = this._addSlotToSet();
       const queue = this._handlers.onFreeSlot(slot);
       if (!queue) {
         break;
@@ -35,18 +38,16 @@ module.exports = class Slots {
 
   delete(slot) {
     return slot.deleteSession()
-      .then(() => {
-        this._slots.delete(slot);
-        this._checkEmpty();
-      })
+      .then(() => this._removeSlotFromSet(slot))
+      .then(() => this._terminating ? null : this._checkEmpty())
   }
 
   /**
    * Terminates all slot sessions and ignore other errors in favor of first runner error
    */
   terminate() {
-    const tasks = this._slots.mapToArray(slot => slot.deleteSession().catch());
-    this._slots.clear();
+    this._terminating = true;
+    const tasks = this._slots.mapToArray(slot => this.delete(slot).catch(() => {}));
     return Promise.all(tasks);
   }
 
@@ -54,10 +55,16 @@ module.exports = class Slots {
     return config.concurrency && this._slots.size === config.concurrency;
   }
 
-  _add() {
+  _addSlotToSet() {
     const slot = new Slot(this._slots.size, this._handlers);
     this._slots.add(slot);
+    reporter.handleEvent(SLOT_ADD, {slot});
     return slot;
+  }
+
+  _removeSlotFromSet(slot) {
+    this._slots.delete(slot);
+    reporter.handleEvent(SLOT_DELETE, {slot});
   }
 
   _checkEmpty() {

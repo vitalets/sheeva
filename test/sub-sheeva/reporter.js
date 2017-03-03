@@ -52,6 +52,14 @@ module.exports = class LogReporter {
         this._add(data, `${event} ${data.env.id}`);
         break;
       }
+      case events.SLOT_ADD: {
+        this._add(data, `${event} ${data.slot.index}`);
+        break;
+      }
+      case events.SLOT_DELETE: {
+        this._add(data, `${event} ${data.slot.index}`);
+        break;
+      }
       case events.SESSION_START: {
         this._add(data, `${event} ${data.session.index}`);
         break;
