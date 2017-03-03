@@ -503,24 +503,29 @@ describe('errors', () => {
       };
       const result = run([`
         describe('suite 1', () => {
-          it('test 1', () => sleepError(1, 'err'));
+          it('test 1', () => sleepError(10, 'err'));
         });
       `, `
         describe('suite 2', () => {
-          it('test 2', () => sleep(5));
+          it('test 2', () => sleep(100));
         });
-      `], {config, flat: true, include: ['RUNNER_END', 'SESSION', 'TEST']});
+      `], {config, include: ['SESSION', 'TEST']});
 
-      return expectResolve(result, [
-        'SESSION_START 0',
-        'SESSION_START 1',
-        'TEST_START test 1',
-        'TEST_START test 2',
-        'TEST_END test 1 err',
-        'SESSION_END 0',
-        'SESSION_END 1',
-        'RUNNER_END'
-      ]);
+      return expectResolve(result, {
+        env1: {
+          session0: [
+            'SESSION_START 0',
+            'TEST_START test 1',
+            'TEST_END test 1 err',
+            'SESSION_END 0'
+          ],
+          session1: [
+            'SESSION_START 1',
+            'TEST_START test 2',
+            'SESSION_END 1'
+          ]
+        }
+      });
     });
 
   });
