@@ -24,15 +24,16 @@ module.exports = class Session {
   /**
    * Constructor
    *
-   * @param {Number} slotIndex
-   * @param {Object} env
+   * @param {Object} options
+   * @param {Number} options.index
+   * @param {Number} options.slotIndex
+   * @param {Object} options.env
    */
-  constructor(slotIndex, env) {
-    this._slotIndex = slotIndex;
-    this._env = env;
+  constructor(options) {
+    this._index = options.index;
+    this._slotIndex = options.slotIndex;
+    this._env = options.env;
     this._status = STATUS.CREATED;
-    this._env.sessions.push(this);
-    this._index = this._env.sessions.length - 1;
   }
 
   get env() {

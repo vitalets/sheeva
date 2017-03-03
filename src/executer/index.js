@@ -17,6 +17,7 @@ const reporter = require('../reporter');
 const {ENV_START, ENV_END} = require('../events');
 const Picker = require('./picker');
 const Slots = require('./slots');
+const Sessions = require('./Sessions');
 const {errors} = require('./caller');
 
 const Executer = module.exports = class Executer {
@@ -24,10 +25,13 @@ const Executer = module.exports = class Executer {
    * Constructor
    */
   constructor() {
+    this._sessions = new Sessions();
+    this._slots = new Slots(this._sessions);
     this._picker = null;
-    this._slots = null;
     this._startedEnvs = new Set();
     this._promised = new utils.Promised();
+    this._initSessions();
+    this._initSlots();
   }
 
   /**
@@ -37,20 +41,19 @@ const Executer = module.exports = class Executer {
    */
   run(envFlatSuites) {
     return this._promised.call(() => {
-      this._initSlots();
       this._initPicker(envFlatSuites);
       this._slots.fill();
     });
   }
 
+  _initSessions() {
+    this._sessions.onSessionStart = session => this._checkEnvStart(session.env);
+    this._sessions.onSessionEnd = session => this._checkEnvEnd(session.env);
+  }
+
   _initSlots() {
-    const handlers = {
-      onFreeSlot: slot => this._handleFreeSlot(slot),
-      onEmpty: () => this._end(),
-      onSessionStart: session => this._checkEnvStart(session.env),
-      onSessionEnd: session => this._checkEnvEnd(session.env),
-    };
-    this._slots = new Slots(handlers);
+    this._slots.onFreeSlot = slot => this._handleFreeSlot(slot);
+    this._slots.onEmpty = () => this._end();
   }
 
   _initPicker(envFlatSuites) {

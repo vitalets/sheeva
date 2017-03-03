@@ -3,22 +3,20 @@
  */
 
 const {config} = require('../../configurator');
-const Session = require('./session');
 
 module.exports = class Slot {
   /**
    * Constructor
    *
    * @param {Number} index
-   * @param {Object} handlers
-   * @param {Function} handlers.onSessionStart
-   * @param {Function} handlers.onSessionEnd
+   * @param {Sessions} sessions
    */
-  constructor(index, handlers) {
+  constructor(index, sessions) {
     this._index = index;
-    this._handlers = handlers;
+    this._sessions = sessions;
     this._session = null;
     this._queue = null;
+    this._deleting
   }
 
   get index() {
@@ -43,8 +41,11 @@ module.exports = class Slot {
 
   deleteSession() {
     if (this._session) {
+      const session = this._session;
       return this._session.end()
-        .then(() => this._onSessionEnd());
+      // need this._session = null before handling session end (todo: make it more elegant)
+        .finally(() => this._session = null)
+        .then(() => this._sessions.handleSessionEnd(session));
     } else {
       return Promise.resolve();
     }
@@ -71,8 +72,7 @@ module.exports = class Slot {
   }
 
   _createSession() {
-    this._session = new Session(this._index, this._queue.env);
-    this._handlers.onSessionStart(this._session);
+    this._session = this._sessions.createSession(this._index, this._queue.env);
     return this._session.start();
   }
 
@@ -82,11 +82,5 @@ module.exports = class Slot {
 
   _runQueue() {
     return this._queue.runOn(this._session);
-  }
-
-  _onSessionEnd() {
-    const session = this._session;
-    this._session = null;
-    this._handlers.onSessionEnd(session);
   }
 };

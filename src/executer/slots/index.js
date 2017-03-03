@@ -12,14 +12,22 @@ module.exports = class Slots {
   /**
    * Constructor
    *
-   * @param {Object} handlers
-   * @param {Function} handlers.onFreeSlot
-   * @param {Function} handlers.onEmpty
+   * @param {Sessions} sessions
    */
-  constructor(handlers) {
-    this._handlers = handlers;
+  constructor(sessions) {
+    this._sessions = sessions;
     this._slots = new ExtraSet();
     this._terminating = false;
+    this._onEmpty = () => {};
+    this._onFreeSlot = () => {};
+  }
+
+  set onEmpty(handler) {
+    this._onEmpty = handler;
+  }
+
+  set onFreeSlot(handler) {
+    this._onFreeSlot = handler;
   }
 
   toArray() {
@@ -28,8 +36,8 @@ module.exports = class Slots {
 
   fill() {
     while (!this._isConcurrencyReached()) {
-      const slot = this._addSlotToSet();
-      const queue = this._handlers.onFreeSlot(slot);
+      const slot = this._createSlot();
+      const queue = this._onFreeSlot(slot);
       if (!queue) {
         break;
       }
@@ -38,7 +46,7 @@ module.exports = class Slots {
 
   delete(slot) {
     return slot.deleteSession()
-      .then(() => this._removeSlotFromSet(slot))
+      .then(() => this._destroySlot(slot))
       .then(() => this._terminating ? null : this._checkEmpty())
   }
 
@@ -55,21 +63,22 @@ module.exports = class Slots {
     return config.concurrency && this._slots.size === config.concurrency;
   }
 
-  _addSlotToSet() {
-    const slot = new Slot(this._slots.size, this._handlers);
+  _createSlot() {
+    const slotIndex = this._slots.size;
+    const slot = new Slot(slotIndex, this._sessions);
     this._slots.add(slot);
     reporter.handleEvent(SLOT_ADD, {slot});
     return slot;
   }
 
-  _removeSlotFromSet(slot) {
+  _destroySlot(slot) {
     this._slots.delete(slot);
     reporter.handleEvent(SLOT_DELETE, {slot});
   }
 
   _checkEmpty() {
     if (this._slots.size === 0) {
-      this._handlers.onEmpty()
+      this._onEmpty()
     }
   }
 };
