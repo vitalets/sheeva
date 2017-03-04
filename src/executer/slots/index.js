@@ -20,6 +20,8 @@ module.exports = class Slots {
     this._terminating = false;
     this._onEmpty = () => {};
     this._onFreeSlot = () => {};
+    this._onSessionStart = () => {};
+    this._onSessionEnd = () => {};
   }
 
   set onEmpty(handler) {
@@ -28,6 +30,14 @@ module.exports = class Slots {
 
   set onFreeSlot(handler) {
     this._onFreeSlot = handler;
+  }
+
+  set onSessionStart(handler) {
+    this._onSessionStart = handler;
+  }
+
+  set onSessionEnd(handler) {
+    this._onSessionEnd = handler;
   }
 
   toArray() {
@@ -66,6 +76,8 @@ module.exports = class Slots {
   _createSlot() {
     const slotIndex = this._slots.size;
     const slot = new Slot(slotIndex, this._sessions);
+    slot.onSessionStart = this._onSessionStart;
+    slot.onSessionEnd = this._onSessionEnd;
     this._slots.add(slot);
     reporter.handleEvent(SLOT_ADD, {slot});
     return slot;

@@ -30,7 +30,6 @@ const Executer = module.exports = class Executer {
     this._picker = null;
     this._startedEnvs = new Set();
     this._promised = new utils.Promised();
-    this._initSessions();
     this._initSlots();
   }
 
@@ -46,14 +45,12 @@ const Executer = module.exports = class Executer {
     });
   }
 
-  _initSessions() {
-    this._sessions.onSessionStart = session => this._checkEnvStart(session.env);
-    this._sessions.onSessionEnd = session => this._checkEnvEnd(session.env);
-  }
-
   _initSlots() {
     this._slots.onFreeSlot = slot => this._handleFreeSlot(slot);
     this._slots.onEmpty = () => this._end();
+    // listen sessionStart / sessionEnd from slots (not sessions), because slot should be cleaned before handling
+    this._slots.onSessionStart = session => this._checkEnvStart(session.env);
+    this._slots.onSessionEnd = session => this._checkEnvEnd(session.env);
   }
 
   _initPicker(envFlatSuites) {

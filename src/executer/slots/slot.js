@@ -16,7 +16,8 @@ module.exports = class Slot {
     this._sessions = sessions;
     this._session = null;
     this._queue = null;
-    this._deleting
+    this._onSessionStart = () => {};
+    this._onSessionEnd = () => {};
   }
 
   get index() {
@@ -31,6 +32,14 @@ module.exports = class Slot {
     return this._queue;
   }
 
+  set onSessionStart(handler) {
+    this._onSessionStart = handler;
+  }
+
+  set onSessionEnd(handler) {
+    this._onSessionEnd = handler;
+  }
+
   run(queue) {
     this._queue = queue;
     return Promise.resolve()
@@ -42,10 +51,9 @@ module.exports = class Slot {
   deleteSession() {
     if (this._session) {
       const session = this._session;
-      return this._session.end()
-      // need this._session = null before handling session end (todo: make it more elegant)
+      return this._sessions.endSession(this._session)
         .finally(() => this._session = null)
-        .then(() => this._sessions.handleSessionEnd(session));
+        .then(() => this._onSessionEnd(session));
     } else {
       return Promise.resolve();
     }
@@ -73,6 +81,7 @@ module.exports = class Slot {
 
   _createSession() {
     this._session = this._sessions.createSession(this._index, this._queue.env);
+    this._onSessionStart(this._session);
     return this._session.start();
   }
 
