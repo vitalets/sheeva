@@ -43,7 +43,7 @@ module.exports = class SuiteFlattener {
   _flattenSubSuites() {
     this._suite.children
       .filter(item => item.isSuite)
-      .map(suite => this._flattenSubSuite(suite))
+      .map(suite => this._flattenSubSuite(suite));
   }
 
   _flattenSubSuite(suite) {

@@ -59,7 +59,7 @@ class Reporter {
           throw new Error('Each reporter should have `handleEvent()` method');
         }
         return customReporter;
-      })
+      });
   }
 
   _initCollectors() {

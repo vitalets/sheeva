@@ -53,7 +53,7 @@ function processCliValues() {
   }
 
   if (program.reporters) {
-    program.reporters = require(path.resolve(program.reporters))
+    program.reporters = require(path.resolve(program.reporters));
   }
 }
 

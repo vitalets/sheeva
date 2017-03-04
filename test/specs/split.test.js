@@ -51,7 +51,7 @@ describe('split files', () => {
           ]
         }
       }
-    )
+    );
   });
 
   it('should split suite on 3 parallel sessions', run => {
@@ -94,7 +94,7 @@ describe('split files', () => {
           ]
         }
       }
-    )
+    );
   });
 
   it('should split normally even if tests count less than concurrency', run => {
@@ -127,7 +127,7 @@ describe('split files', () => {
           ]
         }
       }
-    )
+    );
   });
 
   it('should emit QUEUE_SPLIT event', run => {

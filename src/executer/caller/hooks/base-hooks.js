@@ -58,7 +58,7 @@ module.exports = class BaseHooksCaller {
     this._suiteStack.push(suite);
     this._onSuiteHooksStart(suite);
     return this._callHooks(hooks)
-      .catch(e => this._addPreHookError(suite, e))
+      .catch(e => this._addPreHookError(suite, e));
   }
 
   _callSuitePostHooks(suite, hookType) {

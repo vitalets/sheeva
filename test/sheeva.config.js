@@ -45,7 +45,7 @@ function createSubConfig(env) {
       const {fn, session, context, attempt} = params;
       return params !== noop
         ? fn(context, session, attempt)
-        : callAsync(env.delay, params)
+        : callAsync(env.delay, params);
     }
   };
 }
@@ -59,6 +59,6 @@ function callAsync(delay, {fn, session, context, attempt}) {
       } catch(e) {
         reject(e);
       }
-    }, delay)
+    }, delay);
   });
 }

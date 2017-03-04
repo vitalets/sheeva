@@ -31,7 +31,7 @@ describe('events', () => {
 
     it('should emit runner events in case of startRunner error', run => {
       const config = {
-        startRunner: () => { throw new Error('err') },
+        startRunner: () => { throw new Error('err'); },
       };
 
       const result = run([`
@@ -107,7 +107,7 @@ describe('events', () => {
         'SLOT_ADD 1',
         'SLOT_DELETE 0',
         'SLOT_DELETE 1',
-      ])
+      ]);
     });
   });
 
@@ -138,7 +138,7 @@ describe('events', () => {
         'SUITE_END suite 2',
         'SUITE_END suite 1',
         'SUITE_END root'
-      ])
+      ]);
     });
 
     it('should emit for file suites', run => {
@@ -150,7 +150,7 @@ describe('events', () => {
       return expectResolve(result, [
         'SUITE_START root',
         'SUITE_END root'
-      ])
+      ]);
     });
 
     it('should not emit for empty suites', run => {
@@ -197,7 +197,7 @@ describe('events', () => {
         'TEST_END test 1',
         'TEST_START test 4',
         'TEST_END test 4'
-      ])
+      ]);
     });
 
   });

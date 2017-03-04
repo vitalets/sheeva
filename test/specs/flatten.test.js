@@ -20,7 +20,7 @@ describe('flatten and sort', () => {
       'TEST_END test 2',
       'TEST_END test 3',
       'TEST_END test 1',
-    ])
+    ]);
   });
 
   it('should flatten and sort suites inside parent suite', run => {
@@ -45,7 +45,7 @@ describe('flatten and sort', () => {
       'TEST_END test 2',
       'TEST_END test 3',
       'TEST_END test 1',
-    ])
+    ]);
   });
 
   it('should flatten suites and sort by nested before/after hooks count', run => {
@@ -72,7 +72,7 @@ describe('flatten and sort', () => {
       'TEST_END test 3',
       'TEST_END test 2',
       'TEST_END test 1',
-    ])
+    ]);
   });
 
   it('should move tests after suites', run => {
@@ -88,7 +88,7 @@ describe('flatten and sort', () => {
     return expectResolve(result, [
       'TEST_END test 2',
       'TEST_END test 1',
-    ])
+    ]);
   });
 
   it('should split on flatten phase and sort suites between files', run => {
@@ -116,7 +116,7 @@ describe('flatten and sort', () => {
       'TEST_END test 3',
       'TEST_END test 1',
       'TEST_END test 2',
-    ])
+    ]);
   });
 
   it('should not split on flatten phase and sort suites between files if splitSuites = false', run => {
@@ -143,7 +143,7 @@ describe('flatten and sort', () => {
       'TEST_END test 3',
       'TEST_END test 2',
       'TEST_END test 1',
-    ])
+    ]);
   });
 
   it('should not split on flatten phase and sort suites between files if newSessionPerFile = true', run => {
@@ -175,6 +175,6 @@ describe('flatten and sort', () => {
       'SESSION_START 1',
       'TEST_END test 1',
       'SESSION_END 1'
-    ])
+    ]);
   });
 });

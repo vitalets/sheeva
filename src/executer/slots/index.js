@@ -57,7 +57,7 @@ module.exports = class Slots {
   delete(slot) {
     return slot.deleteSession()
       .then(() => this._destroySlot(slot))
-      .then(() => this._terminating ? null : this._checkEmpty())
+      .then(() => this._terminating ? null : this._checkEmpty());
   }
 
   /**
@@ -90,7 +90,7 @@ module.exports = class Slots {
 
   _checkEmpty() {
     if (this._slots.size === 0) {
-      this._onEmpty()
+      this._onEmpty();
     }
   }
 };

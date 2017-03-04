@@ -26,7 +26,7 @@ describe('config startSession / endSession hooks', () => {
       ]).then(() => {
         expect(a, 'to equal', 1);
         expect(b, 'to equal', 1);
-      })
+      });
     });
 
     it('should call startSession / endSession for several sessions (concurrency = 2)', run => {
@@ -61,7 +61,7 @@ describe('config startSession / endSession hooks', () => {
       }).then(() => {
         expect(a, 'to equal', 2);
         expect(b, 'to equal', 2);
-      })
+      });
     });
 
     it('should call startSession / endSession for several sessions (splitSuites = true)', run => {
@@ -94,7 +94,7 @@ describe('config startSession / endSession hooks', () => {
       }).then(() => {
         expect(a, 'to equal', 2);
         expect(b, 'to equal', 2);
-      })
+      });
     });
 
   });
@@ -105,7 +105,7 @@ describe('config startSession / endSession hooks', () => {
       let b = 0;
       const config = {
         startSession: () => {
-          throw new Error('err')
+          throw new Error('err');
         },
         endSession: () => b++,
       };
@@ -214,7 +214,7 @@ describe('config startSession / endSession hooks', () => {
         startSession: () => a++,
         endSession: () => b++,
         createEnvs: () => {
-          throw new Error('err')
+          throw new Error('err');
         }
       };
       const result = run(`

@@ -51,7 +51,7 @@ describe('context', () => {
       'TEST_END test 1',
       'HOOK_END suite 1 afterEach',
       'HOOK_END suite 1 afterEach 1'
-    ])
+    ]);
   });
 
   it('should not create context for before/after hooks', run => {
@@ -77,7 +77,7 @@ describe('context', () => {
       'HOOK_END suite 1 before',
       'TEST_END test 1',
       'HOOK_END suite 1 after',
-    ])
+    ]);
   });
 
 });

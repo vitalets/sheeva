@@ -106,7 +106,7 @@ module.exports = class Queue {
     return Promise.resolve()
       .then(() => this._executeAfterHooks())
       .then(() => this._moveCursorWithoutHooks())
-      .then(() => this._executeBeforeHooks())
+      .then(() => this._executeBeforeHooks());
   }
 
   _executeBeforeHooks() {

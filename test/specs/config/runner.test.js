@@ -12,7 +12,7 @@ describe('config runner', () => {
     `], {config});
 
     return expectResolve(result)
-      .then(() => expect(a, 'to equal', 1))
+      .then(() => expect(a, 'to equal', 1));
   });
 
   it('should call async startRunner', run => {
@@ -27,7 +27,7 @@ describe('config runner', () => {
       `], {config});
 
     return expectResolve(result)
-      .then(() => expect(a, 'to equal', 1))
+      .then(() => expect(a, 'to equal', 1));
   });
 
   it('should call sync endRunner', run => {
@@ -43,7 +43,7 @@ describe('config runner', () => {
 
     return expectResolve(result).then(() => {
       expect(a, 'to equal', 1);
-    })
+    });
   });
 
   it('should call async endRunner', run => {
@@ -58,7 +58,7 @@ describe('config runner', () => {
       `], {config});
 
     return expectResolve(result)
-      .then(() => expect(a, 'to equal', 1))
+      .then(() => expect(a, 'to equal', 1));
   });
 
   it('should call startRunner / endRunner in success test', run => {
@@ -77,7 +77,7 @@ describe('config runner', () => {
     return expectResolve(result).then(() => {
       expect(a, 'to equal', 1);
       expect(b, 'to equal', 1);
-    })
+    });
   });
 
   it('should call startRunner / endRunner in failed test', run => {
@@ -96,7 +96,7 @@ describe('config runner', () => {
     return expectResolve(result).then(() => {
       expect(a, 'to equal', 1);
       expect(b, 'to equal', 1);
-    })
+    });
   });
 
   it('should not call startRunner, but call endRunner in case of error in createEnvs', run => {
@@ -105,7 +105,7 @@ describe('config runner', () => {
     const config = {
       startRunner: () => Promise.resolve().then(() => a++),
       endRunner: () => Promise.resolve().then(() => b++),
-      createEnvs: () => { throw new Error('err') }
+      createEnvs: () => { throw new Error('err'); }
     };
     const result = run([`
       describe('suite 1', () => {
@@ -123,7 +123,7 @@ describe('config runner', () => {
   it('should call endRunner even if startRunner has error', run => {
     let b = 0;
     const config = {
-      startRunner: () => Promise.resolve().then(() => { throw new Error('err') }),
+      startRunner: () => Promise.resolve().then(() => { throw new Error('err'); }),
       endRunner: () => Promise.resolve().then(() => b++),
     };
     const result = run([`

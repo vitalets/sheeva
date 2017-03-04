@@ -144,7 +144,7 @@ module.exports = class LogReporter {
       Object.keys(treeLog[envId]).forEach(sessionName => {
         treeLog[envId][sessionName] = treeLog[envId][sessionName]
           .filter(eventName => this._isPassingFilter(eventName));
-      })
+      });
     });
     return treeLog;
   }

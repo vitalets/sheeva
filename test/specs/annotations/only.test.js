@@ -145,6 +145,6 @@ describe('annotation: only', () => {
       .then(res => {
         expect(res, 'to have length', 1);
         expect(res[0].data.only.files, 'to have length', 1);
-      })
+      });
   });
 });

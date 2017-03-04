@@ -78,7 +78,7 @@ const Executer = module.exports = class Executer {
 
   _terminate(error) {
     this._slots.terminate()
-      .finally(() => this._promised.reject(error))
+      .finally(() => this._promised.reject(error));
   }
 };
 

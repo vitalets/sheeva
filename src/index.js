@@ -42,7 +42,7 @@ module.exports = class Sheeva {
       .then(() => this._execute())
       .catch(e => this._storeRunnerError(e))
       .finally(() => this._end())
-      .then(() => this._getResult())
+      .then(() => this._getResult());
   }
 
   _init() {
@@ -90,7 +90,7 @@ module.exports = class Sheeva {
       .catch(e => this._storeRunnerError(e))
       .finally(() => this._emitEnd())
       .finally(() => reporter.stopListen())
-      .catch(e => this._storeRunnerError(e))
+      .catch(e => this._storeRunnerError(e));
   }
 
   _getResult() {

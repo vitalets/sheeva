@@ -19,7 +19,7 @@ describe('concurrency', () => {
           session1: ['TEST_END test 2']
         }
       }
-    )
+    );
   });
 
   it('should run each test in separate session if concurrency = 0', run => {
