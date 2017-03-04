@@ -21,7 +21,8 @@ class Configurator {
   init(rawConfig) {
     this._clear();
     this._merge(rawConfig);
-    this._validate();
+    this._fixTypes();
+    this._validateProps();
     this._createEnvs();
   }
 
@@ -29,27 +30,25 @@ class Configurator {
     Object.assign(this._config, defaults, rawConfig);
   }
 
-  _validate() {
-    // todo: move to separate fn
+  _fixTypes() {
     this._config.files = utils.ensureArray(this._config.files);
     this._config.reporters = utils.ensureArray(this._config.reporters);
     this._config.concurrency = parseInt(this._config.concurrency, 10);
     this._config.timeout = parseInt(this._config.timeout, 10);
-    this._validateTypes();
+  }
+
+  _validateProps() {
+    Object.keys(this._config).forEach(key => {
+      utils.assertOk(defaults.hasOwnProperty(key), `Unknown config option: ${key}`);
+      const valueType = typeof this._config[key];
+      const defaultValueType = typeof defaults[key];
+      const msg = `Incorrect config option type for: ${key} (expected ${defaultValueType}, got ${valueType})`;
+      utils.assertOk(valueType === defaultValueType, msg);
+    });
   }
 
   _createEnvs() {
     this._config.envs = new Envs(this._config).create();
-  }
-
-  _validateTypes() {
-    Object.keys(defaults).forEach(key => {
-      const defaultValueType = typeof defaults[key];
-      const valueType = typeof this._config[key];
-      if (defaultValueType !== valueType) {
-        throw new Error(`Config key type mismatch for ${key}`);
-      }
-    })
   }
 
   _clear() {
