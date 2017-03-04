@@ -63,7 +63,7 @@ module.exports = class Picker {
   }
 
   _trySplitRunningQueues(envs) {
-    if (config.splitFiles && envs.length) {
+    if (config.splitSuites && envs.length) {
       const options = this._getSplitterOptions();
       return this._splitter.trySplit(envs, options);
     }

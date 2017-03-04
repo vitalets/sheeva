@@ -64,12 +64,12 @@ describe('config startSession / endSession hooks', () => {
       })
     });
 
-    it('should call startSession / endSession for several sessions (splitFiles = true)', run => {
+    it('should call startSession / endSession for several sessions (splitSuites = true)', run => {
       let a = 0;
       let b = 0;
       const config = {
         concurrency: 2,
-        splitFiles: true,
+        splitSuites: true,
         startSession: () => a++,
         endSession: () => b++,
       };

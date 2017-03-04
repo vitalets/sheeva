@@ -9,7 +9,7 @@ const Reporter = require('./reporter');
 
 const BASE_CONFIG = {
   concurrency: 1,
-  splitFiles: false,
+  splitSuites: false,
   createEnvs: function () {
     return [{id: 'env1'}];
   },

@@ -9,7 +9,7 @@ module.exports = {
   concurrency: 5,
   files: './test/specs/**/*.test.js',
   newSessionPerFile: false,
-  splitFiles: true,
+  splitSuites: true,
   reporters: require('sheeva-reporter-progress'),
   createEnvs: function () {
     return [

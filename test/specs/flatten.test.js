@@ -94,7 +94,7 @@ describe('flatten and sort', () => {
   it('should split on flatten phase and sort suites between files', run => {
     const config = {
       newSessionPerFile: false,
-      splitFiles: true,
+      splitSuites: true,
     };
     const result = run([`
       describe('suite 1', () => {
@@ -119,9 +119,9 @@ describe('flatten and sort', () => {
     ])
   });
 
-  it('should not split on flatten phase and sort suites between files if splitFiles = false', run => {
+  it('should not split on flatten phase and sort suites between files if splitSuites = false', run => {
     const config = {
-      splitFiles: false,
+      splitSuites: false,
     };
     const result = run([`
       describe('suite 1', () => {
