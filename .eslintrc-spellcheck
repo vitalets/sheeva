@@ -1,0 +1,55 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+
+  "plugins": [
+    "spellcheck"
+  ],
+
+  "rules": {
+    "spellcheck/spell-checker": ["error",
+      {
+        "comments": true,
+        "strings": true,
+        "identifiers": false,
+        "lang": "en_US",
+        "skipWords": [
+          "sheeva",
+          "configurator",
+          "https",
+          "github",
+          "eslint",
+          "todo",
+          "pre",
+          "env",
+          "envs",
+          "splitted",
+          "splittable",
+          "param",
+          "params",
+          "webdriver",
+          "typedef",
+          "executer",
+          "splitter",
+          "todo",
+          "getter",
+          "api",
+          "bdd",
+          "includer",
+          "excluder",
+          "flattener",
+          "baCount",
+          "js",
+          "fn",
+          "utils",
+          "msg"
+        ],
+        "skipIfMatch": [
+          "https?://*",
+          "^[-\\w]+\/[-\\w\\.]+$" //For MIME Types
+        ]
+      }
+    ]
+  }
+}

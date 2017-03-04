@@ -14,7 +14,7 @@ module.exports = {
   RUNNER_START: 'RUNNER_START',
 
   /**
-   * Triggered after all envs and tests are executed or error occured
+   * Triggered after all envs and tests are executed or error occurred
    */
   RUNNER_END: 'RUNNER_END',
 

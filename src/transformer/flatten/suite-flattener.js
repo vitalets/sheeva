@@ -4,12 +4,12 @@
  *
  * 1. If suite has before/after hooks, flatten() returns array with single flatSuite element
  * 2. If suite does not have before/after hooks, flatten() returns array with several flatSuites corresponding
- *    to children suites. When it occurs fo file suite it is basically splitting because each sub-suite can be sorted
- *    individually to begining or end of env suites (depending on it's before/after count).
+ *    to children suites. When it occurs for file suite it is basically splitting because each sub-suite can be sorted
+ *    individually to beginning or end of env suites (depending on it's before/after count).
  *
  * @typedef {Object} FlatSuite
  * @property {Array<Test>} tests
- * @property {Number} baCount max number of before / after hooks
+ * @property {Number} suiteHooksCount max number of suite-level hooks (before / after)
  */
 
 const {config} = require('../../configurator');
@@ -20,24 +20,24 @@ module.exports = class SuiteFlattener {
    */
   constructor(suite) {
     this._suite = suite;
-    this._baCount = 0;
+    this._suiteHooksCount = 0;
     this._flatSuites = [];
   }
 
   flatten() {
-    this._calcBaCount();
+    this._calcSuiteHooksCount();
     this._flattenSubSuites();
     this._flattenTests();
     this._filterEmpty();
-    this._sortByBaCount();
+    this._sortBySuiteHooksCount();
     return this._needSingleFlatSuite() ? this._wrapAsSingleFlatSuite() : this._flatSuites;
   }
 
-  _calcBaCount() {
+  _calcSuiteHooksCount() {
     const {before, after} = this._suite;
     const beforeHooksCount = before && before.length ? 1 : 0;
     const afterHooksCount = after && after.length ? 1 : 0;
-    this._baCount = beforeHooksCount + afterHooksCount;
+    this._suiteHooksCount = beforeHooksCount + afterHooksCount;
   }
 
   _flattenSubSuites() {
@@ -61,15 +61,15 @@ module.exports = class SuiteFlattener {
     this._flatSuites = this._flatSuites.filter(flatSuite => flatSuite.tests.length > 0);
   }
 
-  _sortByBaCount() {
-    this._flatSuites.sort((x, y) => y.baCount - x.baCount);
+  _sortBySuiteHooksCount() {
+    this._flatSuites.sort((x, y) => y.suiteHooksCount - x.suiteHooksCount);
   }
 
   _wrapAsSingleFlatSuite() {
     if (this._flatSuites.length) {
-      const maxBaCount = this._flatSuites[0].baCount;
+      const maxSuiteHooksCount = this._flatSuites[0].suiteHooksCount;
       const tests = this._mergeTests();
-      const singleFlatSuite = createFlatSuite(tests, this._baCount + maxBaCount);
+      const singleFlatSuite = createFlatSuite(tests, this._suiteHooksCount + maxSuiteHooksCount);
       return [singleFlatSuite];
     } else {
       return [];
@@ -81,7 +81,7 @@ module.exports = class SuiteFlattener {
   }
 
   _needSingleFlatSuite() {
-    if (this._baCount > 0) {
+    if (this._suiteHooksCount > 0) {
       return true;
     } else if (this._isFileSuite()) {
       return config.newSessionPerFile || !config.splitSuites;
@@ -95,6 +95,6 @@ module.exports = class SuiteFlattener {
   }
 };
 
-function createFlatSuite(tests, baCount = 0) {
-  return {tests, baCount};
+function createFlatSuite(tests, suiteHooksCount = 0) {
+  return {tests, suiteHooksCount};
 }

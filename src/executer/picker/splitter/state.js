@@ -22,7 +22,7 @@ module.exports = class State {
   }
 
   /**
-   * Mark env unsplittable for specified options
+   * Mark env not splittable for specified options
    * Note: if split is impossible for started session, it's for sure impossible for new session
    * as it requires time for session start, so always mark it
    *

@@ -10,6 +10,6 @@ exports.SuiteHooksCaller = require('./suite-hooks');
 
 /**
  * Calls test level hooks (beforeEach / afterEach).
- * Used in caller/test.js
+ * Used in TestCaller.
  */
 exports.TestHooksCaller = require('./test-hooks');

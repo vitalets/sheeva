@@ -3,7 +3,6 @@
  */
 
 const {config} = require('../configurator');
-// const TimeCollector = require('./collectors/time');
 const ErrorsCollector = require('./collectors/errors');
 
 class Reporter {
