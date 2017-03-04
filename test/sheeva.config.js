@@ -10,7 +10,7 @@ module.exports = {
   files: './test/specs/**/*.test.js',
   newSessionPerFile: false,
   splitSuites: true,
-  reporters: require('sheeva-reporter-progress'),
+  reporters: require('sheeva-reporter-timeline'),
   createEnvs: function () {
     return [
       {id: 'sync-env'},
