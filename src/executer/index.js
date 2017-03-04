@@ -13,11 +13,10 @@
  */
 
 const utils = require('../utils');
-const reporter = require('../reporter');
-const {ENV_START, ENV_END} = require('../events');
 const Picker = require('./picker');
 const Slots = require('./slots');
-const Sessions = require('./Sessions');
+const Sessions = require('./sessions');
+const EnvEmitter = require('./env-emitter');
 const {errors} = require('./caller');
 
 const Executer = module.exports = class Executer {
@@ -28,9 +27,8 @@ const Executer = module.exports = class Executer {
     this._sessions = new Sessions();
     this._slots = new Slots(this._sessions);
     this._picker = null;
-    this._startedEnvs = new Set();
     this._promised = new utils.Promised();
-    this._initSlots();
+    this._setSlotsHandlers();
   }
 
   /**
@@ -40,21 +38,23 @@ const Executer = module.exports = class Executer {
    */
   run(envFlatSuites) {
     return this._promised.call(() => {
-      this._initPicker(envFlatSuites);
+      this._createPicker(envFlatSuites);
+      this._createEnvEmitter();
       this._slots.fill();
     });
   }
 
-  _initSlots() {
+  _setSlotsHandlers() {
     this._slots.onFreeSlot = slot => this._handleFreeSlot(slot);
     this._slots.onEmpty = () => this._end();
-    // listen sessionStart / sessionEnd from slots (not sessions), because slot should be cleaned before handling
-    this._slots.onSessionStart = session => this._checkEnvStart(session.env);
-    this._slots.onSessionEnd = session => this._checkEnvEnd(session.env);
   }
 
-  _initPicker(envFlatSuites) {
+  _createPicker(envFlatSuites) {
     this._picker = new Picker(this._slots, envFlatSuites);
+  }
+
+  _createEnvEmitter() {
+    new EnvEmitter(this._slots, this._picker);
   }
 
   _handleFreeSlot(slot) {
@@ -79,27 +79,6 @@ const Executer = module.exports = class Executer {
   _terminate(error) {
     this._slots.terminate()
       .finally(() => this._promised.reject(error))
-  }
-
-  _checkEnvStart(env) {
-    if (!this._startedEnvs.has(env)) {
-      this._startedEnvs.add(env);
-      reporter.handleEvent(ENV_START, {env});
-    }
-  }
-
-  _checkEnvEnd(env) {
-    if (!this._hasQueues(env) && !this._hasSlots(env)) {
-      reporter.handleEvent(ENV_END, {env});
-    }
-  }
-
-  _hasQueues(env) {
-    return this._picker.getRemainingQueues(env).length > 0;
-  }
-
-  _hasSlots(env) {
-    return this._slots.toArray().some(slot => slot.isHoldingEnv(env));
   }
 };
 
