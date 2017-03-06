@@ -11,6 +11,7 @@ module.exports = {
   newSessionPerFile: false,
   splitSuites: true,
   reporters: require('sheeva-reporter-timeline'),
+  // reporters: require('sheeva-reporter-simple'),
   createEnvs: function () {
     return [
       {id: 'sync-env'},
