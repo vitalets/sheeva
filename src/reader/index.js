@@ -100,7 +100,12 @@ function readFile(file) {
 
 // todo: move to separate module for browser
 function expandPattern(pattern) {
-  return glob.sync(pattern);
+  const isPattern = pattern.indexOf('*') >= 0;
+  const isFile = /\.[a-z]{1,3}$/i.test(pattern);
+  if (!isPattern && !isFile) {
+    pattern = path.join(pattern, '**');
+  }
+  return glob.sync(pattern, {nodir: true});
 }
 
 
