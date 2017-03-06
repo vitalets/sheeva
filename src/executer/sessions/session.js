@@ -26,12 +26,12 @@ module.exports = class Session {
    *
    * @param {Object} options
    * @param {Number} options.index
-   * @param {Number} options.slotIndex
+   * @param {Number} options.workerIndex
    * @param {Object} options.env
    */
   constructor(options) {
     this._index = options.index;
-    this._slotIndex = options.slotIndex;
+    this._workerIndex = options.workerIndex;
     this._env = options.env;
     this._status = STATUS.CREATED;
   }
@@ -44,8 +44,8 @@ module.exports = class Session {
     return this._index;
   }
 
-  get slotIndex() {
-    return this._slotIndex;
+  get workerIndex() {
+    return this._workerIndex;
   }
 
   get isStarted() {

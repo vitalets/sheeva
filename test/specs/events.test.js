@@ -84,14 +84,14 @@ describe('events', () => {
 
   });
 
-  describe('slot', () => {
+  describe('worker', () => {
     beforeEach(context => {
-      context.runOptions.include = ['SLOT'];
+      context.runOptions.include = ['WORKER'];
       context.runOptions.config = {concurrency: 2};
       context.runOptions.flat = true;
     });
 
-    it('should emit SLOT events', run => {
+    it('should emit WORKER events', run => {
       const result = run([`
         describe('suite 1', () => {
           it('test 1', noop);
@@ -103,10 +103,10 @@ describe('events', () => {
       `]);
 
       return expectResolve(result, [
-        'SLOT_ADD 0',
-        'SLOT_ADD 1',
-        'SLOT_DELETE 0',
-        'SLOT_DELETE 1',
+        'WORKER_ADD 0',
+        'WORKER_ADD 1',
+        'WORKER_DELETE 0',
+        'WORKER_DELETE 1',
       ]);
     });
   });

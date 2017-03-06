@@ -3,8 +3,8 @@
  */
 
 module.exports = class State {
-  constructor(slots, envFlatSuites) {
-    this._slots = slots;
+  constructor(workers, envFlatSuites) {
+    this._workers = workers;
     this._envs = [];
     this._fillEnvs(envFlatSuites);
   }
@@ -16,11 +16,11 @@ module.exports = class State {
   }
 
   _isEnvConcurrencyReached(env) {
-    return env.concurrency && env.concurrency === this._getEnvSlots(env).length;
+    return env.concurrency && env.concurrency === this._getEnvWorkers(env).length;
   }
 
-  _getEnvSlots(env) {
-    return this._slots.toArray().filter(slot => slot.isHoldingEnv(env));
+  _getEnvWorkers(env) {
+    return this._workers.toArray().filter(worker => worker.isHoldingEnv(env));
   }
 
   _fillEnvs(envFlatSuites) {

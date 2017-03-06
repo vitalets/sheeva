@@ -8,8 +8,8 @@ const events = require('../src/events');
 const INCLUDE_EVENTS = new Set([
   events.RUNNER_START,
   events.RUNNER_END,
-  events.SLOT_ADD,
-  events.SLOT_DELETE,
+  events.WORKER_ADD,
+  events.WORKER_DELETE,
   events.SESSION_START,
   events.SESSION_END,
   //events.SUITE_START,

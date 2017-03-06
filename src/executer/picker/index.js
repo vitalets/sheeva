@@ -11,10 +11,10 @@ module.exports = class Picker {
   /**
    * Constructor
    */
-  constructor(slots, envFlatSuites) {
-    this._state = new State(slots, envFlatSuites);
+  constructor(workers, envFlatSuites) {
+    this._state = new State(workers, envFlatSuites);
     this._queues = new Queues(envFlatSuites);
-    this._splitter = new Splitter(slots);
+    this._splitter = new Splitter(workers);
     this._session = null;
     this._env = null;
   }
@@ -23,7 +23,7 @@ module.exports = class Picker {
    * Tries to pick next queue for provided session (env) or for any available env.
    *
    * - if there is passed session, try to pick queue for the same env first
-   * - if there is no passed session (empty slot) - try to get queue from any available env (by order)
+   * - if there is no passed session (empty worker) - try to get queue from any available env (by order)
    *
    * @param {Session} [session]
    * @returns {Queue|undefined}

@@ -9,16 +9,16 @@ module.exports = class EnvEmitter {
   /**
    * Constructor
    */
-  constructor(slots, picker) {
-    this._slots = slots;
+  constructor(workers, picker) {
+    this._workers = workers;
     this._picker = picker;
     this._startedEnvs = new Set();
-    this._setSlotsHandlers();
+    this._setWorkerHandlers();
   }
 
-  _setSlotsHandlers() {
-    this._slots.onSessionStart = session => this._checkEnvStart(session.env);
-    this._slots.onSessionEnd = session => this._checkEnvEnd(session.env);
+  _setWorkerHandlers() {
+    this._workers.onSessionStart = session => this._checkEnvStart(session.env);
+    this._workers.onSessionEnd = session => this._checkEnvEnd(session.env);
   }
 
   _checkEnvStart(env) {
@@ -29,7 +29,7 @@ module.exports = class EnvEmitter {
   }
 
   _checkEnvEnd(env) {
-    if (!this._hasQueues(env) && !this._hasSlots(env)) {
+    if (!this._hasQueues(env) && !this._hasWorkers(env)) {
       reporter.handleEvent(ENV_END, {env});
     }
   }
@@ -38,7 +38,7 @@ module.exports = class EnvEmitter {
     return this._picker.getRemainingQueues(env).length > 0;
   }
 
-  _hasSlots(env) {
-    return this._slots.toArray().some(slot => slot.isHoldingEnv(env));
+  _hasWorkers(env) {
+    return this._workers.toArray().some(worker => worker.isHoldingEnv(env));
   }
 };

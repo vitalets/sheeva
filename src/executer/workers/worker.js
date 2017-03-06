@@ -1,10 +1,10 @@
 /**
- * Slot that can execute sessions serially.
+ * Worker that can execute sessions serially.
  */
 
 const {config} = require('../../configurator');
 
-module.exports = class Slot {
+module.exports = class Worker {
   /**
    * Constructor
    *
@@ -60,8 +60,8 @@ module.exports = class Slot {
   }
 
   /**
-   * Checks that slot is holding env.
-   * Actually, slot can hold two envs simultaneously when queue is assigned,
+   * Checks that worker is holding env.
+   * Actually, worker can hold two envs simultaneously when queue is assigned,
    * but previous session is still ending
    *
    * @returns {Boolean}

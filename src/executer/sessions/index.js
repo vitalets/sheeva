@@ -12,14 +12,14 @@ module.exports = class Sessions {
   /**
    * Creates new session
    *
-   * @param {Number} slotIndex
+   * @param {Number} workerIndex
    * @param {Env} env
    * @returns {Session}
    */
-  createSession(slotIndex, env) {
+  createSession(workerIndex, env) {
     const sessions = this._getSessions(env);
     const index = sessions.length;
-    const session = new Session({index, slotIndex, env});
+    const session = new Session({index, workerIndex, env});
     sessions.push(session);
     return session;
   }

@@ -29,14 +29,14 @@ module.exports = {
   ENV_END: 'ENV_END',
 
   /**
-   * Triggered when new slot is coming into game
+   * Triggered when new worker is coming into game
    */
-  SLOT_ADD: 'SLOT_ADD',
+  WORKER_ADD: 'WORKER_ADD',
 
   /**
-   * Triggered when slot leaves the game
+   * Triggered when worker leaves the game
    */
-  SLOT_DELETE: 'SLOT_DELETE',
+  WORKER_DELETE: 'WORKER_DELETE',
 
   /**
    * Triggered before session start

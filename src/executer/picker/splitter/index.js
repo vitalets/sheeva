@@ -6,8 +6,8 @@ const State = require('./state');
 const Candidate = require('./candidate');
 
 module.exports = class Splitter {
-  constructor(slots) {
-    this._slots = slots;
+  constructor(workers) {
+    this._workers = workers;
     this._state = new State();
     this._candidates = [];
     this._stateOptions = {};
@@ -35,10 +35,10 @@ module.exports = class Splitter {
   }
 
   _createCandidates(splittableEnvs) {
-    this._candidates = this._slots.toArray()
-      .filter(slot => Boolean(slot.queue))
-      .filter(slot => splittableEnvs.has(slot.queue.env))
-      .map(slot => new Candidate(slot.queue));
+    this._candidates = this._workers.toArray()
+      .filter(worker => Boolean(worker.queue))
+      .filter(worker => splittableEnvs.has(worker.queue.env))
+      .map(worker => new Candidate(worker.queue));
   }
 
   _filterCandidates() {
