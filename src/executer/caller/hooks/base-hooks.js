@@ -3,6 +3,7 @@
  */
 
 const utils = require('../../../utils');
+const {assertOk} = require('../../../utils/assert');
 const HookCaller = require('./hook');
 
 module.exports = class BaseHooksCaller {
@@ -35,7 +36,7 @@ module.exports = class BaseHooksCaller {
   }
 
   _callPostHooks(hookType, newSuiteStack) {
-    utils.assertOk(newSuiteStack.length <= this._suiteStack.length, 'New suite stack should be less than current');
+    assertOk(newSuiteStack.length <= this._suiteStack.length, 'New suite stack should be less than current');
     const suites = utils.getStackDiff(this._suiteStack, newSuiteStack);
     const reversedSuites = suites.reverse();
     return utils.reduceWithPromises(reversedSuites, suite => this._callSuitePostHooks(suite, hookType));
@@ -52,7 +53,7 @@ module.exports = class BaseHooksCaller {
   _callSuitePostHooks(suite, hookType) {
     const hooks = suite[hookType];
     const popedSuite = this._suiteStack.pop();
-    utils.assertOk(popedSuite === suite, `Something wrong with suite stack`);
+    assertOk(popedSuite === suite, `Something wrong with suite stack`);
     return this._callHooks(hooks)
       .catch(e => this._addError(e))
       .finally(() => this._onSuiteHooksEnd(suite));

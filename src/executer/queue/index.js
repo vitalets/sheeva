@@ -10,6 +10,7 @@
  */
 
 const utils = require('../../utils');
+const {assertArray, assertLength} = require('../../utils/assert');
 const {config} = require('../../configurator');
 const {TestCaller, SuiteHooksCaller, errors} = require('../caller');
 const Cursor = require('./cursor');
@@ -182,6 +183,6 @@ module.exports = class Queue {
 };
 
 function assertTests(tests) {
-  utils.assertArray(tests, 'Queue should be created from tests array');
-  utils.assertLength(tests, 'Queue should be created on non-empty tests array');
+  assertArray(tests, 'Queue should be created from tests array');
+  assertLength(tests, 'Queue should be created on non-empty tests array');
 }

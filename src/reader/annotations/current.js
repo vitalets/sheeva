@@ -2,7 +2,7 @@
  * Holds current annotation about nearest test/suite/hook
  */
 
-const utils = require('../../utils');
+const {assertType} = require('../../utils/assert');
 
 module.exports = class CurrentAnnotation {
   constructor() {
@@ -34,17 +34,17 @@ module.exports = class CurrentAnnotation {
   }
 
   addIgnore(fn) {
-    utils.assertType(fn, 'function', '$ignore() should accept function as parameter');
+    assertType(fn, 'function', '$ignore() should accept function as parameter');
     this._ignore.push(fn);
   }
 
   addIf(fn) {
-    utils.assertType(fn, 'function', '$if() should accept function as parameter');
+    assertType(fn, 'function', '$if() should accept function as parameter');
     this._if.push(fn);
   }
 
   addTimeout(ms) {
-    utils.assertType(ms, 'number', 'Timeout should be number');
+    assertType(ms, 'number', 'Timeout should be number');
     this._timeout = ms;
   }
 

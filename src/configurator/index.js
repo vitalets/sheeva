@@ -3,6 +3,7 @@
  */
 
 const utils = require('../utils');
+const {assertOk} = require('../utils/assert');
 const defaults = require('./defaults');
 const Envs = require('./envs');
 
@@ -39,11 +40,11 @@ class Configurator {
 
   _validateProps() {
     Object.keys(this._config).forEach(key => {
-      utils.assertOk(defaults.hasOwnProperty(key), `Unknown config option: ${key}`);
+      assertOk(defaults.hasOwnProperty(key), `Unknown config option: ${key}`);
       const valueType = typeof this._config[key];
       const defaultValueType = typeof defaults[key];
       const msg = `Incorrect config option type for: ${key} (expected ${defaultValueType}, got ${valueType})`;
-      utils.assertOk(valueType === defaultValueType, msg);
+      assertOk(valueType === defaultValueType, msg);
     });
   }
 
