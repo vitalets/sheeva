@@ -16,6 +16,7 @@
   },
 
   "rules": {
-    "max-statements": 0
+    "max-statements": 0,
+    "max-lines": 0
   }
 }
