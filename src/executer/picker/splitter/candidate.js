@@ -12,7 +12,7 @@ module.exports = class Candidate {
   constructor(queue) {
     this._queue = queue;
     this._splittedQueue = null;
-    this._remainingTestsCount = this._queue.getRemainingTestsCount();
+    this._remainingTestsCount = this._queue.remainingTestsCount;
     this._isSplittable = this._hasEnoughRemainingTests();
     this._remainingTime = this._calcRemainingTime();
   }

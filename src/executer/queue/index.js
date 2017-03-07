@@ -46,14 +46,11 @@ module.exports = class Queue {
 
   /**
    * Remaining tests count depends on if queue is running or not,
-   * because queue runs hooks considering next test,
-   * and if this test will be splitted out we will get error.
-   *
-   * todo: make getter
+   * because queue considering next test and if next test will be splitted out we will get error.
    *
    * @returns {Number}
    */
-  getRemainingTestsCount() {
+  get remainingTestsCount() {
     return this._isRunning
       ? this._cursor.remainingTestsCount - 1
       : this._cursor.remainingTestsCount;
