@@ -62,7 +62,7 @@ describe('errors', () => {
       return expectResolve(report, [
         'HOOK_END suite 1 before err',
         'SUITE_END suite 1 err',
-        'SUITE_END root err'
+        'SUITE_END root'
       ]);
     });
 
@@ -133,7 +133,7 @@ describe('errors', () => {
       return expectResolve(report, [
         'HOOK_END suite 1 beforeEach err',
         'SUITE_END suite 1 err',
-        'SUITE_END root err'
+        'SUITE_END root'
       ]);
     });
 
@@ -212,7 +212,7 @@ describe('errors', () => {
       return expectResolve(report, [
         'HOOK_END suite 1 afterEach err',
         'SUITE_END suite 1 err',
-        'SUITE_END root err'
+        'SUITE_END root'
       ]);
     });
 
@@ -297,7 +297,7 @@ describe('errors', () => {
       return expectResolve(report, [
         'HOOK_END suite 1 after err',
         'SUITE_END suite 1 err',
-        'SUITE_END root err'
+        'SUITE_END root'
       ]);
     });
 
@@ -387,7 +387,7 @@ describe('errors', () => {
         'HOOK_END suite 1 before err1',
         'HOOK_END suite 1 after err2',
         'SUITE_END suite 1 err1',
-        'SUITE_END root err1'
+        'SUITE_END root'
       ]);
     });
 
@@ -405,7 +405,7 @@ describe('errors', () => {
         'HOOK_END suite 1 beforeEach err1',
         'HOOK_END suite 1 afterEach err2',
         'SUITE_END suite 1 err1',
-        'SUITE_END root err1'
+        'SUITE_END root'
       ]);
     });
 

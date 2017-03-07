@@ -4,7 +4,6 @@
 
 const utils = require('../../../utils');
 const HookCaller = require('./hook');
-const errors = require('../errors');
 
 module.exports = class BaseHooksCaller {
   /**
@@ -30,17 +29,6 @@ module.exports = class BaseHooksCaller {
     return this._errors[0];
   }
 
-  /**
-   * Add suite error to errors stack
-   *
-   * @param {Suite} suite
-   * @param {Error} error
-   */
-  addError(suite, error) {
-    errors.attachSuiteToError(error, suite);
-    this._errors.push(error);
-  }
-
   _callPreHooks(hookType, newSuiteStack) {
     const suites = utils.getStackDiff(this._suiteStack, newSuiteStack);
     return utils.reduceWithPromises(suites, suite => this._callSuitePreHooks(suite, hookType));
@@ -58,7 +46,7 @@ module.exports = class BaseHooksCaller {
     this._suiteStack.push(suite);
     this._onSuiteHooksStart(suite);
     return this._callHooks(hooks)
-      .catch(e => this._addPreHookError(suite, e));
+      .catch(e => this._addErrorAndReject(e));
   }
 
   _callSuitePostHooks(suite, hookType) {
@@ -66,23 +54,25 @@ module.exports = class BaseHooksCaller {
     const popedSuite = this._suiteStack.pop();
     utils.assertOk(popedSuite === suite, `Something wrong with suite stack`);
     return this._callHooks(hooks)
-      .catch(e => this._addPostHookError(suite, e))
+      .catch(e => this._addError(e))
       .finally(() => this._onSuiteHooksEnd(suite));
   }
 
   _callHooks(hooks) {
-    return utils.reduceWithPromises(hooks, hook => {
-      return new HookCaller(this._session, this._context, hook).call();
-    });
+    return utils.reduceWithPromises(hooks, hook => this._callHook(hook));
   }
 
-  _addPreHookError(suite, error) {
-    this.addError(suite, error);
+  _callHook(hook) {
+    return new HookCaller(this._session, this._context, hook).call();
+  }
+
+  _addErrorAndReject(error) {
+    this._addError(error);
     return Promise.reject(error);
   }
 
-  _addPostHookError(suite, error) {
-    this.addError(suite, error);
+  _addError(error) {
+    this._errors.push(error);
   }
 
   _onSuiteHooksStart() { }

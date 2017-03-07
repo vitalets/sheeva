@@ -7,11 +7,11 @@ const SubSheeva = require('./sub-sheeva');
 
 module.exports = {
   concurrency: 5,
-  files: './test/specs/**/*.test.js',
+  files: './test/specs',
   newSessionPerFile: false,
   splitSuites: true,
   reporters: require('sheeva-reporter-timeline'),
-  // reporters: require('sheeva-reporter-simple'),
+  //reporters: require('sheeva-reporter-simple'),
   createEnvs: function () {
     return [
       {id: 'sync-env'},

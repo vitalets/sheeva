@@ -4,6 +4,7 @@
 
 const reporter = require('../../../reporter');
 const {SUITE_START, SUITE_END} = require('../../../events');
+const errors = require('../errors');
 const BaseHooksCaller = require('./base-hooks');
 
 module.exports = class SuiteHooksCaller extends BaseHooksCaller {
@@ -31,12 +32,26 @@ module.exports = class SuiteHooksCaller extends BaseHooksCaller {
     return this._callPostHooks('after', newSuiteStack);
   }
 
+  /**
+   * Make addError public to be able to add errors occurred during suite execution
+   *
+   * @param {Error} error
+   */
+  addError(error) {
+    this._addError(error);
+  }
+
   _onSuiteHooksStart(suite) {
     this._emit(SUITE_START, {suite});
   }
 
   _onSuiteHooksEnd(suite) {
-    this._emit(SUITE_END, {suite, error: this.error});
+    const error = this._findSuiteError(suite);
+    this._emit(SUITE_END, {suite, error});
+  }
+
+  _findSuiteError(suite) {
+    return this._errors.find(error => suite === errors.getSuiteFromError(error));
   }
 
   _emit(event, data) {

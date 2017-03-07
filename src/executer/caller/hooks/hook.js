@@ -6,6 +6,7 @@ const {config} = require('../../../configurator');
 const reporter = require('../../../reporter');
 const {HOOK_START, HOOK_END} = require('../../../events');
 const FnCaller = require('../fn');
+const errors = require('../errors');
 
 module.exports = class HookCaller {
   /**
@@ -44,6 +45,7 @@ module.exports = class HookCaller {
 
   _storeErrorAndReject(error) {
     this._error = error;
+    errors.attachHookToError(this._error, this._hook);
     return Promise.reject(error);
   }
 

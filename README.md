@@ -65,20 +65,33 @@ Their requirements to runner are:
 Sheeva tries to fulfill all these requirements.
 
 ## Errors handling
-There are 3 types of errors occured during execution:  
+There are several types of errors that may occur while running tests:  
 
 1. **Error in test**  
   It can be assertion error or error in test code itself. In that case all `afterEach` hooks are called,
-  error is reported via `TEST_END` event and runner goes to the next test. Reporter is responsible for displaying such error.
+  error is reported via `TEST_END` event and runner goes to the next test.
  
-2. **Error in hook**  
-  When error occurs in hook of some suite there is no sense to continue running tests of that suite. 
-  So runner goes to the end of suite, calls needed `after` hooks, emits `SUITE_END` event with error
-  and takes next suite. Reporter is responsible for displaying such error.
+2. **Error in beforeEach hook**  
+   Runner will not call test itself but will call all needed `afterEach` 
+   hooks for proper cleanup. Then runner goes to the end of error suite, calls all needed `after` hooks
+   and starts next suite.
+   
+2. **Error in afterEach hook**  
+   Runner will anyway call all needed `afterEach` hooks for proper cleanup. 
+   Then runner goes to the end of error suite, calls all needed `after` hooks
+   and starts next suite. 
+ 
+3. **Error in before hook**  
+   Runner will not call any tests of that suite. Instead it goes to the end of that suite, 
+   calls all needed `after` hooks and starts next suite.
 
-3. **Error in runner**  
-  This may be internal error in Sheeva itself or in config methods e.g. `config.startSession`. 
-  In that case runner terminates immediately and rejects with that error. Reporter is not responsible for displaying such error, it will be shown in console until you catch it.
+3. **Error in after hook**  
+   Runner will anyway call all needed `after` hooks for proper cleanup and start next suite.
+
+4. **Error in runner**  
+   This may be internal error in Sheeva itself or in configuraiton methods such as `config.startSession`. 
+   In that case runner terminates immediately and `sheeva.run()` rejects with that error.
   
-*Note 1:* if `config.breakOnError` is enabled then runner will terminate on any error.  
-*Note 2:* there can be several errors at once, e.g. error in `before` hook can cause error in `after` hook.  
+*Note 1:* reporter is responsible for displaying all errors except runner error.  
+*Note 2:* if `config.breakOnError` is enabled then runner will terminate on any error.  
+*Note 3:* there can be several errors at once, e.g. error in `before` hook can cause error in `after` hook.  

@@ -6,12 +6,12 @@ exports.attachTestToError = function (error, test) {
   return attach(error, 'test', test);
 };
 
-exports.attachSuiteToError = function (error, suite) {
-  return attach(error, 'suite', suite);
+exports.attachHookToError = function (error, hook) {
+  return attach(error, 'hook', hook);
 };
 
 exports.getSuiteFromError = function (error) {
-  return error.suite;
+  return error.hook && error.hook.parent;
 };
 
 exports.isTestError = function (error) {
@@ -19,7 +19,7 @@ exports.isTestError = function (error) {
 };
 
 exports.isHookError = function (error) {
-  return Boolean(error.suite);
+  return Boolean(error.hook);
 };
 
 exports.isTestOrHookError = function (error) {

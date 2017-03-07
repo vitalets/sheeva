@@ -27,6 +27,7 @@ module.exports = class Queue {
     this._session = null;
     this._suiteHooksCaller = null;
     this._isRunning = false;
+    this._error = null;
     this._promised = new utils.Promised();
   }
 
@@ -74,6 +75,9 @@ module.exports = class Queue {
 
   /**
    * Handles next test in queue.
+   * We handle next test even
+   *
+   *
    * It does not return promise to keep each test in separate promise chain
    * instead of one chain for all tests.
    *
@@ -84,15 +88,18 @@ module.exports = class Queue {
       .then(() => this._moveCursor())
       .then(() => this._executeTest())
       .catch(e => this._handleError(e))
-      .then(() => this._tryHandleNextTest())
-      .catch(e => this._promised.reject(e));
+      .then(() => this._handleNextTestIfNeeded())
+      .catch(e => this._finalize(e));
   }
 
-  _tryHandleNextTest() {
+  /**
+   * Here we check not nextTest but currentTest as we need to call all after hooks
+   */
+  _handleNextTestIfNeeded() {
     if (this._hasCurrentTest()) {
       this._handleNextTest();
     } else {
-      this._promised.resolve();
+      this._finalize();
     }
   }
 
@@ -128,25 +135,37 @@ module.exports = class Queue {
   }
 
   _handleError(error) {
-    if (errors.isHookError(error)) {
-      const suite = errors.getSuiteFromError(error);
-      this._suiteHooksCaller.addError(suite, error);
-      if (!config.breakOnError) {
-        this._cursor.moveToSuiteEnd(suite);
-        return;
-      }
-    }
-    return this._terminate(error);
+    this._storeError(error);
+    return this._isTerminationError() ? this._terminate() : this._moveToErrorSuiteEnd();
   }
 
-  _terminate(error) {
+  _isTerminationError() {
+    return !errors.isHookError(this._error) || config.breakOnError;
+  }
+
+  _terminate() {
     this._cursor.moveToQueueEnd();
-    return this._moveCursor()
-      .finally(() => Promise.reject(error));
+    return this._executeAfterHooks()
+      .finally(() => Promise.reject(this._error));
+  }
+
+  _moveToErrorSuiteEnd() {
+    const suite = errors.getSuiteFromError(this._error);
+    this._cursor.moveToSuiteEnd(suite);
+    this._clearError();
   }
 
   _moveCursorWithoutHooks() {
     return this._cursor.moveToNextText();
+  }
+
+  _storeError(error) {
+    this._error = error;
+    this._suiteHooksCaller.addError(error);
+  }
+
+  _clearError() {
+    this._error = null;
   }
 
   _createHooksCaller() {
@@ -156,10 +175,13 @@ module.exports = class Queue {
   _hasCurrentTest() {
     return Boolean(this._cursor.currentTest);
   }
+
+  _finalize(error) {
+    this._promised.fulfill(this._error || error);
+  }
 };
 
 function assertTests(tests) {
-  if (!Array.isArray(tests) || !tests.length) {
-    throw new Error('Queue should be created on non-empty tests array');
-  }
+  utils.assertArray(tests, 'Queue should be created from tests array');
+  utils.assertLength(tests, 'Queue should be created on non-empty tests array');
 }

@@ -43,6 +43,30 @@ exports.assertOk = function (value, msg) {
 };
 
 /**
+ * Assert array
+ *
+ * @param {*} value
+ * @param {String} msg
+ */
+exports.assertArray = function (value, msg) {
+  if (!Array.isArray(value)) {
+    throw new Error(msg);
+  }
+};
+
+/**
+ * Assert length
+ *
+ * @param {*} value
+ * @param {String} msg
+ */
+exports.assertLength = function (value, msg) {
+  if (!value.length) {
+    throw new Error(msg);
+  }
+};
+
+/**
  * Calls function in Promise.resolve().then
  *
  * @param {Function} fn
@@ -83,6 +107,14 @@ exports.Promised = class {
       this.reject = reject;
       fn();
     });
+  }
+
+  fulfill(error) {
+    if (error) {
+      this.reject(error);
+    } else {
+      this.resolve();
+    }
   }
 };
 
