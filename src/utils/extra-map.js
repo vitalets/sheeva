@@ -36,6 +36,20 @@ module.exports = class ExtraMap extends Map {
   }
 
   /**
+   * If key is not exists new array will be created and returned.
+   *
+   * @param {*} key
+   */
+  getOrCreateArray(key) {
+    let arr = this.get(key);
+    if (!arr) {
+      arr = [];
+      this.set(key, arr);
+    }
+    return arr;
+  }
+
+  /**
    * Push value into array for specified key of map.
    * Array is created if needed.
    *

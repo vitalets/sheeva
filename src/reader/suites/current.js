@@ -3,7 +3,7 @@
  * Also collects map of fn --> childSuites for next iteration.
  */
 
-const utils = require('../../utils');
+const ExtraMap = require('../../utils/extra-map');
 const factory = require('./factory');
 
 module.exports = class Current {
@@ -24,7 +24,7 @@ module.exports = class Current {
    */
   set(suites) {
     this._suites = suites;
-    this._childFnSuites = new Map();
+    this._childFnSuites = new ExtraMap();
   }
 
   addChildSuite(name, fn) {
@@ -32,7 +32,7 @@ module.exports = class Current {
       const options = Object.assign({}, annotation, {name});
       const childSuite = factory.createSuite(options, parentSuite);
       this._annotations.storeInfo(childSuite);
-      utils.pushToMap(this._childFnSuites, fn, childSuite);
+      this._childFnSuites.getOrCreateArray(fn).push(childSuite);
     });
     this._resetAnnotation();
   }

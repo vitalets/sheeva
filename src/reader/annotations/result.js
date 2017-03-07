@@ -2,7 +2,7 @@
  * Info about annotated items grouped per env
  */
 
-const utils = require('../../utils');
+const ExtraMap = require('../../utils/extra-map');
 
 module.exports = class Result {
   constructor() {
@@ -34,7 +34,7 @@ module.exports = class Result {
   _processTags(item) {
     if (item.tags.length) {
       const existingTags = this._getEnvData(item.env).tags;
-      item.tags.forEach(tag => utils.pushToMap(existingTags, tag, item));
+      item.tags.forEach(tag => existingTags.getOrCreateArray(tag).push(item));
     }
   }
 
@@ -53,6 +53,6 @@ function createEnvData() {
   return {
     only: [],
     skip: [],
-    tags: new Map(),
+    tags: new ExtraMap(),
   };
 }
