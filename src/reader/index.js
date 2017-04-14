@@ -14,7 +14,7 @@ const {config} = require('../config');
 const {result} = require('../result');
 const PropsInjector = require('../utils/props-injector');
 const AnnotationsReader = require('./annotations');
-const SuitesReader = require('./suites');
+const TestsReader = require('./tests');
 
 module.exports = class Reader {
   /**
@@ -24,7 +24,7 @@ module.exports = class Reader {
     this._context = global;
     this._files = result.processedFiles;
     this._annotationsReader = new AnnotationsReader();
-    this._suitesReader = new SuitesReader(this._annotationsReader);
+    this._testsReader = new TestsReader(this._annotationsReader);
     this._propsInjector = new PropsInjector();
   }
 
@@ -49,7 +49,7 @@ module.exports = class Reader {
   _createTopSuites() {
     this._files.forEach(file => {
       const fn = () => readFile(file);
-      config.envs.forEach(env => this._suitesReader.addTopSuite(env, file, fn));
+      config.envs.forEach(env => this._testsReader.addTopSuite(env, file, fn));
     });
   }
 
@@ -57,13 +57,13 @@ module.exports = class Reader {
     const methods = Object.assign(
       {},
       this._annotationsReader.api,
-      this._suitesReader.api
+      this._testsReader.api
     );
     this._propsInjector.inject(this._context, methods);
   }
 
   _readFiles() {
-    this._suitesReader.fill();
+    this._testsReader.fill();
   }
 
   _cleanupApi() {

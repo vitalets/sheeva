@@ -1,5 +1,5 @@
 /**
- * Suites structure reader
+ * Tests structure reader
  */
 
 const {result} = require('../../result');
@@ -9,7 +9,7 @@ const Walker = require('./walker');
 const Bdd = require('./api/bdd');
 const factory = require('./factory');
 
-module.exports = class SuitesReader {
+module.exports = class TestsReader {
   constructor(annotationsReader) {
     this._topSuitesPerEnv = result.topSuitesPerEnv;
     this._currentSuites = new CurrentSuites(annotationsReader);
