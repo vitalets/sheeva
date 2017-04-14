@@ -3,7 +3,7 @@
 const path = require('path');
 const program = require('commander');
 const Sheeva = require('.');
-const defaults = require('./configurator/defaults');
+const defaults = require('./config/defaults');
 
 const DEFAULT_CONFIG = './sheeva.config.js';
 
