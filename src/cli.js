@@ -34,8 +34,8 @@ function success(res) {
   exit(res.errors.length);
 }
 
-function fail(error) {
-  console.error(error); // eslint-disable-line no-console
+function fail(runnerError) {
+  console.error(runnerError); // eslint-disable-line no-console
   exit(1);
 }
 
