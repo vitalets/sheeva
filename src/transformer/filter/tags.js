@@ -2,7 +2,7 @@
  * Filters by tags
  */
 
-const {config} = require('../../configurator');
+const {config} = require('../../config');
 const {result} = require('../../result');
 const ExtraSet = require('../../utils/extra-set');
 const Includer = require('./includer');

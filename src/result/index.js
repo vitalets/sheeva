@@ -2,7 +2,7 @@
  * Singleton that collects all data while running and pass it reporters.
  */
 
-const {config} = require('../configurator');
+const {config} = require('../config');
 const ExtraMap = require('../utils/extra-map');
 const ExtraSet = require('../utils/extra-set');
 

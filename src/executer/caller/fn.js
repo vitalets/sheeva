@@ -3,7 +3,7 @@
  * Rejects result if timeout exceeded.
  */
 
-const {config} = require('../../configurator');
+const {config} = require('../../config');
 
 const FnCaller = module.exports = class FnCaller {
   /**

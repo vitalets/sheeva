@@ -9,7 +9,7 @@
 
 const utils = require('../../utils');
 const {assertArray, assertLength} = require('../../utils/assert');
-const {config} = require('../../configurator');
+const {config} = require('../../config');
 const {TestCaller, SuiteHooksCaller, errors} = require('../caller');
 const Cursor = require('./cursor');
 

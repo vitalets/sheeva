@@ -2,7 +2,7 @@
  * Calls hook fn
  */
 
-const {config} = require('../../../configurator');
+const {config} = require('../../../config');
 const reporter = require('../../../reporter');
 const {HOOK_START, HOOK_END} = require('../../../events');
 const FnCaller = require('../fn');

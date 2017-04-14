@@ -2,7 +2,7 @@
  * Process all events and proxy to other reporters.
  */
 
-const {config} = require('../configurator');
+const {config} = require('../config');
 const {result} = require('../result');
 const ErrorsCollector = require('./collectors/errors');
 

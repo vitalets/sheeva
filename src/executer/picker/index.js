@@ -2,7 +2,7 @@
  * Picks next queue for execution.
  */
 
-const {config} = require('../../configurator');
+const {config} = require('../../config');
 const Queues = require('./queues');
 const Splitter = require('./splitter');
 

@@ -5,7 +5,7 @@
 require('promise.prototype.finally').shim();
 
 const utils = require('./utils');
-const configInstance = require('./configurator');
+const configInstance = require('./config');
 const reporter = require('./reporter');
 const resultInstance = require('./result');
 const Reader = require('./reader');

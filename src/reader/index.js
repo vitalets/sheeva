@@ -10,7 +10,7 @@
 
 const path = require('path');
 const glob = require('glob');
-const {config} = require('../configurator');
+const {config} = require('../config');
 const {result} = require('../result');
 const PropsInjector = require('../utils/props-injector');
 const AnnotationsReader = require('./annotations');

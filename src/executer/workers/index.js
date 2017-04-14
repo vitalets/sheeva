@@ -2,7 +2,7 @@
  * Workers manager: keeps workers count under concurrency limit
  */
 
-const {config} = require('../../configurator');
+const {config} = require('../../config');
 const ExtraSet = require('../../utils/extra-set');
 const reporter = require('../../reporter');
 const {WORKER_ADD, WORKER_DELETE} = require('../../events');
