@@ -12,6 +12,7 @@
  * @type {Executer}
  */
 
+const {result} = require('../result');
 const reporter = require('../reporter');
 const utils = require('../utils');
 const {ENV_START, ENV_END} = require('../events');
@@ -24,10 +25,10 @@ const Executer = module.exports = class Executer {
    * Constructor
    */
   constructor() {
+    this._executionPerEnv = result.executionPerEnv;
     this._workers = null;
     this._picker = null;
     this._promised = new utils.Promised();
-    this._startedEnvs = new Set();
   }
 
   /**
@@ -74,14 +75,16 @@ const Executer = module.exports = class Executer {
   }
 
   _tryEmitEnvStart(env) {
-    if (!this._startedEnvs.has(env)) {
-      this._startedEnvs.add(env);
+    const execution = this._executionPerEnv.get(env);
+    if (!execution.started) {
+      execution.started = true;
       reporter.handleEvent(ENV_START, {env});
     }
   }
 
   _tryEmitEnvEnd(env) {
     if (this._isFinishedEnv(env)) {
+      this._executionPerEnv.get(env).ended = true;
       reporter.handleEvent(ENV_END, {env});
     }
   }

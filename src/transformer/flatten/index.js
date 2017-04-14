@@ -11,16 +11,16 @@ const {result} = require('../../result');
 const SuiteFlattener = require('./suite-flattener');
 
 module.exports = function () {
-  const {topSuitesPerEnv, flatSuitesPerEnv} = result;
+  const {topSuitesPerEnv, flatSuitesPerEnv, executionPerEnv} = result;
   topSuitesPerEnv.forEach((topSuites, env) => {
     const flatSuites = new SuiteFlattener({children: topSuites.toArray()}).flatten();
     flatSuitesPerEnv.set(env, flatSuites);
+    executionPerEnv.get(env).testsCount = calcTestsCount(flatSuites);
   });
 };
 
-// todo: move somewhere (in result)
-// _calcTestsCount(env, flatSuites) {
-//   env.testsCount = flatSuites.reduce((res, flatSuite) => {
-//     return res + flatSuite.tests.length;
-//   }, 0);
-// }
+function calcTestsCount(flatSuites) {
+  return flatSuites.reduce((res, flatSuite) => {
+    return res + flatSuite.tests.length;
+  }, 0);
+}

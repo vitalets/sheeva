@@ -17,9 +17,14 @@ class Result {
 
   init() {
     this._clear();
+    this._initCommon();
     this._initReader();
     this._initTransformer();
     this._initExecuter();
+  }
+
+  _initCommon() {
+    this._result.errors = new ExtraSet();
   }
 
   _initReader() {
@@ -52,6 +57,14 @@ class Result {
 
   _initExecuter() {
     this._result.sessionsPerEnv = new ExtraMap();
+    this._result.executionPerEnv = new ExtraMap();
+    config.envs.forEach(env => {
+      this._result.executionPerEnv.set(env, {
+        started: false,
+        ended: false,
+        testsCount: 0,
+      });
+    });
   }
 
   _clear() {
