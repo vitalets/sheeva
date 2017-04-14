@@ -5,14 +5,13 @@
 require('promise.prototype.finally').shim();
 
 const utils = require('./utils');
-const configurator = require('./configurator');
+const configInstance = require('./configurator');
 const reporter = require('./reporter');
+const resultInstance = require('./result');
 const Reader = require('./reader');
-const Transformer = require('./transformer');
+const transform = require('./transformer');
 const Executer = require('./executer');
 const {RUNNER_INIT, RUNNER_START, RUNNER_END} = require('./events');
-
-const config = configurator.config;
 
 module.exports = class Sheeva {
   /**
@@ -22,9 +21,6 @@ module.exports = class Sheeva {
    */
   constructor(rawConfig) {
     this._rawConfig = rawConfig;
-    this._reader = new Reader();
-    this._transformer = new Transformer();
-    this._executer = new Executer();
     this._runnerError = null;
   }
 
@@ -36,36 +32,36 @@ module.exports = class Sheeva {
   run() {
     return Promise.resolve()
       .then(() => this._init())
-      .then(() => this._readFiles())
-      .then(() => this._transform())
+      .then(() => new Reader().read())
+      .then(() => transform())
       .then(() => this._start())
-      .then(() => this._execute())
+      .then(() => new Executer().run())
       .catch(e => this._storeRunnerError(e))
-      .finally(() => this._end())
-      .then(() => this._getResult());
+      .finally(() => this._end());
   }
 
   _init() {
-    configurator.init(this._rawConfig);
+    configInstance.init(this._rawConfig);
+    resultInstance.init();
     reporter.init();
-    this._emitInit();
-  }
-
-  _readFiles() {
-    return this._reader.read();
-  }
-
-  _transform() {
-    this._transformer.transform(this._reader.result);
+    reporter.handleEvent(RUNNER_INIT);
   }
 
   _start() {
-    this._emitStart();
+    const {config} = configInstance;
+    reporter.handleEvent(RUNNER_START);
     return utils.thenCall(() => config.startRunner(config));
   }
 
-  _execute() {
-    return this._executer.run(this._transformer.result);
+  _end() {
+    const {config} = configInstance;
+    return Promise.resolve()
+      .then(() => config.endRunner(config))
+      .catch(e => this._storeRunnerError(e))
+      .finally(() => this._emitEnd())
+      .finally(() => reporter.stopListen())
+      .catch(e => this._storeRunnerError(e))
+      .then(() => this._getResult());
   }
 
   /**
@@ -76,6 +72,7 @@ module.exports = class Sheeva {
    * @param {Error} error
    */
   _storeRunnerError(error) {
+    const {config} = configInstance;
     if (config.breakOnError && Executer.errors.isTestOrHookError(error)) {
       return;
     }
@@ -84,33 +81,19 @@ module.exports = class Sheeva {
     }
   }
 
-  _end() {
-    return Promise.resolve()
-      .then(() => config.endRunner(config))
-      .catch(e => this._storeRunnerError(e))
-      .finally(() => this._emitEnd())
-      .finally(() => reporter.stopListen())
-      .catch(e => this._storeRunnerError(e));
-  }
-
   _getResult() {
-    return this._runnerError ? Promise.reject(this._runnerError) : reporter.getResult();
+    return this._runnerError ? Promise.reject(this._runnerError) : resultInstance.result;
   }
 
-  _emitInit() {
-    const data = {config};
-    reporter.handleEvent(RUNNER_INIT, data);
-  }
-
-  _emitStart() {
-    const data = {
-      config,
-      files: this._reader.files,
-      only: this._transformer.meta.only,
-      skip: this._transformer.meta.skip,
-    };
-    reporter.handleEvent(RUNNER_START, data);
-  }
+  // _emitStart() {
+  //   const data = {
+  //     config,
+  //     files: this._reader.files,
+  //     only: this._transformer.meta.only,
+  //     skip: this._transformer.meta.skip,
+  //   };
+  //   reporter.handleEvent(RUNNER_START, data);
+  // }
 
   _emitEnd() {
     const data = {error: this._runnerError};

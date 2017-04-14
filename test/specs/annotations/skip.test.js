@@ -73,7 +73,7 @@ describe('annotation: skip', () => {
     ]);
   });
 
-  it('should report skipped items in RUNNER_START', run => {
+  it('should have skipped items summary in RUNNER_START', run => {
     const result = run([`
       $skip();
       describe('suite 1', () => {
@@ -91,9 +91,9 @@ describe('annotation: skip', () => {
     return expectResolve(result)
       .then(res => {
         expect(res, 'to have length', 1);
-        expect(res[0].data.skip.files, 'to have length', 2);
-        expect(res[0].data.skip.suites, 'to have length', 1);
-        expect(res[0].data.skip.tests, 'to have length', 1);
+        expect(res[0].data.result.skip.files.size, 'to equal', 2);
+        expect(res[0].data.result.skip.suites.size, 'to equal', 1);
+        expect(res[0].data.result.skip.tests.size, 'to equal', 1);
       });
   });
 

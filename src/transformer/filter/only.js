@@ -1,19 +1,17 @@
 /**
- * Filters suites by only
+ * Filters tests by `only` annotation
  */
 
-const ExtraSet = require('../../utils/extra-set');
+const {config} = require('../../configurator');
+const {result} = require('../../result');
 const Includer = require('./includer');
 
 module.exports = class Only {
-  constructor(envData) {
-    this._envData = envData;
-    this._files = new ExtraSet();
-    this._found = this._find();
-  }
-
-  get files() {
-    return this._files.toArray();
+  constructor() {
+    this._topSuitesPerEnv = result.topSuitesPerEnv;
+    this._annotationsPerEnv = result.annotationsPerEnv;
+    this._summary = result.only;
+    this._found = this._hasOnly();
   }
 
   get found() {
@@ -21,34 +19,38 @@ module.exports = class Only {
   }
 
   filter() {
-    this._updateEnvData();
-    this._updateFiles();
+    this._filterTopSuites();
+    // make this check after collecting files to have nicer error message
+    if (config.noOnly) {
+      this._throwNoOnlyError();
+    }
   }
 
-  throwNoOnlyError() {
-    throw new Error(
-      `ONLY is disallowed but found in ${this.files.length} file(s):\n ${this.files.join('\n')}`
-    );
-  }
-
-  _find() {
-    for (let data of this._envData.values()) {
-      if (data.only.length > 0) {
+  _hasOnly() {
+    for (let data of this._annotationsPerEnv.values()) {
+      if (data.only.size > 0) {
         return true;
       }
     }
     return false;
   }
 
-  _updateEnvData() {
-    this._envData.forEach(data => {
-      data.topSuites = new Includer(data.topSuites).include(data.only);
+  _filterTopSuites() {
+    this._topSuitesPerEnv.forEach((topSuites, env) => {
+      const onlyItems = this._annotationsPerEnv.get(env).only;
+      new Includer(topSuites).include(onlyItems);
+      this._updateSummary(topSuites);
     });
   }
 
-  _updateFiles() {
-    this._envData.forEach(data => {
-      data.topSuites.forEach(suite => this._files.add(suite.name));
-    });
+  _updateSummary(topSuites) {
+    topSuites.forEach(suite => this._summary.files.add(suite.name));
+  }
+
+  _throwNoOnlyError() {
+    const files = this._summary.files.toArray();
+    throw new Error(
+      `ONLY is disallowed but found in ${files.length} file(s):\n ${files.join('\n')}`
+    );
   }
 };

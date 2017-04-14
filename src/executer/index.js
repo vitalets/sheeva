@@ -12,11 +12,11 @@
  * @type {Executer}
  */
 
+const reporter = require('../reporter');
 const utils = require('../utils');
+const {ENV_START, ENV_END} = require('../events');
 const Picker = require('./picker');
 const Workers = require('./workers');
-const Sessions = require('./sessions');
-const EnvEmitter = require('./env-emitter');
 const {errors} = require('./caller');
 
 const Executer = module.exports = class Executer {
@@ -24,22 +24,20 @@ const Executer = module.exports = class Executer {
    * Constructor
    */
   constructor() {
-    this._sessions = new Sessions();
-    this._workers = new Workers(this._sessions);
+    this._workers = null;
     this._picker = null;
     this._promised = new utils.Promised();
-    this._setWorkersHandlers();
+    this._startedEnvs = new Set();
   }
 
   /**
    * Run
-   *
-   * @param {Map<Env,Array<FlatSuite>>} envFlatSuites
    */
-  run(envFlatSuites) {
+  run() {
     return this._promised.call(() => {
-      this._createPicker(envFlatSuites);
-      this._createEnvEmitter();
+      this._workers = new Workers();
+      this._picker = new Picker(this._workers);
+      this._setWorkersHandlers();
       this._workers.fill();
     });
   }
@@ -47,14 +45,8 @@ const Executer = module.exports = class Executer {
   _setWorkersHandlers() {
     this._workers.onFreeWorker = worker => this._handleFreeWorker(worker);
     this._workers.onEmpty = () => this._end();
-  }
-
-  _createPicker(envFlatSuites) {
-    this._picker = new Picker(this._workers, envFlatSuites);
-  }
-
-  _createEnvEmitter() {
-    new EnvEmitter(this._workers, this._picker);
+    this._workers.onSessionStart = session => this._tryEmitEnvStart(session.env);
+    this._workers.onSessionEnd = session => this._tryEmitEnvEnd(session.env);
   }
 
   _handleFreeWorker(worker) {
@@ -79,6 +71,23 @@ const Executer = module.exports = class Executer {
   _terminate(error) {
     this._workers.terminate()
       .finally(() => this._promised.reject(error));
+  }
+
+  _tryEmitEnvStart(env) {
+    if (!this._startedEnvs.has(env)) {
+      this._startedEnvs.add(env);
+      reporter.handleEvent(ENV_START, {env});
+    }
+  }
+
+  _tryEmitEnvEnd(env) {
+    if (this._isFinishedEnv(env)) {
+      reporter.handleEvent(ENV_END, {env});
+    }
+  }
+
+  _isFinishedEnv(env) {
+    return !this._picker.getRemainingQueues(env).length && !this._workers.hasWorkersForEnv(env);
   }
 };
 

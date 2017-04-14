@@ -1,8 +1,10 @@
 /**
- * Session - single concurrent worker for running queues on particular env.
+ * Session belongs to particular env and runs test-queues on particular worker.
+ * It performs setup and teardown by calling `config.startSession` / `config.endSession` hooks.
  */
 
 const {config} = require('../../configurator');
+const {result} = require('../../result');
 const reporter = require('../../reporter');
 
 const {
@@ -25,15 +27,16 @@ module.exports = class Session {
    * Constructor
    *
    * @param {Object} options
-   * @param {Number} options.index
    * @param {Number} options.workerIndex
    * @param {Object} options.env
    */
   constructor(options) {
-    this._index = options.index;
     this._workerIndex = options.workerIndex;
     this._env = options.env;
     this._status = STATUS.CREATED;
+    const sessions = result.sessionsPerEnv.getOrCreateArray(this._env);
+    this._index = sessions.length;
+    sessions.push(this);
   }
 
   get env() {

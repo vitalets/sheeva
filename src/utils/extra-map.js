@@ -2,6 +2,8 @@
  * ES6 Map with extra methods
  */
 
+const ExtraSet = require('./extra-set');
+
 module.exports = class ExtraMap extends Map {
   /**
    * Converts Map/Set to array
@@ -36,17 +38,31 @@ module.exports = class ExtraMap extends Map {
   }
 
   /**
-   * If key is not exists new array will be created and returned.
+   * If key does not exist new array will be created and returned.
    *
    * @param {*} key
    */
   getOrCreateArray(key) {
-    let arr = this.get(key);
-    if (!arr) {
-      arr = [];
-      this.set(key, arr);
+    let value = this.get(key);
+    if (!value) {
+      value = [];
+      this.set(key, value);
     }
-    return arr;
+    return value;
+  }
+
+  /**
+   * If key does not exist new Set will be created and returned.
+   *
+   * @param {*} key
+   */
+  getOrCreateSet(key) {
+    let value = this.get(key);
+    if (!value) {
+      value = new ExtraSet();
+      this.set(key, value);
+    }
+    return value;
   }
 
   /**

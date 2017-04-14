@@ -3,6 +3,7 @@
  */
 
 const {config} = require('../configurator');
+const {result} = require('../result');
 const ErrorsCollector = require('./collectors/errors');
 
 class Reporter {
@@ -31,6 +32,7 @@ class Reporter {
       this._currentEvent = event;
       this._currentData = Object.assign({}, data);
       this._addTimestamp();
+      this._addResult();
       this._proxyToReporters();
       this._proxyToCollectors();
     }
@@ -74,6 +76,10 @@ class Reporter {
 
   _addTimestamp() {
     this._currentData.timestamp = Date.now();
+  }
+
+  _addResult() {
+    this._currentData.result = result;
   }
 
   _proxyToReporters() {

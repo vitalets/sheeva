@@ -1,36 +1,54 @@
 /**
- * Includes only specified items in topSuites, removing all other
+ * Includes only specified item paths in topSuites, removing all other
  */
 
 module.exports = class Includer {
-
+  /**
+   * Constructor
+   *
+   * @param {ExtraMap} topSuites
+   */
   constructor(topSuites) {
     this._topSuites = topSuites;
-    this._items = null;
   }
 
+  /**
+   * Include items with parents
+   *
+   * @param {ExtraSet} items
+   */
   include(items) {
     this._items = items;
-    this._setIncludeFlag();
-    return this._includeWithFlag(this._topSuites);
+    this._setIncludedFlag();
+    this._filterTopSuites();
   }
 
-  _setIncludeFlag() {
+  _setIncludedFlag() {
     this._items.forEach(item => {
-      item.parents.forEach(parent => parent.include = true);
+      item.parents.forEach(parent => parent.includedParent = true);
     });
   }
 
-  _includeWithFlag(items) {
-    return items.filter(item => this._isIncludeItem(item) || this._isIncludeParent(item));
+  _filterTopSuites() {
+    this._topSuites.forEach((suite, key) => {
+      const isIncluded = this._isIncluded(suite);
+      if (!isIncluded) {
+        this._topSuites.delete(key);
+      }
+      // todo: delete suite.includedParent
+    });
   }
 
-  _isIncludeItem(item) {
-    return this._items.indexOf(item) >= 0;
+  _isIncluded(item) {
+    return this._isIncludedExplicitly(item) || this._isIncludedParent(item);
   }
 
-  _isIncludeParent(item) {
-    if (item.include) {
+  _isIncludedExplicitly(item) {
+    return this._items.has(item);
+  }
+
+  _isIncludedParent(item) {
+    if (item.includedParent) {
       this._includeChildrenWithFlag(item);
       return true;
     } else {
@@ -39,8 +57,13 @@ module.exports = class Includer {
   }
 
   _includeChildrenWithFlag(item) {
-    if (item.isSuite) {
-      item.children = this._includeWithFlag(item.children);
-    }
+    item.children = item.children.filter(child => this._isIncluded(child));
   }
+
+  //todo: seems checking item.isSuite is redundant as includedParent is set only to suites
+  // _includeChildrenWithFlag(item) {
+  //   if (item.isSuite) {
+  //     item.children = this._includeWithFlag(item.children);
+  //   }
+  // }
 };

@@ -1,24 +1,18 @@
 /**
- * Excludes specified items from fileSuites
+ * Exclude specified items from parents
  */
 
 module.exports = class Excluder {
-
-  constructor(fileSuites) {
-    this._fileSuites = fileSuites;
-    this._items = null;
-  }
-
   exclude(items) {
     this._items = items;
-    this._removeFromParents();
-    return this._fileSuites;
+    this._removeFromParent();
   }
 
-  _removeFromParents() {
+  _removeFromParent() {
     this._items.forEach(item => {
-      const index = item.parent.children.indexOf(item);
-      item.parent.children.splice(index, 1);
+      const children = item.parent.children;
+      const index = children.indexOf(item);
+      children.splice(index, 1);
     });
   }
 };
