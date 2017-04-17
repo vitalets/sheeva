@@ -3,7 +3,7 @@
  */
 
 const {config} = require('../../config');
-const ExtraSet = require('../../utils/extra-set');
+const {result} = require('../../result');
 const reporter = require('../../reporter');
 const {WORKER_ADD, WORKER_DELETE} = require('../../events');
 const Worker = require('./worker');
@@ -13,7 +13,7 @@ module.exports = class Workers {
    * Constructor
    */
   constructor() {
-    this._workers = new ExtraSet();
+    this._workers = result.workers;
     this._terminating = false;
     this._onEmpty = () => {};
     this._onFreeWorker = () => {};

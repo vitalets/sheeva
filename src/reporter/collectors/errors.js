@@ -2,23 +2,20 @@
  * Collects hook and test errors
  */
 
-const events = require('../../events');
+const {result} = require('../../result');
+const {HOOK_END, TEST_END} = require('../../events');
 
 module.exports = class ErrorsCollector {
   constructor() {
-    this._errors = [];
+    this._errors = result.errors;
   }
 
-  get errors() {
-    return this._errors;
-  }
-
-  handleEvent(event, {error}) {
+  handleEvent(event, data) {
     switch (event) {
-      case events.HOOK_END:
-      case events.TEST_END:
-        if (error) {
-          this._errors.push(error);
+      case HOOK_END:
+      case TEST_END:
+        if (data.error && !this._errors.has(data.error)) {
+          this._errors.set(data.error, data);
         }
     }
   }

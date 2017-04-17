@@ -5,6 +5,8 @@
 const {config} = require('../config');
 const {result} = require('../result');
 const ErrorsCollector = require('./collectors/errors');
+const TestsCollector = require('./collectors/tests');
+const SessionsCollector = require('./collectors/sessions');
 
 class Reporter {
   /**
@@ -12,15 +14,15 @@ class Reporter {
    */
   constructor() {
     this._reporters = [];
-    this._collectors = new Map();
+    this._collectors = [];
     this._currentEvent = null;
     this._currentData = null;
     this._listen = true;
   }
 
   init() {
-    this._initReporters();
     this._initCollectors();
+    this._initReporters();
   }
 
   get(index) {
@@ -33,45 +35,33 @@ class Reporter {
       this._currentData = Object.assign({}, data);
       this._addTimestamp();
       this._addResult();
-      this._proxyToReporters();
       this._proxyToCollectors();
+      this._proxyToReporters();
     }
-  }
-
-  getResult() {
-    const result = {
-      errors: [],
-    };
-    this._collectors.forEach(envCollectors => {
-      result.errors = result.errors.concat(envCollectors.errors.errors);
-    });
-    return result;
   }
 
   stopListen() {
     this._listen = false;
   }
 
+  _initCollectors() {
+    this._collectors = [
+      new ErrorsCollector(),
+      new TestsCollector(),
+      new SessionsCollector(),
+    ];
+  }
+
   _initReporters() {
     this._reporters = config.reporters
       .filter(Boolean)
-      .map(customReporter => typeof customReporter === 'function' ? new customReporter() : customReporter)
-      .map(customReporter => {
-        if (typeof customReporter.handleEvent !== 'function') {
+      .map(reporter => typeof reporter === 'function' ? new reporter() : reporter)
+      .map(reporter => {
+        if (typeof reporter.handleEvent !== 'function') {
           throw new Error('Each reporter should have `handleEvent()` method');
         }
-        return customReporter;
+        return reporter;
       });
-  }
-
-  _initCollectors() {
-    this._collectors.clear();
-    config.envs.forEach(env => {
-      this._collectors.set(env, {
-        //time: new TimeCollector(),
-        errors: new ErrorsCollector(),
-      });
-    });
   }
 
   _addTimestamp() {
@@ -83,9 +73,9 @@ class Reporter {
   }
 
   _proxyToReporters() {
-    this._reporters.forEach(customReporter => {
+    this._reporters.forEach(reporter => {
       //try {
-        customReporter.handleEvent(this._currentEvent, this._currentData);
+      reporter.handleEvent(this._currentEvent, this._currentData);
       // } catch (e) {
       //   console.log('_proxyToReporters', e)
       // }
@@ -93,12 +83,9 @@ class Reporter {
   }
 
   _proxyToCollectors() {
-    if (this._currentData.env) {
-      const envCollectors = this._collectors.get(this._currentData.env);
-      Object.keys(envCollectors).forEach(key => {
-        envCollectors[key].handleEvent(this._currentEvent, this._currentData);
-      });
-    }
+    this._collectors.forEach(collector => {
+      collector.handleEvent(this._currentEvent, this._currentData);
+    });
   }
 }
 

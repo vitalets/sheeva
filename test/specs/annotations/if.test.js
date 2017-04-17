@@ -29,7 +29,7 @@ describe('annotation: if', () => {
         ]
       },
       env2: {
-        session0: [
+        session1: [
           'TEST_END test 0',
           'TEST_END test 2'
         ]
@@ -73,7 +73,7 @@ describe('annotation: if', () => {
         ]
       },
       env2: {
-        session0: [
+        session1: [
           'TEST_END test 0',
           'TEST_END test 3',
           'TEST_END test 4',

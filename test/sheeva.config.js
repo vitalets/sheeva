@@ -6,7 +6,7 @@ require('./globals');
 const SubSheeva = require('./sub-sheeva');
 
 module.exports = {
-  concurrency: 5,
+  concurrency: 10,
   files: './test/specs',
   newSessionPerFile: false,
   splitSuites: true,

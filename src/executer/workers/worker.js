@@ -79,7 +79,7 @@ module.exports = class Worker {
   }
 
   _createSession() {
-    this._session = new Session({env: this._queue.env, workerIndex: this._index});
+    this._session = new Session(this, this._queue.env);
     this._onSessionStart(this._session);
     return this._session.start();
   }

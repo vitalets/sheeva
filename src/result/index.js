@@ -24,7 +24,8 @@ class Result {
   }
 
   _initCommon() {
-    this._result.errors = new ExtraSet();
+    this._result.config = config;
+    this._result.errors = new ExtraMap();
   }
 
   _initReader() {
@@ -56,13 +57,20 @@ class Result {
   }
 
   _initExecuter() {
-    this._result.sessionsPerEnv = new ExtraMap();
+    this._result.sessions = new ExtraMap();
     this._result.executionPerEnv = new ExtraMap();
-    config.envs.forEach(env => {
+    this._result.workers = new ExtraSet();
+    config.envs.forEach((env, index) => {
       this._result.executionPerEnv.set(env, {
+        index,
         started: false,
         ended: false,
-        testsCount: 0,
+        tests: {
+          total: 0,
+          ended: 0,
+          success: 0,
+          failed: 0,
+        },
       });
     });
   }

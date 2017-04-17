@@ -26,17 +26,15 @@ module.exports = class Session {
   /**
    * Constructor
    *
-   * @param {Object} options
-   * @param {Number} options.workerIndex
-   * @param {Object} options.env
+   * @param {Worker} worker
+   * @param {Env} env
    */
-  constructor(options) {
-    this._workerIndex = options.workerIndex;
-    this._env = options.env;
+  constructor(worker, env) {
+    this._worker = worker;
+    this._env = env;
     this._status = STATUS.CREATED;
-    const sessions = result.sessionsPerEnv.getOrCreateArray(this._env);
-    this._index = sessions.length;
-    sessions.push(this);
+    this._index = result.sessions.size;
+    result.sessions.set(this, {});
   }
 
   get env() {
@@ -47,8 +45,8 @@ module.exports = class Session {
     return this._index;
   }
 
-  get workerIndex() {
-    return this._workerIndex;
+  get worker() {
+    return this._worker;
   }
 
   get isStarted() {

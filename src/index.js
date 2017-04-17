@@ -37,7 +37,8 @@ module.exports = class Sheeva {
       .then(() => this._start())
       .then(() => new Executer().run())
       .catch(e => this._storeRunnerError(e))
-      .finally(() => this._end());
+      .finally(() => this._end())
+      .then(() => this._getResult());
   }
 
   _init() {
@@ -58,10 +59,9 @@ module.exports = class Sheeva {
     return Promise.resolve()
       .then(() => config.endRunner(config))
       .catch(e => this._storeRunnerError(e))
-      .finally(() => this._emitEnd())
+      .finally(() => reporter.handleEvent(RUNNER_END))
       .finally(() => reporter.stopListen())
-      .catch(e => this._storeRunnerError(e))
-      .then(() => this._getResult());
+      .catch(e => this._storeRunnerError(e));
   }
 
   /**
@@ -83,21 +83,6 @@ module.exports = class Sheeva {
 
   _getResult() {
     return this._runnerError ? Promise.reject(this._runnerError) : resultInstance.result;
-  }
-
-  // _emitStart() {
-  //   const data = {
-  //     config,
-  //     files: this._reader.files,
-  //     only: this._transformer.meta.only,
-  //     skip: this._transformer.meta.skip,
-  //   };
-  //   reporter.handleEvent(RUNNER_START, data);
-  // }
-
-  _emitEnd() {
-    const data = {error: this._runnerError};
-    reporter.handleEvent(RUNNER_END, data);
   }
 };
 
