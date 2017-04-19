@@ -4,14 +4,16 @@
 
 require('./globals');
 const SubSheeva = require('./sub-sheeva');
+const TimelineReporter = require('sheeva-reporter-timeline');
+
+const isTravis = process.env.TRAVIS;
 
 module.exports = {
-  concurrency: 5,
   files: './test/specs',
+  concurrency: 5,
+  reporters: new TimelineReporter({append: isTravis}),
   newSessionPerFile: false,
   splitSuites: true,
-  reporters: require('sheeva-reporter-timeline'),
-  //reporters: require('sheeva-reporter-simple'),
   createEnvs: function () {
     return [
       {id: 'sync-env'},

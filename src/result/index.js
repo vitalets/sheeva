@@ -26,6 +26,11 @@ class Result {
   _initCommon() {
     this._result.config = config;
     this._result.errors = new ExtraMap();
+    this._result.runnerTimes = {
+      init: 0,
+      start: 0,
+      end: 0,
+    };
   }
 
   _initReader() {

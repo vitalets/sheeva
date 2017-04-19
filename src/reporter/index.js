@@ -7,6 +7,7 @@ const {result} = require('../result');
 const ErrorsCollector = require('./collectors/errors');
 const TestsCollector = require('./collectors/tests');
 const SessionsCollector = require('./collectors/sessions');
+const RunnerTimesCollector = require('./collectors/runner-times');
 
 class Reporter {
   /**
@@ -49,6 +50,7 @@ class Reporter {
       new ErrorsCollector(),
       new TestsCollector(),
       new SessionsCollector(),
+      new RunnerTimesCollector(),
     ];
   }
 
