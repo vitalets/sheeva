@@ -26,10 +26,18 @@ class Result {
   _initCommon() {
     this._result.config = config;
     this._result.errors = new ExtraMap();
-    this._result.runnerTimes = {
-      init: 0,
-      start: 0,
-      end: 0,
+    this._result.runner = {
+      times: {
+        init: 0,
+        start: 0,
+        end: 0,
+      },
+      tests: {
+        total: 0,
+        ended: 0,
+        success: 0,
+        failed: 0,
+      }
     };
   }
 

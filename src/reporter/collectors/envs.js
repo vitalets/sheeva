@@ -1,11 +1,11 @@
 /**
- * Collects tests counters (running, ended, failed, success)
+ * Collects tests counters for each Env
  */
 
 const {result} = require('../../result');
 const {RUNNER_START, TEST_END} = require('../../events');
 
-module.exports = class TestsCollector {
+module.exports = class EnvsCollector {
   constructor() {
     this._executionPerEnv = result.executionPerEnv;
     this._flatSuitesPerEnv = result.flatSuitesPerEnv;

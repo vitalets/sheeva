@@ -5,9 +5,9 @@
 const {config} = require('../config');
 const {result} = require('../result');
 const ErrorsCollector = require('./collectors/errors');
-const TestsCollector = require('./collectors/tests');
+const EnvsCollector = require('./collectors/envs');
 const SessionsCollector = require('./collectors/sessions');
-const RunnerTimesCollector = require('./collectors/runner-times');
+const RunnerCollector = require('./collectors/runner');
 
 class Reporter {
   /**
@@ -48,9 +48,9 @@ class Reporter {
   _initCollectors() {
     this._collectors = [
       new ErrorsCollector(),
-      new TestsCollector(),
+      new EnvsCollector(),
       new SessionsCollector(),
-      new RunnerTimesCollector(),
+      new RunnerCollector(),
     ];
   }
 
