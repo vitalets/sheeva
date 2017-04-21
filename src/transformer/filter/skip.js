@@ -1,59 +1,45 @@
 /**
- * Filters suites by skip
+ * Filters tests by `skip` annotation
  */
 
-const ExtraSet = require('../../utils/extra-set');
+const {result} = require('../../result');
 const Excluder = require('./excluder');
 
 module.exports = class Skip {
-  constructor(envData) {
-    this._envData = envData;
-    this._files = new ExtraSet();
-    this._suites = new ExtraSet();
-    this._tests = new ExtraSet();
-  }
-
-  get files() {
-    return this._files.toArray();
-  }
-
-  get suites() {
-    return this._suites.toArray();
-  }
-
-  get tests() {
-    return this._tests.toArray();
+  constructor() {
+    this._topSuitesPerEnv = result.topSuitesPerEnv;
+    this._annotationsPerEnv = result.annotationsPerEnv;
+    this._summary = result.skip;
   }
 
   filter() {
-    this._updateEnvData();
-    this._updateFiles();
-    this._updateSuitesAndTests();
+    this._filterTopSuites();
   }
 
-  _updateEnvData() {
-    this._envData.forEach(data => {
-      data.topSuites = new Excluder(data.topSuites).exclude(data.skip);
+  _filterTopSuites() {
+    this._topSuitesPerEnv.forEach((topSuites, env) => {
+      const skippedItems = this._annotationsPerEnv.get(env).skip;
+      new Excluder().exclude(skippedItems);
+      this._updateSummary(skippedItems);
     });
   }
 
-  _updateFiles() {
-    this._envData.forEach(data => {
-      data.skip.forEach(item => {
-        const fileName = item.parents[0].name;
-        this._files.add(fileName);
-      });
+  _updateSummary(skippedItems) {
+    skippedItems.forEach(skippedItem => {
+      this._addFile(skippedItem);
+      this._addFullname(skippedItem);
     });
   }
 
-  _updateSuitesAndTests() {
-    this._envData.forEach(data => {
-      data.skip.forEach(item => {
-        const fullName = getFullName(item);
-        const set = item.children ? this._suites : this._tests;
-        set.add(fullName);
-      });
-    });
+  _addFile(skippedItem) {
+     const fileName = skippedItem.parents[0].name;
+     this._summary.files.add(fileName);
+  }
+
+  _addFullname(skippedItem) {
+     const fullName = getFullName(skippedItem);
+     const target = skippedItem.children ? this._summary.suites : this._summary.tests;
+     target.add(fullName);
   }
 };
 

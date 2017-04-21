@@ -1,5 +1,5 @@
 /**
- * Splitter for running queues
+ * Tries to split running queues for parallelization
  */
 
 const State = require('./state');
@@ -14,7 +14,7 @@ module.exports = class Splitter {
   }
 
   /**
-   * Tries split the longest running queue in specified envs
+   * Tries to split the longest running queue in specified envs
    *
    * @param {Array<Env>} envs
    * @param {Object} options

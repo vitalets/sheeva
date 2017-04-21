@@ -1,9 +1,9 @@
 /**
- * Workers manager
+ * Workers manager: keeps workers count under concurrency limit
  */
 
-const ExtraSet = require('../../utils/extra-set');
-const {config} = require('../../configurator');
+const {config} = require('../../config');
+const {result} = require('../../result');
 const reporter = require('../../reporter');
 const {WORKER_ADD, WORKER_DELETE} = require('../../events');
 const Worker = require('./worker');
@@ -11,12 +11,9 @@ const Worker = require('./worker');
 module.exports = class Workers {
   /**
    * Constructor
-   *
-   * @param {Sessions} sessions
    */
-  constructor(sessions) {
-    this._sessions = sessions;
-    this._workers = new ExtraSet();
+  constructor() {
+    this._workers = result.workers;
     this._terminating = false;
     this._onEmpty = () => {};
     this._onFreeWorker = () => {};
@@ -69,13 +66,27 @@ module.exports = class Workers {
     return Promise.all(tasks);
   }
 
+  getWorkersForEnv(env) {
+    return this._workers.toArray()
+      .filter(worker => worker.isHoldingEnv(env));
+  }
+
+  hasWorkersForEnv(env) {
+    for (let worker of this._workers) {
+      if (worker.isHoldingEnv(env)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   _isConcurrencyReached() {
     return config.concurrency && this._workers.size === config.concurrency;
   }
 
   _createWorker() {
     const workerIndex = this._workers.size;
-    const worker = new Worker(workerIndex, this._sessions);
+    const worker = new Worker(workerIndex);
     worker.onSessionStart = this._onSessionStart;
     worker.onSessionEnd = this._onSessionEnd;
     this._workers.add(worker);

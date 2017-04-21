@@ -10,38 +10,22 @@
 
 const path = require('path');
 const glob = require('glob');
-const {config} = require('../configurator');
+const {config} = require('../config');
+const {result} = require('../result');
 const PropsInjector = require('../utils/props-injector');
-const Annotations = require('./annotations');
-const Suites = require('./suites');
+const AnnotationsReader = require('./annotations');
+const TestsReader = require('./tests');
 
 module.exports = class Reader {
   /**
    * Constructor
    */
   constructor() {
-    this._files = [];
     this._context = global;
-    this._annotations = new Annotations();
-    this._suites = new Suites(this._annotations);
+    this._files = result.processedFiles;
+    this._annotationsReader = new AnnotationsReader();
+    this._testsReader = new TestsReader(this._annotationsReader);
     this._propsInjector = new PropsInjector();
-    this._result = new Map();
-  }
-
-  /**
-   * Returns processed files
-   *
-   * @returns {Array}
-   */
-  get files() {
-    return this._files;
-  }
-
-  /**
-   * @returns {Map<Env,EnvData>}
-   */
-  get result() {
-    return this._result;
   }
 
   /**
@@ -53,43 +37,37 @@ module.exports = class Reader {
     this._injectApi();
     this._readFiles();
     this._cleanupApi();
-    this._mergeResult();
   }
 
   _expandPatterns() {
-    this._files = config.files.reduce((res, pattern) => {
+    config.files.forEach(pattern => {
       const files = expandPattern(pattern);
-      return res.concat(files);
-    }, []);
+      files.forEach(file => this._files.add(file));
+    });
   }
 
   _createTopSuites() {
     this._files.forEach(file => {
       const fn = () => readFile(file);
-      config.envs.forEach(env => this._suites.addTopSuite(env, file, fn));
+      config.envs.forEach(env => this._testsReader.addTopSuite(env, file, fn));
     });
   }
 
   _injectApi() {
-    const methods = Object.assign({}, this._annotations.api, this._suites.api);
+    const methods = Object.assign(
+      {},
+      this._annotationsReader.api,
+      this._testsReader.api
+    );
     this._propsInjector.inject(this._context, methods);
   }
 
   _readFiles() {
-    this._suites.fill();
+    this._testsReader.fill();
   }
 
   _cleanupApi() {
     this._propsInjector.cleanup();
-  }
-
-  _mergeResult() {
-    config.envs.forEach(env => {
-      const topSuites = this._suites.getForEnv(env);
-      const annotationData = this._annotations.getForEnv(env);
-      const envData = Object.assign({topSuites}, annotationData);
-      this._result.set(env, envData);
-    });
   }
 };
 

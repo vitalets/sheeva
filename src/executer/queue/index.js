@@ -5,13 +5,11 @@
  * 1. error in test - just report and go to next test
  * 2. error in hook - move index to suite end and continue from the next suite
  * 3. error in outer code - reject queue execution
- *
- * @type {Queue}
  */
 
 const utils = require('../../utils');
 const {assertArray, assertLength} = require('../../utils/assert');
-const {config} = require('../../configurator');
+const {config} = require('../../config');
 const {TestCaller, SuiteHooksCaller, errors} = require('../caller');
 const Cursor = require('./cursor');
 

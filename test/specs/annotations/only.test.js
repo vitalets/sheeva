@@ -129,7 +129,7 @@ describe('annotation: only', () => {
     });
   });
 
-  it('should report files with $only() in RUNNER_START', run => {
+  it('should have only items summary in RUNNER_START', run => {
     const result = run([`
       $only();
       describe('suite 1', () => {
@@ -144,7 +144,7 @@ describe('annotation: only', () => {
     return expectResolve(result)
       .then(res => {
         expect(res, 'to have length', 1);
-        expect(res[0].data.only.files, 'to have length', 1);
+        expect(res[0].data.result.only.files.size, 'to equal', 1);
       });
   });
 });

@@ -2,18 +2,17 @@
  * Picks next queue for execution.
  */
 
-const {config} = require('../../configurator');
+const {config} = require('../../config');
 const Queues = require('./queues');
-const State = require('./state');
 const Splitter = require('./splitter');
 
 module.exports = class Picker {
   /**
    * Constructor
    */
-  constructor(workers, envFlatSuites) {
-    this._state = new State(workers, envFlatSuites);
-    this._queues = new Queues(envFlatSuites);
+  constructor(workers) {
+    this._workers = workers;
+    this._queues = new Queues();
     this._splitter = new Splitter(workers);
     this._session = null;
     this._env = null;
@@ -50,7 +49,7 @@ module.exports = class Picker {
   }
 
   _pickForAvailableEnvs() {
-    const envs = this._state.getAvailableEnvs({exclude: this._env});
+    const envs = this._getAvailableEnvs();
     return this._pickForEnvs(envs);
   }
 
@@ -67,6 +66,16 @@ module.exports = class Picker {
       const options = this._getSplitterOptions();
       return this._splitter.trySplit(envs, options);
     }
+  }
+
+  _getAvailableEnvs() {
+    return config.envs
+      .filter(env => env !== this._env)
+      .filter(env => !this._isEnvConcurrencyReached(env));
+  }
+
+  _isEnvConcurrencyReached(env) {
+    return env.concurrency && env.concurrency === this._workers.getWorkersForEnv(env).length;
   }
 
   _getSplitterOptions() {

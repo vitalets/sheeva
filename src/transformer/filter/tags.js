@@ -2,37 +2,49 @@
  * Filters by tags
  */
 
+const {config} = require('../../config');
+const {result} = require('../../result');
+const ExtraSet = require('../../utils/extra-set');
 const Includer = require('./includer');
 
 module.exports = class Tags {
   /**
    * Constructor
-   *
-   * @param {EnvData} envData
-   * @param {Array} tags
    */
-  constructor(envData, tags) {
-    this._envData = envData;
-    this._tags = tags;
+  constructor() {
+    this._topSuitesPerEnv = result.topSuitesPerEnv;
+    this._annotationsPerEnv = result.annotationsPerEnv;
+    this._summary = result.tags;
+    this._configTags = config.tags;
   }
 
   filter() {
-    if (this._tags && this._tags.length) {
-      this._includeTagged();
+    if (this._configTags && this._configTags.length) {
+      this._filterTopSuites();
     }
   }
 
-  _includeTagged() {
-    this._envData.forEach(data => {
-      const taggedItems = this._concatTagItems(data.tags);
-      data.topSuites = new Includer(data.topSuites).include(taggedItems);
+  _filterTopSuites() {
+    this._topSuitesPerEnv.forEach((topSuites, env) => {
+      const tags = this._annotationsPerEnv.get(env).tags;
+      const taggedItems = this._concatTagItems(tags);
+      new Includer(topSuites).include(taggedItems);
     });
   }
 
-  _concatTagItems(tagsMap) {
-    return this._tags.reduce((res, tag) => {
-      const items = tagsMap.get(tag) || [];
-      return res.concat(items);
-    }, []);
+  _concatTagItems(tags) {
+    const taggedItems = new ExtraSet();
+    this._configTags.forEach(configTag => {
+      const items = tags.get(configTag);
+      if (items && items.size) {
+        items.forEach(item => taggedItems.add(item));
+        this._updateSummary(configTag);
+      }
+    });
+    return taggedItems;
+  }
+
+  _updateSummary(configTag) {
+    this._summary.intersected.add(configTag);
   }
 };

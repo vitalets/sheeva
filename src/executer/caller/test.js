@@ -3,7 +3,7 @@
  * Used in Queue.
  */
 
-const {config} = require('../../configurator');
+const {config} = require('../../config');
 const reporter = require('../../reporter');
 const {TEST_START, TEST_RETRY, TEST_END} = require('../../events');
 const {TestHooksCaller} = require('./hooks');

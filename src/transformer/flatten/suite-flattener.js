@@ -1,22 +1,24 @@
 /**
- * Converts suite to one or several flatSuites.
- * Recursively flattens suite children.
+ * Converts suite to one or several flatSuites by flattening children.
+ * Also sort suites.
  *
  * 1. If suite has before/after hooks, flatten() returns array with single flatSuite element
  * 2. If suite does not have before/after hooks, flatten() returns array with several flatSuites corresponding
- *    to children suites. When it occurs for file suite it is basically splitting because each sub-suite can be sorted
- *    individually to beginning or end of env suites (depending on it's before/after count).
+ *    to children suites. When it occurs for file suite it is basically `suite splitting` because each sub-suite
+ *    can be sorted individually to beginning or end of env suites (depending on it's before/after count).
  *
  * @typedef {Object} FlatSuite
  * @property {Array<Test>} tests
  * @property {Number} suiteHooksCount max number of suite-level hooks (before / after)
  */
 
-const {config} = require('../../configurator');
+const {config} = require('../../config');
 
 module.exports = class SuiteFlattener {
   /**
    * Constructor
+   *
+   * @param {Suite} suite
    */
   constructor(suite) {
     this._suite = suite;

@@ -1,19 +1,18 @@
 /**
- * Worker that can execute sessions serially.
+ * Worker: executes sessions serially.
  */
 
-const {config} = require('../../configurator');
+const {config} = require('../../config');
+const Session = require('./session');
 
 module.exports = class Worker {
   /**
    * Constructor
    *
    * @param {Number} index
-   * @param {Sessions} sessions
    */
-  constructor(index, sessions) {
+  constructor(index) {
     this._index = index;
-    this._sessions = sessions;
     this._session = null;
     this._queue = null;
     this._onSessionStart = () => {};
@@ -51,7 +50,7 @@ module.exports = class Worker {
   deleteSession() {
     if (this._session) {
       const session = this._session;
-      return this._sessions.endSession(this._session)
+      return this._session.end()
         .finally(() => this._session = null)
         .then(() => this._onSessionEnd(session));
     } else {
@@ -80,7 +79,7 @@ module.exports = class Worker {
   }
 
   _createSession() {
-    this._session = this._sessions.createSession(this._index, this._queue.env);
+    this._session = new Session(this, this._queue.env);
     this._onSessionStart(this._session);
     return this._session.start();
   }

@@ -1,5 +1,5 @@
 /**
- * Checks config, extends with defaults and creates envs.
+ * Singleton config, validates and extends passed config with defaults.
  */
 
 const utils = require('../utils');

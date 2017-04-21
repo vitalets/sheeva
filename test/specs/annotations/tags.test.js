@@ -1,4 +1,4 @@
-describe('annotation: tags', () => {
+describe('annotations: tags', () => {
 
   it('should run tagged test', run => {
     const config = {

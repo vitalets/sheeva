@@ -29,7 +29,7 @@ describe('annotation: ignore', () => {
         ]
       },
       env2: {
-        session0: [
+        session1: [
           'TEST_END test 0',
           'TEST_END test 1'
         ]
@@ -73,7 +73,7 @@ describe('annotation: ignore', () => {
         ]
       },
       env2: {
-        session0: [
+        session1: [
           'TEST_END test 0',
           'TEST_END test 1',
           'TEST_END test 2',

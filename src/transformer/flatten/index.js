@@ -7,28 +7,13 @@
  *
  */
 
+const {result} = require('../../result');
 const SuiteFlattener = require('./suite-flattener');
 
-module.exports = class Flatten {
-  constructor() {
-    this._envFlatSuites = new Map();
-  }
-
-  get result() {
-    return this._envFlatSuites;
-  }
-
-  run(envData) {
-    envData.forEach((data, env) => {
-      const flatSuites = new SuiteFlattener({children: data.topSuites}).flatten();
-      this._envFlatSuites.set(env, flatSuites);
-      this._calcTestsCount(env, flatSuites);
-    });
-  }
-
-  _calcTestsCount(env, flatSuites) {
-    env.testsCount = flatSuites.reduce((res, flatSuite) => {
-      return res + flatSuite.tests.length;
-    }, 0);
-  }
+module.exports = function () {
+  const {topSuitesPerEnv, flatSuitesPerEnv} = result;
+  topSuitesPerEnv.forEach((topSuites, env) => {
+    const flatSuites = new SuiteFlattener({children: topSuites.toArray()}).flatten();
+    flatSuitesPerEnv.set(env, flatSuites);
+  });
 };

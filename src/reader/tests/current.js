@@ -7,8 +7,8 @@ const ExtraMap = require('../../utils/extra-map');
 const factory = require('./factory');
 
 module.exports = class Current {
-  constructor(annotations) {
-    this._annotations = annotations;
+  constructor(annotationsReader) {
+    this._annotationsReader = annotationsReader;
     this._suites = null;
     this._childFnSuites = null;
   }
@@ -31,7 +31,7 @@ module.exports = class Current {
     this._forEachSuites((parentSuite, annotation) => {
       const options = Object.assign({}, annotation, {name});
       const childSuite = factory.createSuite(options, parentSuite);
-      this._annotations.storeInfo(childSuite);
+      this._annotationsReader.store(childSuite);
       this._childFnSuites.getOrCreateArray(fn).push(childSuite);
     });
     this._resetAnnotation();
@@ -41,7 +41,7 @@ module.exports = class Current {
     this._forEachSuites((parentSuite, annotation) => {
       const options = Object.assign({}, annotation, {name, fn});
       const test = factory.createTest(options, parentSuite);
-      this._annotations.storeInfo(test);
+      this._annotationsReader.store(test);
     });
     this._resetAnnotation();
   }
@@ -59,13 +59,13 @@ module.exports = class Current {
   }
 
   _callForSuite(suite, iterator) {
-    const annotation = this._annotations.current.get(suite.env);
+    const annotation = this._annotationsReader.current.get(suite.env);
     if (!annotation.ignored) {
       iterator(suite, annotation);
     }
   }
 
   _resetAnnotation() {
-    this._annotations.current.reset();
+    this._annotationsReader.current.reset();
   }
 };
