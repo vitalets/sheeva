@@ -41,14 +41,14 @@
   },
   "devDependencies": {
     "escape-string-regexp": "^1.0.5",
-    "eslint": "^3.16.1",
+    "eslint": "^3.19.0",
     "eslint-plugin-spellcheck": "0.0.8",
-    "husky": "^0.13.1",
-    "lint-staged": "^3.3.1",
+    "husky": "^0.13.3",
+    "lint-staged": "^3.4.1",
     "madge": "^1.6.0",
     "sheeva-reporter-console": "github:vitalets/sheeva-reporter-console",
     "treeify": "^1.0.1",
-    "unexpected": "^10.26.1"
+    "unexpected": "^10.27.0"
   },
   "license": "MIT"
 }
