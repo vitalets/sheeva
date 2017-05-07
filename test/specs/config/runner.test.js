@@ -113,7 +113,7 @@ describe('config runner', () => {
       });
       `], {config});
 
-    return expectReject(result, { message: 'err'})
+    return expectReject(result, 'err')
       .then(() => {
         expect(a, 'to equal', 0);
         expect(b, 'to equal', 1);
@@ -132,7 +132,7 @@ describe('config runner', () => {
       });
       `], {config});
 
-    return expectReject(result, { message: 'err'})
+    return expectReject(result, 'err')
       .then(() => expect(b, 'to equal', 1));
   });
 

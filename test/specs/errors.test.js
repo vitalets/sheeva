@@ -12,9 +12,7 @@ describe('errors', () => {
       });  
     `);
 
-    return expectReject(result, {
-      message: 'err'
-    });
+    return expectReject(result, 'err');
   });
 
   it('should run all hooks in case of test error', run => {

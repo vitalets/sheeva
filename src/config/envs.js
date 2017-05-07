@@ -4,9 +4,10 @@
  * @typedef {Object} Env
  * @property {String} id
  * @property {String} label
- * @property {Array} sessions
  * @property {Number} [concurrency]
  */
+
+const assert = require('assert');
 
 module.exports = class Envs {
   constructor(config) {
@@ -15,20 +16,14 @@ module.exports = class Envs {
   }
 
   create() {
-    this._createFromConfig();
+    this._envs = this._config.createEnvs();
+    this._assertArray();
     this._filter();
-    this._assertCount();
+    this._assertLength();
     this._assertIds();
     this._setLabels();
     this._setSessions();
     return this._envs;
-  }
-
-  _createFromConfig() {
-    this._envs = this._config.createEnvs();
-    if (!Array.isArray(this._envs)) {
-      throw new Error('createEnvs() should return array');
-    }
   }
 
   _filter() {
@@ -37,18 +32,18 @@ module.exports = class Envs {
     }
   }
 
-  _assertCount() {
-    if (!this._envs.length) {
-      throw new Error('You should provide at least one env');
-    }
+  _assertArray() {
+    assert(Array.isArray(this._envs), 'createEnvs() should return array');
+  }
+
+  _assertLength() {
+    assert(this._envs.length, 'You should provide at least one env');
   }
 
   _assertIds() {
     const envIds = new Set();
     this._envs.forEach(env => {
-      if (!env || !env.id || envIds.has(env.id)) {
-        throw new Error('Each env should be object with unique id property');
-      }
+      assert(env && env.id && !envIds.has(env.id), 'Each env should be an object with unique id property');
       envIds.add(env.id);
     });
   }

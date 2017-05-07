@@ -90,9 +90,7 @@ describe('annotation: ignore', () => {
       });
     `);
 
-    return expectReject(result, {
-      message: '$ignore() should accept function as parameter'
-    });
+    return expectReject(result, '$ignore() should accept function as parameter');
   });
 
 });

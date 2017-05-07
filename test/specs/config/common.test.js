@@ -8,9 +8,7 @@ describe('config common', () => {
       it('test 0', noop);
     `, {config});
 
-    return expectReject(result, {
-      message: 'Unknown config option: abc'
-    });
+    return expectReject(result, 'Unknown config option: abc');
   });
 
   it('should fail for incorrect option type', run => {
@@ -21,9 +19,7 @@ describe('config common', () => {
       it('test 0', noop);
     `, {config});
 
-    return expectReject(result, {
-      message: 'Incorrect config option type for: createEnvs (expected function, got number)'
-    });
+    return expectReject(result, 'Incorrect config option type for: createEnvs (expected function, got number)');
   });
 
 });

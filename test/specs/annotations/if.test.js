@@ -90,9 +90,7 @@ describe('annotation: if', () => {
       });
     `);
 
-    return expectReject(result, {
-      message: '$if() should accept function as parameter'
-    });
+    return expectReject(result, '$if() should accept function as parameter');
   });
 
 });

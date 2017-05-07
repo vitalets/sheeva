@@ -223,9 +223,7 @@ describe('config startSession / endSession hooks', () => {
       });
       `, {config, include: ['SESSION']});
 
-      return expectReject(result, {
-        message: 'err'
-      })
+      return expectReject(result, 'err')
         .then(() => {
           expect(a, 'to equal', 0);
           expect(b, 'to equal', 0);

@@ -69,7 +69,7 @@ describe('config envs', () => {
   it('should fail in case of no envs', run => {
     const config = {
       createEnvs: function () {
-        return [ ];
+        return [];
       },
     };
     const report = run(`
@@ -78,9 +78,7 @@ describe('config envs', () => {
         });
       `, {config});
 
-    return expectReject(report, {
-      message: 'You should provide at least one env'
-    });
+    return expectReject(report, 'You should provide at least one env');
   });
 
   it('should filter envs by env option', run => {
