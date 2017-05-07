@@ -28,9 +28,11 @@ module.exports = class SubSheeva {
    * @param {Array} [options.exclude]
    * @param {Boolean} [options.flat]
    * @param {Boolean} [options.raw]
+   * @param {Boolean} [options.result]
    * @returns {Promise}
    */
   constructor(code, options) {
+    this._options = options;
     this._tempFiles = new TempFiles(code, options.session);
     this._reporter = new Reporter(options);
     this._config = this._createConfig(options.config);
@@ -39,9 +41,14 @@ module.exports = class SubSheeva {
 
   run() {
     this._sheeva = this._createSheeva();
+    let output = null;
     return this._sheeva.run()
-      .then(() => this._reporter.getResult())
-      .catch(e => this._attachReportToError(e))
+      .then(result => output = this._options.result ? result : this._reporter.getReport())
+      .catch(e => {
+        return this._options.result
+          ? attachToError(e,  'result', output)
+          : attachToError(e,  'report', output || this._reporter.getReport());
+      })
       .finally(() => this._tempFiles.cleanup());
   }
 
@@ -61,11 +68,6 @@ module.exports = class SubSheeva {
     return new Sheeva(this._config);
   }
 
-  _attachReportToError(error) {
-    Object.defineProperty(error, 'report', { value: this._reporter.getResult() });
-    return Promise.reject(error);
-  }
-
   _clearRequireCache() {
     Object.keys(require.cache).forEach(key => {
       const relpath = path.relative(__dirname, key);
@@ -76,4 +78,7 @@ module.exports = class SubSheeva {
   }
 };
 
-
+function attachToError(error, key, value) {
+  Object.defineProperty(error, key, {value});
+  return Promise.reject(error);
+}

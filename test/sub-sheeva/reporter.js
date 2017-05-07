@@ -103,18 +103,7 @@ module.exports = class LogReporter {
     }
   }
 
-  _add({session}, str) {
-    this._flatLog.push(str);
-    if (session) {
-      const env = session.env;
-      this._treeLog[env.id] = this._treeLog[env.id] || {};
-      const sessionName = `session${session.index}`;
-      this._treeLog[env.id][sessionName] = this._treeLog[env.id][sessionName] || [];
-      this._treeLog[env.id][sessionName].push(str);
-    }
-  }
-
-  getResult() {
+  getReport() {
     const loggedEnvs = Object.keys(this._treeLog);
     const flat = this._options.flat || loggedEnvs.length === 0 || this._isSingleEnvAndSession();
 
@@ -124,6 +113,17 @@ module.exports = class LogReporter {
       return this._getFlatLog();
     } else {
       return this._getTreeLog();
+    }
+  }
+
+  _add({session}, str) {
+    this._flatLog.push(str);
+    if (session) {
+      const env = session.env;
+      this._treeLog[env.id] = this._treeLog[env.id] || {};
+      const sessionName = `session${session.index}`;
+      this._treeLog[env.id][sessionName] = this._treeLog[env.id][sessionName] || [];
+      this._treeLog[env.id][sessionName].push(str);
     }
   }
 
