@@ -7,8 +7,8 @@
  * 3. error in outer code - reject queue execution
  */
 
+const assert = require('assert');
 const utils = require('../../utils');
-const {assertArray, assertLength} = require('../../utils/assert');
 const {config} = require('../../config');
 const {TestCaller, SuiteHooksCaller, errors} = require('../caller');
 const Cursor = require('./cursor');
@@ -178,6 +178,6 @@ module.exports = class Queue {
 };
 
 function assertTests(tests) {
-  assertArray(tests, 'Queue should be created from tests array');
-  assertLength(tests, 'Queue should be created on non-empty tests array');
+  assert(Array.isArray(tests), 'Queue should be created from tests array');
+  assert(tests.length, 'Queue should be created on non-empty tests array');
 }
