@@ -1,11 +1,5 @@
 /**
- * Read test files into suites structure
- *
- * @typedef {Object} EnvData
- * @property {Array<Suite>} topSuites
- * @property {Array<Suite|Test>} only
- * @property {Array<Suite|Test>} skip
- * @property {Map<String, Array<Suite|Test>>} tags
+ * Read test files into suites tree structure
  */
 
 const path = require('path');
