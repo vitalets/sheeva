@@ -8,8 +8,6 @@
  * - Picker returns whole queues or tries split when reasonable.
  * - Queue moves internal cursor test by test and executes them via caller.
  * - Caller calls test function with needed hooks.
- *
- * @type {Executer}
  */
 
 const {result} = require('../result');
@@ -83,14 +81,14 @@ const Executer = module.exports = class Executer {
   }
 
   _tryEmitEnvEnd(env) {
-    if (this._isFinishedEnv(env)) {
+    if (!this._hasPendingJobs(env) && !this._executionPerEnv.get(env).ended) {
       this._executionPerEnv.get(env).ended = true;
       reporter.handleEvent(ENV_END, {env});
     }
   }
 
-  _isFinishedEnv(env) {
-    return !this._picker.getRemainingQueues(env).length && !this._workers.hasWorkersForEnv(env);
+  _hasPendingJobs(env) {
+    return this._picker.getRemainingQueues(env).length || this._workers.hasWorkersForEnv(env);
   }
 };
 

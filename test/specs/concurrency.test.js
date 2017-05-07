@@ -46,7 +46,30 @@ describe('concurrency', () => {
         session2: [ 'TEST_END test 3', 'TEST_END test 4' ]
       }
     });
+  });
 
+  it('should correctly send env events', run => {
+    const config = {concurrency: 2};
+    const include = ['ENV', 'TEST_END'];
+    const report = run([`
+      describe('suite 1', () => {
+        it('test 1', noop);
+      });
+      `,`
+      describe('suite 2', () => {
+        it('test 2', noop);
+      });
+    `], {config, include, raw: true});
+
+    return expectResolve(report).then(res => {
+      res = res.map(item => item.event);
+      expect(res, 'to equal', [
+        'ENV_START',
+        'TEST_END',
+        'TEST_END',
+        'ENV_END'
+      ]);
+    });
   });
 
 });
