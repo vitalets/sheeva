@@ -17,6 +17,7 @@
   "rules": {
     "complexity": ["error", {"max" : 4}],
     "max-depth": ["error", {"max" : 2}],
+    "max-nested-callbacks": ["error", {"max" : 2}],
     "max-params": ["error", {"max" : 3}],
     "max-statements": ["error", {"max" : 8}, {"ignoreTopLevelFunctions": false}],
     "max-len": ["error", {"code" : 120}],
