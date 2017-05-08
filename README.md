@@ -1,5 +1,7 @@
+<p align="center">
+  <img src="https://cloud.githubusercontent.com/assets/1473072/25821119/9278f514-343c-11e7-97ac-839e3ec64a7a.png"/>
+</p>
 <h1 align="center">Sheeva</h1>
-
 <p align="center">
   <a title='build status' href="https://npmjs.org/package/sheeva"><img src='https://travis-ci.org/vitalets/sheeva.svg?branch=master'/></a>
   <a title='npm version' href="https://npmjs.org/package/sheeva"><img src='http://img.shields.io/npm/v/sheeva.svg'/></a>
