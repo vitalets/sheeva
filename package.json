@@ -50,5 +50,14 @@
     "treeify": "^1.0.1",
     "unexpected": "^10.27.0"
   },
+  "keywords": [
+    "webdriver",
+    "selenium",
+    "appium",
+    "automation",
+    "test",
+    "test-runner",
+    "concurrency"
+  ],
   "license": "MIT"
 }
