@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://cloud.githubusercontent.com/assets/1473072/25821119/9278f514-343c-11e7-97ac-839e3ec64a7a.png"/>
+  <img src="https://cloud.githubusercontent.com/assets/1473072/25825444/b3095b02-344b-11e7-93b8-aa3244c33923.png"/>
 </p>
 <h1 align="center">Sheeva</h1>
 <p align="center">
