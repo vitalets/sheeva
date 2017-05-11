@@ -14,14 +14,31 @@
 
 ***
 
-**Main features:**  
-* Parallelization per browser or per mobile device, per suite and even per particular test
-* Flexible annotations for conditional test run, re-tries, nested groups, timeouts and tags
-* [Mocha](https://mochajs.org)-like syntax compatible with 
-[Selenium-webdriver](https://www.npmjs.com/package/selenium-webdriver), 
-[Webdriverio](http://webdriver.io) and other testing frameworks
+## Intro
+Sheeva is a JavaScript test runner. 
+It's main goal to ensure minimal test execution time on parallel targets with limited concurrency.
 
-Learn more in [Why special runner?](#) section.
+## Features  
+- **Parallelization** 
+  - per browser 
+  - per mobile device
+  - per suite 
+  - per test
+- **Annotations** 
+  - ignore/run test for particular target  
+  - automatically re-try with increasing timeout 
+  - run subset of tests by tag
+  - attach custom data to test
+- **Syntax**
+  - BDD compatible with [Mocha](https://mochajs.org), [Jasmine]() and [Jest]()
+  - Nested groups allowed
+- **Integrations**
+  - [Selenium-webdriver](https://www.npmjs.com/package/selenium-webdriver)
+  - [Webdriverio](http://webdriver.io)
+  - [Sauce Labs](https://saucelabs.com)
+- **Can run in**
+  - Node.JS
+  - Browser
 
 ## Contents
  * [Demo](#demo)
