@@ -10,3 +10,4 @@ npm-debug.log
 /node_modules_fav
 sheeva.timings.json
 /src-stable
+/src-instrumented

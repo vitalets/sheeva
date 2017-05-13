@@ -29,7 +29,8 @@
     "devtool": "devtool src-stable/cli -- --config=test/sheeva.config.js --env=sync-env --reporters=./test/debug-reporter.js --timeout=0",
     "precommit": "npm run lint-staged && npm run circular && npm run tt -- --no-only",
     "prepush": "npm run code && npm run tt -- --no-only && npm run copy",
-    "copy": "cp -R src/ src-stable/"
+    "copy": "cp -R src/ src-stable/",
+    "instrument": "babel src -d src-instrumented --source-maps"
   },
   "lint-staged": {
     "*.js": "eslint"
@@ -40,6 +41,8 @@
     "promise.prototype.finally.err": "^2.0.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-runtyper": "^0.2.2",
     "escape-string-regexp": "^1.0.5",
     "eslint": "^3.19.0",
     "eslint-plugin-spellcheck": "0.0.8",
@@ -47,6 +50,7 @@
     "lint-staged": "^3.4.1",
     "madge": "^1.6.0",
     "sheeva-reporter-console": "github:vitalets/sheeva-reporter-console",
+    "source-map-support": "^0.4.15",
     "treeify": "^1.0.1",
     "unexpected": "^10.27.0"
   },

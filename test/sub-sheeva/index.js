@@ -7,6 +7,7 @@ require('promise.prototype.finally').shim();
 const TempFiles = require('./tempfiles');
 const Reporter = require('./reporter');
 
+const SHEEVA_PATH = `../../${process.env.SHEEVA_DIR || 'src'}/`;
 const BASE_CONFIG = {
   concurrency: 1,
   splitSuites: false,
@@ -14,7 +15,6 @@ const BASE_CONFIG = {
     return [{id: 'env1'}];
   },
 };
-const SHEEVA_PATH = '../../src/';
 
 module.exports = class SubSheeva {
   /**
