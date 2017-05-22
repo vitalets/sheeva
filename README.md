@@ -3,7 +3,7 @@
 </p>
 <h1 align="center">Sheeva</h1>
 <p align="center">
-  <a title='build status' href="https://npmjs.org/package/sheeva"><img src='https://travis-ci.org/vitalets/sheeva.svg?branch=master'/></a>
+  <a title='build status' href="https://travis-ci.org/vitalets/sheeva"><img src='https://travis-ci.org/vitalets/sheeva.svg?branch=master'/></a>
   <a title='npm version' href="https://npmjs.org/package/sheeva"><img src='http://img.shields.io/npm/v/sheeva.svg'/></a>
   <a title='License' href="https://opensource.org/licenses/MIT"><img src='https://img.shields.io/badge/license-MIT-blue.svg'/></a>
 </p>
