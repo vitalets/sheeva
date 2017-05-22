@@ -3,9 +3,9 @@
  * Rejects result if timeout exceeded.
  */
 
-const {config} = require('../../config');
+const {config} = require('../../../config');
 
-const FnCaller = module.exports = class FnCaller {
+const Fn = module.exports = class Fn {
   /**
    * Constructor
    *
@@ -27,7 +27,7 @@ const FnCaller = module.exports = class FnCaller {
   call(params) {
     try {
       this._result = config.callTestHookFn(params);
-      return this._isPromise() && this._hasTimeout()
+      return this._isAsync() && this._hasTimeout()
         ? this._raceWithTimeout()
         : Promise.resolve(this._result);
     } catch (e) {
@@ -35,7 +35,7 @@ const FnCaller = module.exports = class FnCaller {
     }
   }
 
-  _isPromise() {
+  _isAsync() {
     return this._result && typeof this._result.then === 'function';
   }
 
@@ -63,9 +63,9 @@ const FnCaller = module.exports = class FnCaller {
 
   _rejectByTimeout(reject) {
     this._timer = null;
-    const error = new FnCaller.TimeoutError(`Timeout ${this._timeout} ms exceeded`);
+    const error = new Fn.TimeoutError(`Timeout ${this._timeout} ms exceeded`);
     reject(error);
   }
 };
 
-FnCaller.TimeoutError = class TimeoutError extends Error {};
+Fn.TimeoutError = class TimeoutError extends Error {};

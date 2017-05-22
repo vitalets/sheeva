@@ -16,9 +16,10 @@ const utils = require('../utils');
 const {ENV_START, ENV_END} = require('../events');
 const Picker = require('./picker');
 const Workers = require('./workers');
-const {errors} = require('./caller');
+const HookFn = require('./caller/hooks/hook-fn');
+const TestCaller = require('./caller/test');
 
-const Executer = module.exports = class Executer {
+module.exports = class Executer {
   /**
    * Constructor
    */
@@ -67,9 +68,17 @@ const Executer = module.exports = class Executer {
     this._promised.resolve();
   }
 
+  /**
+   * Pass through only system errors - in that case runner rejects
+   */
   _terminate(error) {
     this._workers.terminate()
-      .finally(() => this._promised.reject(error));
+      // todo: catch and emit extra error
+      .finally(() => {
+          return HookFn.isHookError(error) || TestCaller.isTestError(error)
+            ? this._promised.resolve()
+            : this._promised.reject(error);
+      });
   }
 
   _tryEmitEnvStart(env) {
@@ -91,5 +100,3 @@ const Executer = module.exports = class Executer {
     return this._picker.getRemainingQueues(env).length || this._workers.hasWorkersForEnv(env);
   }
 };
-
-Executer.errors = errors;

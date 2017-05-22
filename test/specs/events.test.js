@@ -45,7 +45,7 @@ describe('events', () => {
         report: [
           'RUNNER_INIT',
           'RUNNER_START',
-          'RUNNER_END',
+          'RUNNER_END err',
         ]
       });
     });

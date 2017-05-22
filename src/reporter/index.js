@@ -4,6 +4,7 @@
 
 const {config} = require('../config');
 const {result} = require('../result');
+const {EXTRA_ERROR} = require('../events');
 const ErrorsCollector = require('./collectors/errors');
 const EnvsCollector = require('./collectors/envs');
 const SessionsCollector = require('./collectors/sessions');
@@ -39,6 +40,10 @@ class Reporter {
       this._proxyToCollectors();
       this._proxyToReporters();
     }
+  }
+
+  handleError(error) {
+    this.handleEvent(EXTRA_ERROR, {error});
   }
 
   stopListen() {

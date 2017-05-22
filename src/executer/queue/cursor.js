@@ -33,16 +33,29 @@ module.exports = class Cursor {
     this._setCurrentIndex(this._currentIndex + 1);
   }
 
+  /**
+   * Moves cursor to the last test of provided suite.
+   *
+   * @param {Suite} suite
+   */
   moveToSuiteEnd(suite) {
     while (!this._isSuiteEnd(suite)) {
       this.moveToNextText();
     }
   }
 
+  /**
+   * Moves cursor to the last test of queue.
+   */
   moveToQueueEnd() {
     this._setCurrentIndex(this._tests.length - 1);
   }
 
+  /**
+   * Returns true if current test is left to suite boundary.
+   *
+   * @returns {boolean}
+   */
   isSuiteBoundary() {
     return !this._currentTest || !this._nextTest || this._currentTest.parent !== this._nextTest.parent;
   }

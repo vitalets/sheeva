@@ -99,4 +99,9 @@ module.exports = {
    * Triggered instead of TEST_END when test is going to be retried
    */
   TEST_RETRY: 'TEST_RETRY',
+
+  /**
+   * Triggered for errors thrown while processing another error.
+   */
+  EXTRA_ERROR: 'EXTRA_ERROR',
 };

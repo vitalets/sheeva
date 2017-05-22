@@ -37,7 +37,7 @@
   "dependencies": {
     "commander": "^2.9.0",
     "glob": "^7.1.1",
-    "promise.prototype.finally": "^2.0.1"
+    "promise.prototype.finally.err": "^2.0.1"
   },
   "devDependencies": {
     "escape-string-regexp": "^1.0.5",

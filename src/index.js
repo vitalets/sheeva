@@ -2,16 +2,16 @@
  * Sheeva entry point
  */
 
-require('promise.prototype.finally').shim();
+require('promise.prototype.finally.err').shim();
 
 const utils = require('./utils');
 const configInstance = require('./config');
 const reporter = require('./reporter');
+const {RUNNER_INIT, RUNNER_START, RUNNER_END} = require('./events');
 const resultInstance = require('./result');
 const Reader = require('./reader');
 const transform = require('./transformer');
 const Executer = require('./executer');
-const {RUNNER_INIT, RUNNER_START, RUNNER_END} = require('./events');
 
 module.exports = class Sheeva {
   /**
@@ -21,7 +21,6 @@ module.exports = class Sheeva {
    */
   constructor(rawConfig) {
     this._rawConfig = rawConfig;
-    this._runnerError = null;
   }
 
   /**
@@ -34,11 +33,10 @@ module.exports = class Sheeva {
       .then(() => this._init())
       .then(() => new Reader().read())
       .then(() => transform())
-      .then(() => this._start())
+      .then(() => this._startRunner())
       .then(() => new Executer().run())
-      .catch(e => this._storeRunnerError(e))
-      .finally(() => this._end())
-      .then(() => this._getResult());
+      .finally(e => this._end(e))
+      .then(() => resultInstance.result);
   }
 
   _init() {
@@ -48,41 +46,19 @@ module.exports = class Sheeva {
     reporter.handleEvent(RUNNER_INIT);
   }
 
-  _start() {
+  _startRunner() {
     const {config} = configInstance;
     reporter.handleEvent(RUNNER_START);
     return utils.thenCall(() => config.startRunner(config));
   }
 
-  _end() {
+  _end(error) {
     const {config} = configInstance;
     return Promise.resolve()
       .then(() => config.endRunner(config))
-      .catch(e => this._storeRunnerError(e))
-      .finally(() => reporter.handleEvent(RUNNER_END))
+      .catch(e => error ? reporter.handleError(e) : Promise.reject(e))
+      .finally(e => reporter.handleEvent(RUNNER_END, {error: error || e}))
       .finally(() => reporter.stopListen())
-      .catch(e => this._storeRunnerError(e));
-  }
-
-  /**
-   * Store runner error.
-   * When config.breakOnError is enabled, errors from tests/hooks are also come here,
-   * but we filter them as they should be already reported
-   *
-   * @param {Error} error
-   */
-  _storeRunnerError(error) {
-    const {config} = configInstance;
-    if (config.breakOnError && Executer.errors.isTestOrHookError(error)) {
-      return;
-    }
-    if (!this._runnerError) {
-      this._runnerError = error || new Error('Empty rejection');
-    }
-  }
-
-  _getResult() {
-    return this._runnerError ? Promise.reject(this._runnerError) : resultInstance.result;
+      .catch(e => Promise.reject(error || e));
   }
 };
-

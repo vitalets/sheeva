@@ -2,6 +2,8 @@
  * Test globals
  */
 
+require('source-map-support').install();
+
 const expect = require('unexpected');
 
 Object.assign(global, {

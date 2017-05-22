@@ -1,16 +1,21 @@
 /**
  * Queue executes flat suite of tests serially.
  *
- * Errors processing:
- * 1. error in test - just report and go to next test
- * 2. error in hook - move index to suite end and continue from the next suite
- * 3. error in outer code - reject queue execution
+ * Here can be 3 types of errors:
+ * 1. error in test - terminate only if config.breakOnError = true
+ * 2. error in hook - move index to the end of errored suite and continue from the next suite
+ * 3. error in runner - terminate queue: move to the end and execute all after hooks
  */
 
 const assert = require('assert');
 const utils = require('../../utils');
 const {config} = require('../../config');
-const {TestCaller, SuiteHooksCaller, errors} = require('../caller');
+const reporter = require('../../reporter');
+const {EXTRA_ERROR} = require('../../events');
+const BeforeHooks = require('../caller/hooks/pre/before');
+const AfterHooks = require('../caller/hooks/post/after');
+const HookFn = require('../caller/hooks/hook-fn');
+const TestCaller = require('../caller/test');
 const Cursor = require('./cursor');
 
 module.exports = class Queue {
@@ -21,11 +26,13 @@ module.exports = class Queue {
    */
   constructor(tests) {
     assertTests(tests);
-    this._suiteStack = [];
     this._cursor = new Cursor(tests);
     this._session = null;
-    this._suiteHooksCaller = null;
+    this._hookFn = null;
+    this._beforeHooks = null;
+    this._afterHooks = null;
     this._isRunning = false;
+    this._suiteStack = [];
     this._error = null;
     this._promised = new utils.Promised();
   }
@@ -64,39 +71,26 @@ module.exports = class Queue {
     return this._promised.call(() => {
       this._isRunning = true;
       this._session = session;
-      this._suiteHooksCaller = this._createHooksCaller();
+      this._hookFn = new HookFn(session, null);
+      this._beforeHooks = new BeforeHooks(this._hookFn, this._suiteStack);
+      this._afterHooks = new AfterHooks(this._hookFn, this._suiteStack);
       this._handleNextTest();
     });
   }
 
   /**
-   * Handles next test in queue.
-   * We handle next test even
-   *
+   * Handles next test in queue (recursively).
    *
    * It does not return promise to keep each test in separate promise chain
    * instead of one chain for all tests.
-   *
-   * @returns {undefined}
    */
   _handleNextTest() {
     Promise.resolve()
       .then(() => this._moveCursor())
       .then(() => this._executeTest())
       .catch(e => this._handleError(e))
-      .then(() => this._handleNextTestIfNeeded())
-      .catch(e => this._finalize(e));
-  }
-
-  /**
-   * Here we check not nextTest but currentTest as we need to call all after hooks
-   */
-  _handleNextTestIfNeeded() {
-    if (this._hasCurrentTest()) {
-      this._handleNextTest();
-    } else {
-      this._finalize();
-    }
+      .then(() => this._hasCurrentTest() ? this._handleNextTest() : this._promised.resolve())
+      .catch(e => this._promised.reject(e));
   }
 
   _moveCursor() {
@@ -105,75 +99,73 @@ module.exports = class Queue {
       : this._moveCursorWithoutHooks();
   }
 
-  _moveCursorWithHooks() {
-    return Promise.resolve()
-      .then(() => this._executeAfterHooks())
-      .then(() => this._moveCursorWithoutHooks())
-      .then(() => this._executeBeforeHooks());
-  }
-
-  _executeBeforeHooks() {
-    if (this._hasCurrentTest()) {
-      this._suiteHooksCaller = this._createHooksCaller();
-      return this._suiteHooksCaller.callBefore(this._cursor.currentTest);
-    }
-  }
-
-  _executeAfterHooks() {
-    const stopSuite = this._cursor.findCommonSuiteWithNextTest();
-    return this._suiteHooksCaller.callAfter(stopSuite);
-  }
-
   _executeTest() {
     if (this._hasCurrentTest()) {
       return new TestCaller(this._session, this._cursor.currentTest).call();
     }
   }
 
+  /**
+   * Here can be 3 types of errors:
+   *
+   * 1. error in test
+   *   - config.breakOnError = true: terminate
+   *   - config.breakOnError = false: such error will never come here
+   *
+   * 2. error in hook
+   *   - config.breakOnError = true: terminate
+   *   - config.breakOnError = false: no terminate. Move index to the end of errored suite
+   *     and continue from the next suite
+   *
+   * 3. error in runner
+   * - config.breakOnError = true|false: terminate
+   */
   _handleError(error) {
-    this._storeError(error);
-    return this._isTerminationError() ? this._terminate() : this._moveToErrorSuiteEnd();
+    this._error = error;
+    return this._shouldTerminate() ? this._terminate() : this._moveToErrorSuiteEnd();
   }
 
-  _isTerminationError() {
-    return !errors.isHookError(this._error) || config.breakOnError;
+  _moveCursorWithHooks() {
+    return Promise.resolve()
+      .then(() => this._hasCurrentTest() ? this._executeAfterHooks() : null)
+      .then(() => this._moveCursorWithoutHooks())
+      .then(() => this._hasCurrentTest() ? this._executeBeforeHooks() : null);
+  }
+
+  _executeBeforeHooks() {
+    return this._beforeHooks.call(this._cursor.currentTest);
+  }
+
+  _executeAfterHooks() {
+    // todo: try catch to call after even if findCommonSuiteWithNextTest throws
+    const stopSuite = this._cursor.findCommonSuiteWithNextTest();
+    return this._afterHooks.call(stopSuite);
+  }
+
+  _shouldTerminate() {
+    return config.breakOnError || !HookFn.isHookError(this._error);
   }
 
   _terminate() {
-    this._cursor.moveToQueueEnd();
-    return this._executeAfterHooks()
+    return Promise.resolve()
+      .then(() => this._cursor.moveToQueueEnd())
+      .then(() => this._executeAfterHooks())
+      .catch(e => reporter.handleEvent(EXTRA_ERROR, {error: e}))
       .finally(() => Promise.reject(this._error));
   }
 
   _moveToErrorSuiteEnd() {
-    const suite = errors.getSuiteFromError(this._error);
+    const suite = HookFn.extractSuiteFromError(this._error);
     this._cursor.moveToSuiteEnd(suite);
-    this._clearError();
+    this._error = null;
   }
 
   _moveCursorWithoutHooks() {
     return this._cursor.moveToNextText();
   }
 
-  _storeError(error) {
-    this._error = error;
-    this._suiteHooksCaller.addError(error);
-  }
-
-  _clearError() {
-    this._error = null;
-  }
-
-  _createHooksCaller() {
-    return new SuiteHooksCaller(this._session, null, this._suiteStack);
-  }
-
   _hasCurrentTest() {
     return Boolean(this._cursor.currentTest);
-  }
-
-  _finalize(error) {
-    this._promised.fulfill(this._error || error);
   }
 };
 
