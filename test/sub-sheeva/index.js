@@ -3,7 +3,7 @@
  */
 
 const path = require('path');
-require('promise.prototype.finally').shim();
+require('promise.prototype.finally.err').shim();
 const TempFiles = require('./tempfiles');
 const Reporter = require('./reporter');
 
