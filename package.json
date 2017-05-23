@@ -8,6 +8,9 @@
   },
   "main": "src/index.js",
   "bin": "src/cli.js",
+  "engines": {
+    "node": ">=6"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/vitalets/sheeva.git"
