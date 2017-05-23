@@ -15,8 +15,8 @@
 ***
 
 ## Intro
-Sheeva is a JavaScript test runner. 
-It's main goal to ensure minimal test execution time on parallel targets with limited concurrency.
+Sheeva is a test-runner with focus on optimal test execution on parallel targets with limited concurrency.
+Targets are browsers, mobile phones, tablets and any other configurable entities.
 
 ## Features  
 - **Parallelization** 
