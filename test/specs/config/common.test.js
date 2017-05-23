@@ -22,4 +22,8 @@ describe('config common', () => {
     return expectReject(result, 'Incorrect config option type for: createTargets (expected function, got number)');
   });
 
+  it('should reject for empty files array', run => {
+    const result = run([]);
+    return expectReject(result, 'No files matched');
+  });
 });

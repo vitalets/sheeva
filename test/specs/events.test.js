@@ -20,7 +20,7 @@ describe('events', () => {
       ]);
     });
 
-    it('should emit runner events for empty files', run => {
+    it('should emit runner events for empty file', run => {
       const result = run(``);
       return expectResolve(result, [
         'RUNNER_INIT',

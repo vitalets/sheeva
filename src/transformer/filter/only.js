@@ -20,7 +20,7 @@ module.exports = class Only {
 
   filter() {
     this._filterTopSuites();
-    // make this check after collecting files to have nicer error message
+    // this check performed after collecting files to have nicer error message
     if (config.noOnly) {
       this._throwNoOnlyError();
     }
