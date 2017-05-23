@@ -52,19 +52,19 @@ describe('events', () => {
 
   });
 
-  describe('env', () => {
+  describe('target', () => {
 
     beforeEach(context => {
-      context.runOptions.include = ['ENV'];
+      context.runOptions.include = ['TARGET'];
       context.runOptions.flat = true;
     });
 
-    it('should emit ENV_START / ENV_END', run => {
+    it('should emit TARGET_START / TARGET_END', run => {
       const config = {
-        createEnvs: function () {
+        createTargets: function () {
           return [
-            {id: 'env1'},
-            {id: 'env2'},
+            {id: 'target1'},
+            {id: 'target2'},
           ];
         },
       };
@@ -75,10 +75,10 @@ describe('events', () => {
       `, {config});
 
       return expectResolve(report, [
-        'ENV_START env1',
-        'ENV_END env1',
-        'ENV_START env2',
-        'ENV_END env2',
+        'TARGET_START target1',
+        'TARGET_END target1',
+        'TARGET_START target2',
+        'TARGET_END target2',
       ]);
     });
 

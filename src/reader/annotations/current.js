@@ -52,14 +52,14 @@ module.exports = class CurrentAnnotation {
     this._retry = count;
   }
 
-  get(env) {
-    if (this._isIgnored(env)) {
+  get(target) {
+    if (this._isIgnored(target)) {
       return {
         ignored: true
       };
     } else {
       return {
-        env,
+        target,
         tags: this._tags,
         only: this._only,
         skip: this._skip,
@@ -69,7 +69,7 @@ module.exports = class CurrentAnnotation {
     }
   }
 
-  _isIgnored(env) {
-    return this._ignore.some(fn => fn(env)) || this._if.some(fn => !fn(env));
+  _isIgnored(target) {
+    return this._ignore.some(fn => fn(target)) || this._if.some(fn => !fn(target));
   }
 };

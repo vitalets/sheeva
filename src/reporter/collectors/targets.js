@@ -1,14 +1,14 @@
 /**
- * Collects tests counters for each Env
+ * Collects tests counters for each Target
  */
 
 const {result} = require('../../result');
 const {RUNNER_START, TEST_END} = require('../../events');
 
-module.exports = class EnvsCollector {
+module.exports = class TargetsCollector {
   constructor() {
-    this._executionPerEnv = result.executionPerEnv;
-    this._flatSuitesPerEnv = result.flatSuitesPerEnv;
+    this._executionPerTarget = result.executionPerTarget;
+    this._flatSuitesPerTarget = result.flatSuitesPerTarget;
   }
 
   handleEvent(event, data) {
@@ -23,14 +23,14 @@ module.exports = class EnvsCollector {
   }
 
   _calcTotal() {
-    this._flatSuitesPerEnv.forEach((flatSuites, env) => {
+    this._flatSuitesPerTarget.forEach((flatSuites, target) => {
       const total = calcTotal(flatSuites);
-      this._executionPerEnv.get(env).tests.total = total;
+      this._executionPerTarget.get(target).tests.total = total;
     });
   }
 
-  _calcEnded({env, error}) {
-    const tests = this._executionPerEnv.get(env).tests;
+  _calcEnded({target, error}) {
+    const tests = this._executionPerTarget.get(target).tests;
     tests.ended++;
     if (error) {
       tests.failed++;

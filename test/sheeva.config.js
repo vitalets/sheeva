@@ -14,18 +14,16 @@ module.exports = {
   reporters: new ConsoleReporter({append}),
   newSessionPerFile: false,
   splitSuites: true,
-  createEnvs: function () {
+  createTargets: function () {
     return [
-      {id: 'sync-env'},
-      {id: 'async-env', delay: 10},
-      //{id: 'async-env1', delay: 40},
-      //{id: 'async-env2', delay: 50},
+      {id: 'sync-target'},
+      {id: 'async-target', delay: 10},
     ];
   },
   startRunner: function (config) {
-    config.envs.forEach(env => env.delay ? createSubConfig(env) : null);
+    config.targets.forEach(target => target.delay ? createSubConfig(target) : null);
   },
-  callTestHookFn: function ({fn, session, context, hook, env}) {
+  callTestHookFn: function ({fn, session, context, hook, target}) {
     if (hook) {
       context.runOptions = context.runOptions || {};
       return fn(context);
@@ -34,7 +32,7 @@ module.exports = {
     const run = function (code, options = {}) {
       const configFromHooks = context.runOptions && context.runOptions.config;
       const configFromTest = options.config;
-      options.config = Object.assign({}, env.subConfig, configFromHooks, configFromTest);
+      options.config = Object.assign({}, target.subConfig, configFromHooks, configFromTest);
       const finalOptions = Object.assign({session}, context.runOptions, options);
       return new SubSheeva(code, finalOptions).run();
     };
@@ -42,13 +40,13 @@ module.exports = {
   },
 };
 
-function createSubConfig(env) {
-  env.subConfig = {
+function createSubConfig(target) {
+  target.subConfig = {
     callTestHookFn: function (params) {
       const {fn, session, context, attempt} = params;
       return params !== noop
         ? fn(context, session, attempt)
-        : callAsync(env.delay, params);
+        : callAsync(target.delay, params);
     }
   };
 }

@@ -45,8 +45,8 @@ module.exports = class Queue {
     return this.tests[0].parents[0];
   }
 
-  get env() {
-    return this.topSuite.env;
+  get target() {
+    return this.topSuite.target;
   }
 
   /**

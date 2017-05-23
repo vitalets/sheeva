@@ -44,12 +44,12 @@ module.exports = class LogReporter {
         this._add(data, `${event}${errMessage}`);
         break;
       }
-      case events.ENV_START: {
-        this._add(data, `${event} ${data.env.id}`);
+      case events.TARGET_START: {
+        this._add(data, `${event} ${data.target.id}`);
         break;
       }
-      case events.ENV_END: {
-        this._add(data, `${event} ${data.env.id}`);
+      case events.TARGET_END: {
+        this._add(data, `${event} ${data.target.id}`);
         break;
       }
       case events.WORKER_ADD: {
@@ -104,8 +104,8 @@ module.exports = class LogReporter {
   }
 
   getReport() {
-    const loggedEnvs = Object.keys(this._treeLog);
-    const flat = this._options.flat || loggedEnvs.length === 0 || this._isSingleEnvAndSession();
+    const loggedTargets = Object.keys(this._treeLog);
+    const flat = this._options.flat || loggedTargets.length === 0 || this._isSingleTargetAndSession();
 
     if (this._options.raw) {
       return this._getRawLog();
@@ -119,11 +119,11 @@ module.exports = class LogReporter {
   _add({session}, str) {
     this._flatLog.push(str);
     if (session) {
-      const env = session.env;
-      this._treeLog[env.id] = this._treeLog[env.id] || {};
+      const target = session.target;
+      this._treeLog[target.id] = this._treeLog[target.id] || {};
       const sessionName = `session${session.index}`;
-      this._treeLog[env.id][sessionName] = this._treeLog[env.id][sessionName] || [];
-      this._treeLog[env.id][sessionName].push(str);
+      this._treeLog[target.id][sessionName] = this._treeLog[target.id][sessionName] || [];
+      this._treeLog[target.id][sessionName].push(str);
     }
   }
 
@@ -140,9 +140,9 @@ module.exports = class LogReporter {
   _getTreeLog() {
     const treeLog = this._treeLog;
     this._treeLog = {};
-    Object.keys(treeLog).forEach(envId => {
-      Object.keys(treeLog[envId]).forEach(sessionName => {
-        treeLog[envId][sessionName] = treeLog[envId][sessionName]
+    Object.keys(treeLog).forEach(targetId => {
+      Object.keys(treeLog[targetId]).forEach(sessionName => {
+        treeLog[targetId][sessionName] = treeLog[targetId][sessionName]
           .filter(eventName => this._isPassingFilter(eventName));
       });
     });
@@ -161,9 +161,9 @@ module.exports = class LogReporter {
     return result;
   }
 
-  _isSingleEnvAndSession() {
-    const loggedEnvs = Object.keys(this._treeLog);
-    return (loggedEnvs.length === 1 && Object.keys(this._treeLog[loggedEnvs[0]]).length <= 1);
+  _isSingleTargetAndSession() {
+    const loggedTargets = Object.keys(this._treeLog);
+    return (loggedTargets.length === 1 && Object.keys(this._treeLog[loggedTargets[0]]).length <= 1);
   }
 
   _setOptions(options) {

@@ -1,5 +1,5 @@
 /**
- * Store envs that can not be splitted
+ * Store targets that can not be splitted
  */
 
 module.exports = class State {
@@ -9,38 +9,38 @@ module.exports = class State {
   }
 
   /**
-   * Checks that env can be splitted
+   * Checks that target can be splitted
    *
-   * @param {Env} env
+   * @param {Target} target
    * @param {Boolean} isSessionStarted
    * @returns {Boolean}
    */
-  canSplit(env, {isSessionStarted}) {
+  canSplit(target, {isSessionStarted}) {
     return isSessionStarted
-      ? this._canSplitForStartedSession(env)
-      : this._canSplitForNewSession(env);
+      ? this._canSplitForStartedSession(target)
+      : this._canSplitForNewSession(target);
   }
 
   /**
-   * Mark env not splittable for specified options
+   * Mark target not splittable for specified options
    * Note: if split is impossible for started session, it's for sure impossible for new session
    * as it requires time for session start, so always mark it
    *
-   * @param {Env} env
+   * @param {Target} target
    * @param {Boolean} isSessionStarted
    */
-  setCantSplit(env, {isSessionStarted}) {
-    this._cantSplitForNewSession.add(env);
+  setCantSplit(target, {isSessionStarted}) {
+    this._cantSplitForNewSession.add(target);
     if (isSessionStarted) {
-      this._cantSplitForStartedSession.add(env);
+      this._cantSplitForStartedSession.add(target);
     }
   }
 
-  _canSplitForStartedSession(env) {
-    return !this._cantSplitForStartedSession.has(env);
+  _canSplitForStartedSession(target) {
+    return !this._cantSplitForStartedSession.has(target);
   }
 
-  _canSplitForNewSession(env) {
-    return !this._cantSplitForNewSession.has(env);
+  _canSplitForNewSession(target) {
+    return !this._cantSplitForNewSession.has(target);
   }
 };

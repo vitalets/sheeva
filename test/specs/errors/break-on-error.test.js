@@ -54,7 +54,7 @@ describe('config.breakOnError', () => {
     ]);
   });
 
-  $if(env => env.id === 'sync-env');
+  $if(target => target.id === 'sync-target');
   it('should terminate all sessions in case of test error', run => {
     const config = {
       concurrency: 2,
@@ -70,7 +70,7 @@ describe('config.breakOnError', () => {
       `], {config, include: ['SESSION', 'TEST']});
 
     return expectResolve(result, {
-      env1: {
+      target1: {
         session0: [
           'SESSION_START 0',
           'TEST_START test 1',

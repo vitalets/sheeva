@@ -19,7 +19,7 @@ describe('split files', () => {
     `], {config, include});
 
     return expectResolve(result, {
-        env1: {
+        target1: {
           session0: [
             'SESSION_START 0',
             'SUITE_START root',
@@ -79,7 +79,7 @@ describe('split files', () => {
      Maybe this should be improved in future.
     */
     return expectResolve(result, {
-        env1: {
+        target1: {
           session0: [
             'TEST_END test 1',
             'TEST_END test 2'
@@ -112,7 +112,7 @@ describe('split files', () => {
       `], {config});
 
     return expectResolve(result, {
-        env1: {
+        target1: {
           session0: [
             'TEST_END test 1',
           ],

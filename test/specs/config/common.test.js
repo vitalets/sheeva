@@ -13,13 +13,13 @@ describe('config common', () => {
 
   it('should fail for incorrect option type', run => {
     const config = {
-      createEnvs: 1,
+      createTargets: 1,
     };
     const result = run(`
       it('test 0', noop);
     `, {config});
 
-    return expectReject(result, 'Incorrect config option type for: createEnvs (expected function, got number)');
+    return expectReject(result, 'Incorrect config option type for: createTargets (expected function, got number)');
   });
 
 });

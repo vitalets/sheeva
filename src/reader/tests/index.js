@@ -11,7 +11,7 @@ const factory = require('./factory');
 
 module.exports = class TestsReader {
   constructor(annotationsReader) {
-    this._topSuitesPerEnv = result.topSuitesPerEnv;
+    this._topSuitesPerTarget = result.topSuitesPerTarget;
     this._currentSuites = new CurrentSuites(annotationsReader);
     this._api = new Bdd(this._currentSuites, annotationsReader.current).getMethods();
     this._walker = new Walker(this._currentSuites);
@@ -22,9 +22,9 @@ module.exports = class TestsReader {
     return this._api;
   }
 
-  addTopSuite(env, name, fn) {
-    const topSuite = factory.createSuite({env, name});
-    this._topSuitesPerEnv.getOrCreateSet(env).add(topSuite);
+  addTopSuite(target, name, fn) {
+    const topSuite = factory.createSuite({target, name});
+    this._topSuitesPerTarget.getOrCreateSet(target).add(topSuite);
     this._topSuitesPerFn.getOrCreateArray(fn).push(topSuite);
   }
 

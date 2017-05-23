@@ -74,7 +74,7 @@ function linkItems(child, parent, childrenField = 'children') {
 function extendBase(options, extraOptions) {
   return Object.assign({
     name: options.name,
-    env: options.env,
+    target: options.target,
     only: options.only,
     skip: options.skip,
     tags: options.tags || [],

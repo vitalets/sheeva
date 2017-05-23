@@ -5,7 +5,7 @@
 const assert = require('assert');
 const utils = require('../utils');
 const defaults = require('./defaults');
-const Envs = require('./envs');
+const Targets = require('./targets');
 
 class Configurator {
   /**
@@ -24,7 +24,7 @@ class Configurator {
     this._merge(rawConfig);
     this._fixTypes();
     this._validateProps();
-    this._createEnvs();
+    this._createTargets();
   }
 
   _merge(rawConfig) {
@@ -48,8 +48,8 @@ class Configurator {
     });
   }
 
-  _createEnvs() {
-    this._config.envs = new Envs(this._config).create();
+  _createTargets() {
+    this._config.targets = new Targets(this._config).create();
   }
 
   _clear() {

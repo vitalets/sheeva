@@ -17,7 +17,7 @@ module.exports = class Before extends Base {
     const data = {
       suite,
       session: this._hookFn.session,
-      env: this._hookFn.session.env,
+      target: this._hookFn.session.target,
     };
     reporter.handleEvent(SUITE_START, data);
   }

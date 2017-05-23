@@ -59,16 +59,16 @@ module.exports = class Worker {
   }
 
   /**
-   * Checks that worker is holding env.
-   * Actually, worker can hold two envs simultaneously when queue is assigned,
+   * Checks that worker is holding target.
+   * Actually, worker can hold two targets simultaneously when queue is assigned,
    * but previous session is still ending
    *
    * @returns {Boolean}
    */
-  isHoldingEnv(env) {
+  isHoldingTarget(target) {
     return [
-      this._session && this._session.env === env,
-      this._queue && this._queue.env === env,
+      this._session && this._session.target === target,
+      this._queue && this._queue.target === target,
     ].some(Boolean);
   }
 
@@ -79,13 +79,13 @@ module.exports = class Worker {
   }
 
   _createSession() {
-    this._session = new Session(this, this._queue.env);
+    this._session = new Session(this, this._queue.target);
     this._onSessionStart(this._session);
     return this._session.start();
   }
 
   _needNewSession() {
-    return !this._session || config.newSessionPerFile || this._session.env !== this._queue.env;
+    return !this._session || config.newSessionPerFile || this._session.target !== this._queue.target;
   }
 
   _runQueue() {

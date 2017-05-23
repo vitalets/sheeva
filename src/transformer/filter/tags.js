@@ -12,8 +12,8 @@ module.exports = class Tags {
    * Constructor
    */
   constructor() {
-    this._topSuitesPerEnv = result.topSuitesPerEnv;
-    this._annotationsPerEnv = result.annotationsPerEnv;
+    this._topSuitesPerTarget = result.topSuitesPerTarget;
+    this._annotationsPerTarget = result.annotationsPerTarget;
     this._summary = result.tags;
     this._configTags = config.tags;
   }
@@ -25,8 +25,8 @@ module.exports = class Tags {
   }
 
   _filterTopSuites() {
-    this._topSuitesPerEnv.forEach((topSuites, env) => {
-      const tags = this._annotationsPerEnv.get(env).tags;
+    this._topSuitesPerTarget.forEach((topSuites, target) => {
+      const tags = this._annotationsPerTarget.get(target).tags;
       const taggedItems = this._concatTagItems(tags);
       new Includer(topSuites).include(taggedItems);
     });

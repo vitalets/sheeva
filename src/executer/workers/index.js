@@ -66,14 +66,14 @@ module.exports = class Workers {
     return Promise.all(tasks);
   }
 
-  getWorkersForEnv(env) {
+  getWorkersForTarget(target) {
     return this._workers.toArray()
-      .filter(worker => worker.isHoldingEnv(env));
+      .filter(worker => worker.isHoldingTarget(target));
   }
 
-  hasWorkersForEnv(env) {
+  hasWorkersForTarget(target) {
     for (let worker of this._workers) {
-      if (worker.isHoldingEnv(env)) {
+      if (worker.isHoldingTarget(target)) {
         return true;
       }
     }

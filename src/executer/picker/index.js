@@ -15,67 +15,67 @@ module.exports = class Picker {
     this._queues = new Queues();
     this._splitter = new Splitter(workers);
     this._session = null;
-    this._env = null;
+    this._target = null;
   }
 
   /**
-   * Tries to pick next queue for provided session (env) or for any available env.
+   * Tries to pick next queue for provided session (target) or for any available target.
    *
-   * - if there is passed session, try to pick queue for the same env first
-   * - if there is no passed session (empty worker) - try to get queue from any available env (by order)
+   * - if there is passed session, try to pick queue for the same target first
+   * - if there is no passed session (empty worker) - try to get queue from any available target (by order)
    *
    * @param {Session} [session]
    * @returns {Queue|undefined}
    */
   pickNextQueue(session) {
     this._session = session;
-    this._env = session && session.env;
-    return this._env && this._pickForSingleEnv(this._env) || this._pickForAvailableEnvs();
+    this._target = session && session.target;
+    return this._target && this._pickForSingleTarget(this._target) || this._pickForAvailableTargets();
   }
 
   /**
-   * Returns remaining queues for env
+   * Returns remaining queues for target
    *
-   * @param {Env} env
+   * @param {Target} target
    * @returns {Array<Queue>}
    */
-  getRemainingQueues(env) {
-    return this._queues.getRemaining(env);
+  getRemainingQueues(target) {
+    return this._queues.getRemaining(target);
   }
 
-  _pickForSingleEnv(env) {
-    const envs = [env];
-    return this._pickForEnvs(envs);
+  _pickForSingleTarget(target) {
+    const targets = [target];
+    return this._pickForTargets(targets);
   }
 
-  _pickForAvailableEnvs() {
-    const envs = this._getAvailableEnvs();
-    return this._pickForEnvs(envs);
+  _pickForAvailableTargets() {
+    const targets = this._getAvailableTargets();
+    return this._pickForTargets(targets);
   }
 
-  _pickForEnvs(envs) {
-    return this._tryPickWholeQueue(envs) || this._trySplitRunningQueues(envs);
+  _pickForTargets(targets) {
+    return this._tryPickWholeQueue(targets) || this._trySplitRunningQueues(targets);
   }
 
-  _tryPickWholeQueue(envs) {
-    return this._queues.pickNext(envs);
+  _tryPickWholeQueue(targets) {
+    return this._queues.pickNext(targets);
   }
 
-  _trySplitRunningQueues(envs) {
-    if (config.splitSuites && envs.length) {
+  _trySplitRunningQueues(targets) {
+    if (config.splitSuites && targets.length) {
       const options = this._getSplitterOptions();
-      return this._splitter.trySplit(envs, options);
+      return this._splitter.trySplit(targets, options);
     }
   }
 
-  _getAvailableEnvs() {
-    return config.envs
-      .filter(env => env !== this._env)
-      .filter(env => !this._isEnvConcurrencyReached(env));
+  _getAvailableTargets() {
+    return config.targets
+      .filter(target => target !== this._target)
+      .filter(target => !this._isTargetConcurrencyReached(target));
   }
 
-  _isEnvConcurrencyReached(env) {
-    return env.concurrency && env.concurrency === this._workers.getWorkersForEnv(env).length;
+  _isTargetConcurrencyReached(target) {
+    return target.concurrency && target.concurrency === this._workers.getWorkersForTarget(target).length;
   }
 
   _getSplitterOptions() {

@@ -6,7 +6,7 @@ const {config} = require('../config');
 const {result} = require('../result');
 const {EXTRA_ERROR} = require('../events');
 const ErrorsCollector = require('./collectors/errors');
-const EnvsCollector = require('./collectors/envs');
+const TargetsCollector = require('./collectors/targets');
 const SessionsCollector = require('./collectors/sessions');
 const RunnerCollector = require('./collectors/runner');
 
@@ -53,7 +53,7 @@ class Reporter {
   _initCollectors() {
     this._collectors = [
       new ErrorsCollector(),
-      new EnvsCollector(),
+      new TargetsCollector(),
       new SessionsCollector(),
       new RunnerCollector(),
     ];

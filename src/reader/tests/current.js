@@ -59,7 +59,7 @@ module.exports = class Current {
   }
 
   _callForSuite(suite, iterator) {
-    const annotation = this._annotationsReader.current.get(suite.env);
+    const annotation = this._annotationsReader.current.get(suite.target);
     if (!annotation.ignored) {
       iterator(suite, annotation);
     }

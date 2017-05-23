@@ -1,4 +1,4 @@
-$if(env => env.id === 'sync-env');
+$if(target => target.id === 'sync-target');
 describe('annotation: timeout', () => {
 
   it('should fail after test timeout', run => {

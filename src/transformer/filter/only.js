@@ -8,8 +8,8 @@ const Includer = require('./includer');
 
 module.exports = class Only {
   constructor() {
-    this._topSuitesPerEnv = result.topSuitesPerEnv;
-    this._annotationsPerEnv = result.annotationsPerEnv;
+    this._topSuitesPerTarget = result.topSuitesPerTarget;
+    this._annotationsPerTarget = result.annotationsPerTarget;
     this._summary = result.only;
     this._found = this._hasOnly();
   }
@@ -27,7 +27,7 @@ module.exports = class Only {
   }
 
   _hasOnly() {
-    for (let data of this._annotationsPerEnv.values()) {
+    for (let data of this._annotationsPerTarget.values()) {
       if (data.only.size > 0) {
         return true;
       }
@@ -36,8 +36,8 @@ module.exports = class Only {
   }
 
   _filterTopSuites() {
-    this._topSuitesPerEnv.forEach((topSuites, env) => {
-      const onlyItems = this._annotationsPerEnv.get(env).only;
+    this._topSuitesPerTarget.forEach((topSuites, target) => {
+      const onlyItems = this._annotationsPerTarget.get(target).only;
       new Includer(topSuites).include(onlyItems);
       this._updateSummary(topSuites);
     });

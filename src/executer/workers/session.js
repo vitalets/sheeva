@@ -1,5 +1,5 @@
 /**
- * Session belongs to particular env and runs test-queues on particular worker.
+ * Session belongs to particular target and runs test-queues on particular worker.
  * It performs setup and teardown by calling `config.startSession` / `config.endSession` hooks.
  */
 
@@ -27,18 +27,18 @@ module.exports = class Session {
    * Constructor
    *
    * @param {Worker} worker
-   * @param {Env} env
+   * @param {Target} target
    */
-  constructor(worker, env) {
+  constructor(worker, target) {
     this._worker = worker;
-    this._env = env;
+    this._target = target;
     this._status = STATUS.CREATED;
     this._index = result.sessions.size;
     result.sessions.set(this, {});
   }
 
-  get env() {
-    return this._env;
+  get target() {
+    return this._target;
   }
 
   get index() {
@@ -102,7 +102,7 @@ module.exports = class Session {
 
   _emit(event, data = {}) {
     data.session = this;
-    data.env = this._env;
+    data.target = this._target;
     reporter.handleEvent(event, data);
   }
 };

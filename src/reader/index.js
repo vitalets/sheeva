@@ -43,7 +43,7 @@ module.exports = class Reader {
   _createTopSuites() {
     this._files.forEach(file => {
       const fn = () => readFile(file);
-      config.envs.forEach(env => this._testsReader.addTopSuite(env, file, fn));
+      config.targets.forEach(target => this._testsReader.addTopSuite(target, file, fn));
     });
   }
 

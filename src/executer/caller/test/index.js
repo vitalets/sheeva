@@ -73,7 +73,7 @@ const TestCaller = module.exports = class TestCaller {
   _callFn() {
     const params = {
       session: this._session,
-      env: this._session.env,
+      target: this._session.target,
       fn: this._test.fn,
       test: this._test,
       suite: this._test.parent,
@@ -86,7 +86,7 @@ const TestCaller = module.exports = class TestCaller {
   _emit(event, data) {
     data = Object.assign({
       session: this._session,
-      env: this._session.env,
+      target: this._session.target,
       test: this._test,
       attempt: this._retry.attempt
     }, data);

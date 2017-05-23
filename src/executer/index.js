@@ -13,7 +13,7 @@
 const {result} = require('../result');
 const reporter = require('../reporter');
 const utils = require('../utils');
-const {ENV_START, ENV_END} = require('../events');
+const {TARGET_START, TARGET_END} = require('../events');
 const Picker = require('./picker');
 const Workers = require('./workers');
 const HookFn = require('./caller/hooks/hook-fn');
@@ -24,7 +24,7 @@ module.exports = class Executer {
    * Constructor
    */
   constructor() {
-    this._executionPerEnv = result.executionPerEnv;
+    this._executionPerTarget = result.executionPerTarget;
     this._workers = null;
     this._picker = null;
     this._promised = new utils.Promised();
@@ -45,8 +45,8 @@ module.exports = class Executer {
   _setWorkersHandlers() {
     this._workers.onFreeWorker = worker => this._handleFreeWorker(worker);
     this._workers.onEmpty = () => this._end();
-    this._workers.onSessionStart = session => this._tryEmitEnvStart(session.env);
-    this._workers.onSessionEnd = session => this._tryEmitEnvEnd(session.env);
+    this._workers.onSessionStart = session => this._tryEmitTargetStart(session.target);
+    this._workers.onSessionEnd = session => this._tryEmitTargetEnd(session.target);
   }
 
   _handleFreeWorker(worker) {
@@ -81,22 +81,22 @@ module.exports = class Executer {
       });
   }
 
-  _tryEmitEnvStart(env) {
-    const execution = this._executionPerEnv.get(env);
+  _tryEmitTargetStart(target) {
+    const execution = this._executionPerTarget.get(target);
     if (!execution.started) {
       execution.started = true;
-      reporter.handleEvent(ENV_START, {env});
+      reporter.handleEvent(TARGET_START, {target});
     }
   }
 
-  _tryEmitEnvEnd(env) {
-    if (!this._hasPendingJobs(env) && !this._executionPerEnv.get(env).ended) {
-      this._executionPerEnv.get(env).ended = true;
-      reporter.handleEvent(ENV_END, {env});
+  _tryEmitTargetEnd(target) {
+    if (!this._hasPendingJobs(target) && !this._executionPerTarget.get(target).ended) {
+      this._executionPerTarget.get(target).ended = true;
+      reporter.handleEvent(TARGET_END, {target});
     }
   }
 
-  _hasPendingJobs(env) {
-    return this._picker.getRemainingQueues(env).length || this._workers.hasWorkersForEnv(env);
+  _hasPendingJobs(target) {
+    return this._picker.getRemainingQueues(target).length || this._workers.hasWorkersForTarget(target);
   }
 };

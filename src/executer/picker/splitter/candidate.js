@@ -21,8 +21,8 @@ module.exports = class Candidate {
     return this._isSplittable;
   }
 
-  get env() {
-    return this._queue.env;
+  get target() {
+    return this._queue.target;
   }
 
   get remainingTime() {

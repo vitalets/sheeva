@@ -14,7 +14,7 @@ describe('concurrency', () => {
       `], {config});
 
     return expectResolve(report, {
-        env1: {
+        target1: {
           session0: ['TEST_END test 1'],
           session1: ['TEST_END test 2']
         }
@@ -40,7 +40,7 @@ describe('concurrency', () => {
       `], {config});
 
     return expectResolve(report, {
-      env1: {
+      target1: {
         session0: [ 'TEST_END test 1' ],
         session1: [ 'TEST_END test 2' ],
         session2: [ 'TEST_END test 3', 'TEST_END test 4' ]
@@ -48,9 +48,9 @@ describe('concurrency', () => {
     });
   });
 
-  it('should correctly send env events', run => {
+  it('should correctly send target events', run => {
     const config = {concurrency: 2};
-    const include = ['ENV', 'TEST_END'];
+    const include = ['TARGET', 'TEST_END'];
     const report = run([`
       describe('suite 1', () => {
         it('test 1', noop);
@@ -64,10 +64,10 @@ describe('concurrency', () => {
     return expectResolve(report).then(res => {
       res = res.map(item => item.event);
       expect(res, 'to equal', [
-        'ENV_START',
+        'TARGET_START',
         'TEST_END',
         'TEST_END',
-        'ENV_END'
+        'TARGET_END'
       ]);
     });
   });

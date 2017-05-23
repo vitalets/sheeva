@@ -7,8 +7,8 @@ const Excluder = require('./excluder');
 
 module.exports = class Skip {
   constructor() {
-    this._topSuitesPerEnv = result.topSuitesPerEnv;
-    this._annotationsPerEnv = result.annotationsPerEnv;
+    this._topSuitesPerTarget = result.topSuitesPerTarget;
+    this._annotationsPerTarget = result.annotationsPerTarget;
     this._summary = result.skip;
   }
 
@@ -17,8 +17,8 @@ module.exports = class Skip {
   }
 
   _filterTopSuites() {
-    this._topSuitesPerEnv.forEach((topSuites, env) => {
-      const skippedItems = this._annotationsPerEnv.get(env).skip;
+    this._topSuitesPerTarget.forEach((topSuites, target) => {
+      const skippedItems = this._annotationsPerTarget.get(target).skip;
       new Excluder().exclude(skippedItems);
       this._updateSummary(skippedItems);
     });

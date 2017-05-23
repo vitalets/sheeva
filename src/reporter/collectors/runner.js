@@ -15,7 +15,7 @@ const {
 module.exports = class RunnerCollector {
   constructor() {
     this._runner = result.runner;
-    this._executionPerEnv = result.executionPerEnv;
+    this._executionPerTarget = result.executionPerTarget;
   }
 
   handleEvent(event, data) {
@@ -41,7 +41,7 @@ module.exports = class RunnerCollector {
   }
 
   _calcTestsTotal() {
-    this._executionPerEnv.forEach(execution => this._runner.tests.total += execution.tests.total);
+    this._executionPerTarget.forEach(execution => this._runner.tests.total += execution.tests.total);
   }
 
   _processTestEnd(data) {

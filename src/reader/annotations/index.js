@@ -8,7 +8,7 @@ const Api = require('./api');
 
 module.exports = class AnnotationsReader {
   constructor() {
-    this._annotationsPerEnv = result.annotationsPerEnv;
+    this._annotationsPerTarget = result.annotationsPerTarget;
     this._currentAnnotation = new CurrentAnnotation();
     this._api = new Api(this._currentAnnotation).getMethods();
   }
@@ -34,19 +34,19 @@ module.exports = class AnnotationsReader {
 
   _processOnly(item) {
     if (item.only) {
-      this._annotationsPerEnv.get(item.env).only.add(item);
+      this._annotationsPerTarget.get(item.target).only.add(item);
     }
   }
 
   _processSkip(item) {
     if (item.skip) {
-      this._annotationsPerEnv.get(item.env).skip.add(item);
+      this._annotationsPerTarget.get(item.target).skip.add(item);
     }
   }
 
   _processTags(item) {
     if (item.tags.length) {
-      const existingTags = this._annotationsPerEnv.get(item.env).tags;
+      const existingTags = this._annotationsPerTarget.get(item.target).tags;
       item.tags.forEach(tag => existingTags.getOrCreateSet(tag).add(item));
     }
   }

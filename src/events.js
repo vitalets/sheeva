@@ -14,19 +14,19 @@ module.exports = {
   RUNNER_START: 'RUNNER_START',
 
   /**
-   * Triggered after all envs and tests are executed or error occurred
+   * Triggered after all targets and tests are executed or error occurred
    */
   RUNNER_END: 'RUNNER_END',
 
   /**
-   * Triggered before the first session of env is started
+   * Triggered before the first session of target is started
    */
-  ENV_START: 'ENV_START',
+  TARGET_START: 'TARGET_START',
 
   /**
-   * Triggered after all tests of env are executed and all sessions are ended
+   * Triggered after all tests of target are executed and all sessions are ended
    */
-  ENV_END: 'ENV_END',
+  TARGET_END: 'TARGET_END',
 
   /**
    * Triggered when new worker is coming into game

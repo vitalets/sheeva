@@ -18,12 +18,12 @@ module.exports = {
 
   /**
    * todo:
-   * How envs are executed per pool of sessions:
-   * - `fullEnvFirst`: run all available sessions of first env, then run on second env, etc
-   * - `fullEnvFirstDone`: run all available sessions of first env and wait until it's done, then run on second env, etc
-   * - `allEnvs`: run all envs in parallel (not supported yet)
+   * How targets are executed per pool of sessions:
+   * - `fullTargetFirst`: run all available sessions of first target, then run on second target, etc
+   * - `fullTargetFirstDone`: run all available sessions of first target and wait until it's done, then run on second
+   * - `allTargets`: run all targets in parallel (not supported yet)
    */
-  //concurrencyMode: 'fullEnvFirst',
+  //concurrencyMode: 'fullTargetFirst',
 
   /**
    * Start new session for each file.
@@ -70,27 +70,27 @@ module.exports = {
   timeout: 10000,
 
   /**
-   * Run env with particular id
+   * Run target with particular id
    * @type {String}
    */
-  env: '',
+  target: '',
 
   /**
-   * Creates environments (shortly envs).
-   * Each env should have `id` property and can overwrite some config fields.
+   * Creates targets.
+   * Each target should have `id` property and can overwrite some config fields.
    *
    * @returns {Array<Object>}
    */
-  createEnvs: function () {
+  createTargets: function () {
     return [
       {
         /**
-         * Each environment must have unique id
+         * Each target must have unique id
          * @type {String}
          */
-        id: 'default-env',
+        id: 'default-target',
         /**
-         * Env own concurrency limit
+         * Target own concurrency limit
          * @type {Number}
          */
         concurrency: 0,
@@ -99,13 +99,13 @@ module.exports = {
   },
 
   /**
-   * Creates one-line env label to be shown in reports
+   * Creates one-line target label to be shown in reports
    *
-   * @param {Object} env
+   * @param {Object} target
    * @returns {String}
    */
-  createEnvLabel: function (env) {
-    return env.id;
+  createTargetLabel: function (target) {
+    return target.id;
   },
 
   /**
@@ -136,7 +136,7 @@ module.exports = {
    * @param {Object} params.session
    * @param {Function} params.fn
    * @param {Object} params.context
-   * @param {Object} params.env
+   * @param {Object} params.target
    * @param {Suite} params.suite
    * @param {Number} params.attempt
    * @param {Test} [params.test]

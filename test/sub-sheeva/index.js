@@ -11,8 +11,8 @@ const SHEEVA_PATH = `../../${process.env.SHEEVA_DIR || 'src'}/`;
 const BASE_CONFIG = {
   concurrency: 1,
   splitSuites: false,
-  createEnvs: function () {
-    return [{id: 'env1'}];
+  createTargets: function () {
+    return [{id: 'target1'}];
   },
 };
 

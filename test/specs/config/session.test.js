@@ -48,7 +48,7 @@ describe('config startSession / endSession hooks', () => {
       `], {config});
 
       return expectResolve(result, {
-        env1: {
+        target1: {
           session0: [
             'SESSION_START 0',
             'SESSION_END 0',
@@ -81,7 +81,7 @@ describe('config startSession / endSession hooks', () => {
       `], {config});
 
       return expectResolve(result, {
-        env1: {
+        target1: {
           session0: [
             'SESSION_START 0',
             'SESSION_END 0',
@@ -152,7 +152,7 @@ describe('config startSession / endSession hooks', () => {
      return expectReject(result, {
      message: 'err',
      report: {
-     env1: {
+     target1: {
      session0: [
      'SESSION_START 0',
      'SESSION_END 0',
@@ -189,7 +189,7 @@ describe('config startSession / endSession hooks', () => {
      return expectReject(result, {
      message: 'err',
      report: {
-     env1: {
+     target1: {
      session0: [
      'SESSION_START 0',
      'SESSION_END 0',
@@ -207,13 +207,13 @@ describe('config startSession / endSession hooks', () => {
      });
      });
      */
-    it('should not call endSession if startSession was not called (error in create envs)', run => {
+    it('should not call endSession if startSession was not called (error in create targets)', run => {
       let a = 0;
       let b = 0;
       const config = {
         startSession: () => a++,
         endSession: () => b++,
-        createEnvs: () => {
+        createTargets: () => {
           throw new Error('err');
         }
       };

@@ -36,7 +36,7 @@ const HookFn = module.exports = class HookFn {
   _callFn() {
     const params = {
       session: this._session,
-      env: this._session.env,
+      target: this._session.target,
       fn: this._hook.fn,
       hook: this._hook,
       suite: this._hook.parent,
@@ -54,7 +54,7 @@ const HookFn = module.exports = class HookFn {
   _emit(event, data) {
     data = Object.assign({
       session: this._session,
-      env: this._session.env,
+      target: this._session.target,
       hook: this._hook,
       suite: this._hook.parent,
     }, data);

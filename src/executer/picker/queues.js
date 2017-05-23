@@ -1,5 +1,5 @@
 /**
- * Picks whole queues from first suitable env
+ * Picks whole queues from first suitable target
  */
 
 const {result} = require('../../result');
@@ -10,35 +10,35 @@ module.exports = class Queues {
    * Constructor
    */
   constructor() {
-    this._envQueues = new Map();
+    this._targetQueues = new Map();
     this._createQueues();
   }
 
   /**
-   * Picks first available queue from envs
+   * Picks first available queue from targets
    *
-   * @param {Array} envs
+   * @param {Array} targets
    * @returns {Queue}
    */
-  pickNext(envs) {
-    for (let env of envs) {
-      const queues = this._envQueues.get(env);
+  pickNext(targets) {
+    for (let target of targets) {
+      const queues = this._targetQueues.get(target);
       if (queues.length) {
-        // console.log(`${env.id}: picked queue with ${queues[0].tests.length} test(s)`);
+        // console.log(`${target.id}: picked queue with ${queues[0].tests.length} test(s)`);
         return queues.shift();
       }
     }
   }
 
   // todo: getRemainingQueues
-  getRemaining(env) {
-    return this._envQueues.get(env);
+  getRemaining(target) {
+    return this._targetQueues.get(target);
   }
 
   _createQueues() {
-    result.flatSuitesPerEnv.forEach((flatSuites, env) => {
+    result.flatSuitesPerTarget.forEach((flatSuites, target) => {
       const queues = flatSuites.map(flatSuite => new Queue(flatSuite.tests));
-      this._envQueues.set(env, queues);
+      this._targetQueues.set(target, queues);
     });
   }
 };

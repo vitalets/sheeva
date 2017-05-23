@@ -11,9 +11,9 @@ const {result} = require('../../result');
 const SuiteFlattener = require('./suite-flattener');
 
 module.exports = function () {
-  const {topSuitesPerEnv, flatSuitesPerEnv} = result;
-  topSuitesPerEnv.forEach((topSuites, env) => {
+  const {topSuitesPerTarget, flatSuitesPerTarget} = result;
+  topSuitesPerTarget.forEach((topSuites, target) => {
     const flatSuites = new SuiteFlattener({children: topSuites.toArray()}).flatten();
-    flatSuitesPerEnv.set(env, flatSuites);
+    flatSuitesPerTarget.set(target, flatSuites);
   });
 };

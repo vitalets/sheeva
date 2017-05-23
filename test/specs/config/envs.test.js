@@ -1,15 +1,15 @@
-describe('config envs', () => {
+describe('config targets', () => {
 
   beforeEach(context => {
     context.runOptions.include = ['SESSION', 'TEST_END'];
   });
 
-  it('should run tests in all envs', run => {
+  it('should run tests in all targets', run => {
     const config = {
-      createEnvs: function () {
+      createTargets: function () {
         return [
-          {id: 'env1'},
-          {id: 'env2'},
+          {id: 'target1'},
+          {id: 'target2'},
         ];
       },
     };
@@ -21,7 +21,7 @@ describe('config envs', () => {
     `, {config});
 
     return expectResolve(report, {
-      env1: {
+      target1: {
         session0: [
           'SESSION_START 0',
           'TEST_END test 0',
@@ -29,7 +29,7 @@ describe('config envs', () => {
           'SESSION_END 0'
         ]
       },
-      env2: {
+      target2: {
         session1: [
           'SESSION_START 1',
           'TEST_END test 0',
@@ -40,12 +40,12 @@ describe('config envs', () => {
     });
   });
 
-  it('should emit env events correctly', run => {
+  it('should emit target events correctly', run => {
     const config = {
-      createEnvs: function () {
+      createTargets: function () {
         return [
-          {id: 'env1'},
-          {id: 'env2'},
+          {id: 'target1'},
+          {id: 'target2'},
         ];
       },
     };
@@ -53,22 +53,22 @@ describe('config envs', () => {
       describe('suite', () => {
         it('test 0', noop);
       });
-    `, {config, flat: true, include: ['ENV', 'TEST_END']});
+    `, {config, flat: true, include: ['TARGET', 'TEST_END']});
 
     return expectResolve(report, [
-      'ENV_START env1',
+      'TARGET_START target1',
       'TEST_END test 0',
-      'ENV_END env1',
-      'ENV_START env2',
+      'TARGET_END target1',
+      'TARGET_START target2',
       'TEST_END test 0',
-      'ENV_END env2'
+      'TARGET_END target2'
     ]);
   });
 
 
-  it('should fail in case of no envs', run => {
+  it('should fail in case of no targets', run => {
     const config = {
-      createEnvs: function () {
+      createTargets: function () {
         return [];
       },
     };
@@ -78,16 +78,16 @@ describe('config envs', () => {
         });
       `, {config});
 
-    return expectReject(report, 'You should provide at least one env');
+    return expectReject(report, 'You should provide at least one target');
   });
 
-  it('should filter envs by env option', run => {
+  it('should filter targets by target option', run => {
     const config = {
-      env: 'env1',
-      createEnvs: function () {
+      target: 'target1',
+      createTargets: function () {
         return [
-          {id: 'env1'},
-          {id: 'env2'},
+          {id: 'target1'},
+          {id: 'target2'},
         ];
       },
     };

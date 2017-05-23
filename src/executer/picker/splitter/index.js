@@ -14,30 +14,30 @@ module.exports = class Splitter {
   }
 
   /**
-   * Tries to split the longest running queue in specified envs
+   * Tries to split the longest running queue in specified targets
    *
-   * @param {Array<Env>} envs
+   * @param {Array<Target>} targets
    * @param {Object} options
    * @param {Boolean} options.isSessionStarted
    */
-  trySplit(envs, options = {}) {
+  trySplit(targets, options = {}) {
     this._stateOptions = {isSessionStarted: options.isSessionStarted};
-    const splittableEnvs = this._extractSplittableEnvs(envs);
-    this._createCandidates(splittableEnvs);
+    const splittableTargets = this._extractSplittableTargets(targets);
+    this._createCandidates(splittableTargets);
     this._filterCandidates();
     this._sortCandidates();
     return this._trySplit();
   }
 
-  _extractSplittableEnvs(envs) {
-    const arr = envs.filter(env => this._state.canSplit(env, this._stateOptions));
+  _extractSplittableTargets(targets) {
+    const arr = targets.filter(target => this._state.canSplit(target, this._stateOptions));
     return new Set(arr);
   }
 
-  _createCandidates(splittableEnvs) {
+  _createCandidates(splittableTargets) {
     this._candidates = this._workers.toArray()
       .filter(worker => Boolean(worker.queue))
-      .filter(worker => splittableEnvs.has(worker.queue.env))
+      .filter(worker => splittableTargets.has(worker.queue.target))
       .map(worker => new Candidate(worker.queue));
   }
 
@@ -55,12 +55,12 @@ module.exports = class Splitter {
       if (queue) {
         return queue;
       } else {
-        this._setCantSplit(candidate.env);
+        this._setCantSplit(candidate.target);
       }
     }
   }
 
-  _setCantSplit(env) {
-    this._state.setCantSplit(env, this._stateOptions);
+  _setCantSplit(target) {
+    this._state.setCantSplit(target, this._stateOptions);
   }
 };

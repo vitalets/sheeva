@@ -5,7 +5,7 @@
  * 1. If suite has before/after hooks, flatten() returns array with single flatSuite element
  * 2. If suite does not have before/after hooks, flatten() returns array with several flatSuites corresponding
  *    to children suites. When it occurs for file suite it is basically `suite splitting` because each sub-suite
- *    can be sorted individually to beginning or end of env suites (depending on it's before/after count).
+ *    can be sorted individually to beginning or end of target suites (depending on it's before/after count).
  *
  * @typedef {Object} FlatSuite
  * @property {Array<Test>} tests

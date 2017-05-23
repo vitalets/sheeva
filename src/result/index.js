@@ -42,11 +42,11 @@ class Result {
   }
 
   _initReader() {
-    this._result.topSuitesPerEnv = new ExtraMap();
-    this._result.annotationsPerEnv = new ExtraMap();
+    this._result.topSuitesPerTarget = new ExtraMap();
+    this._result.annotationsPerTarget = new ExtraMap();
     this._result.processedFiles = new ExtraSet();
-    config.envs.forEach(env => {
-      this._result.annotationsPerEnv.set(env, {
+    config.targets.forEach(target => {
+      this._result.annotationsPerTarget.set(target, {
         only: new ExtraSet(),
         skip: new ExtraSet(),
         tags: new ExtraMap(),
@@ -55,7 +55,7 @@ class Result {
   }
 
   _initTransformer() {
-    this._result.flatSuitesPerEnv = new ExtraMap();
+    this._result.flatSuitesPerTarget = new ExtraMap();
     this._result.only = {
       files: new ExtraSet()
     };
@@ -71,10 +71,10 @@ class Result {
 
   _initExecuter() {
     this._result.sessions = new ExtraMap();
-    this._result.executionPerEnv = new ExtraMap();
+    this._result.executionPerTarget = new ExtraMap();
     this._result.workers = new ExtraSet();
-    config.envs.forEach((env, index) => {
-      this._result.executionPerEnv.set(env, {
+    config.targets.forEach((target, index) => {
+      this._result.executionPerTarget.set(target, {
         index,
         started: false,
         ended: false,

@@ -99,13 +99,13 @@ describe('config runner', () => {
     });
   });
 
-  it('should not call startRunner, but call endRunner in case of error in createEnvs', run => {
+  it('should not call startRunner, but call endRunner in case of error in createTargets', run => {
     let a = 0;
     let b = 0;
     const config = {
       startRunner: () => Promise.resolve().then(() => a++),
       endRunner: () => Promise.resolve().then(() => b++),
-      createEnvs: () => { throw new Error('err'); }
+      createTargets: () => { throw new Error('err'); }
     };
     const result = run([`
       describe('suite 1', () => {
