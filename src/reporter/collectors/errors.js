@@ -3,7 +3,7 @@
  */
 
 const {result} = require('../../result');
-const {HOOK_END, TEST_END, UNHANDLED_ERROR} = require('../../events');
+const {HOOK_END, TEST_END, EXTRA_ERROR} = require('../../events');
 
 module.exports = class ErrorsCollector {
   constructor() {
@@ -14,7 +14,7 @@ module.exports = class ErrorsCollector {
     switch (event) {
       case HOOK_END:
       case TEST_END:
-      case UNHANDLED_ERROR:
+      case EXTRA_ERROR:
         if (data.error && !this._errors.has(data.error)) {
           this._errors.set(data.error, data);
         }

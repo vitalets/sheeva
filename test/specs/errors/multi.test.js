@@ -123,4 +123,26 @@ describe('multi errors', () => {
     ]);
   });
 
+  it('should collect all errors', run => {
+    const report = run(`
+      describe('suite 1', () => {
+        afterEach(() => { throw new Error('err2') });
+        after(() => { throw new Error('err3') });
+        describe('suite 2', () => {
+          beforeEach(() => { throw new Error('err4') });
+          afterEach(() => { throw new Error('err5') });
+          after(() => { throw new Error('err6') });
+          it('test 0', noop);
+        });
+      });
+    `, {result: true});
+
+    return expectResolve(report).then(result => {
+      expect(result.errors.size, 'to equal', 5);
+      const errors = result.errors.toArray().map(item => item.error.message).join(' ');
+      expect(errors, 'to equal', 'err4 err5 err2 err6 err3');
+    });
+  });
+
+
 });

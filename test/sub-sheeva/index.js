@@ -46,8 +46,8 @@ module.exports = class SubSheeva {
       .then(result => output = this._options.result ? result : this._reporter.getReport())
       .catch(e => {
         return this._options.result
-          ? attachToError(e,  'result', output)
-          : attachToError(e,  'report', output || this._reporter.getReport());
+          ? attachToError(e, 'result', output)
+          : attachToError(e, 'report', output || this._reporter.getReport());
       })
       .finally(() => this._tempFiles.cleanup());
   }

@@ -30,7 +30,7 @@
     "devtool": "devtool src-stable/cli -- --config=test/sheeva.config.js --env=sync-env --reporters=./test/debug-reporter.js --timeout=0",
     "precommit": "npm run lint-staged && npm run circular && npm run tt -- --no-only",
     "prepush": "npm run code && npm run ttdev -- --no-only && npm run copy",
-    "copy": "cp -R src/ src-stable/",
+    "copy": "rm -rf src-stable && cp -R src/ src-stable/",
     "runtyper": "npm run instrument && npm run test-runtyper",
     "instrument": "babel src -d src-instrumented --source-maps"
   },
