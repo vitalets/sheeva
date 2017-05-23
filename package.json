@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "commander": "^2.9.0",
-    "glob": "^7.1.1",
+    "glob": "^7.1.2",
     "promise.prototype.finally.err": "^2.0.1"
   },
   "devDependencies": {
@@ -49,12 +49,12 @@
     "eslint": "^3.19.0",
     "eslint-plugin-spellcheck": "0.0.8",
     "husky": "^0.13.3",
-    "lint-staged": "^3.4.1",
+    "lint-staged": "^3.4.2",
     "madge": "^1.6.0",
     "sheeva-reporter-console": "github:vitalets/sheeva-reporter-console",
     "source-map-support": "^0.4.15",
     "treeify": "^1.0.1",
-    "unexpected": "^10.27.0"
+    "unexpected": "^10.29.0"
   },
   "keywords": [
     "webdriver",
