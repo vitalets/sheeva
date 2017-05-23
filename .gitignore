@@ -11,3 +11,4 @@ npm-debug.log
 sheeva.timings.json
 /src-stable
 /src-instrumented
+/dist

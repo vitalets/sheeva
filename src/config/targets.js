@@ -22,7 +22,6 @@ module.exports = class Targets {
     this._assertLength();
     this._assertIds();
     this._setLabels();
-    this._setSessions();
     return this._targets;
   }
 
@@ -53,9 +52,5 @@ module.exports = class Targets {
     this._targets.forEach(target => {
       target.label = target.label || this._config.createTargetLabel(target);
     });
-  }
-
-  _setSessions() {
-    this._targets.forEach(target => target.sessions = []);
   }
 };

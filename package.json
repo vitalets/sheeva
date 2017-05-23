@@ -30,6 +30,7 @@
     "norep": "npm t -- --reporters=",
     "ci": "npm run code && npm run ttdev",
     "debug": "npm t -- --reporters=./test/debug-reporter.js",
+    "build": "rollup -c",
     "devtool": "devtool src-stable/cli -- --config=test/sheeva.config.js --target=sync-target --reporters=./test/debug-reporter.js --timeout=0",
     "precommit": "npm run lint-staged && npm run circular && npm run tt -- --no-only",
     "prepush": "npm run code && npm run ttdev -- --no-only && npm run copy",
@@ -38,7 +39,7 @@
     "instrument": "babel src -d src-instrumented --source-maps"
   },
   "lint-staged": {
-    "*.js": "eslint"
+    "src/**/*.js, test/**/*.js": "eslint"
   },
   "dependencies": {
     "commander": "^2.9.0",
@@ -54,6 +55,13 @@
     "husky": "^0.13.3",
     "lint-staged": "^3.4.2",
     "madge": "^1.6.0",
+    "rollup": "^0.41.6",
+    "rollup-analyzer": "^1.0.2",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-filesize": "^1.3.2",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.1.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
     "sheeva-reporter-console": "github:vitalets/sheeva-reporter-console",
     "source-map-support": "^0.4.15",
     "treeify": "^1.0.1",
