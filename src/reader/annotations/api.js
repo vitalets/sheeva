@@ -16,6 +16,7 @@ module.exports = class AnnotationAPI {
       $if: fn => this._currentAnnotation.addIf(fn),
       $timeout: ms => this._currentAnnotation.addTimeout(ms),
       $retry: count => this._currentAnnotation.addRetry(count),
+      $data: data => this._currentAnnotation.addData(data),
     };
   }
 

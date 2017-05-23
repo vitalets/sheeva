@@ -81,5 +81,6 @@ function extendBase(options, extraOptions) {
     parents: [],
     parent: undefined,
     timeout: options.timeout,
+    data: options.data,
   }, extraOptions);
 }

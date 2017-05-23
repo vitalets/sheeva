@@ -17,6 +17,7 @@ module.exports = class CurrentAnnotation {
     this._if = [];
     this._timeout = 0;
     this._retry = 0;
+    this._data = null;
   }
 
   addOnly() {
@@ -52,6 +53,10 @@ module.exports = class CurrentAnnotation {
     this._retry = count;
   }
 
+  addData(data) {
+    this._data = data;
+  }
+
   get(target) {
     if (this._isIgnored(target)) {
       return {
@@ -65,6 +70,7 @@ module.exports = class CurrentAnnotation {
         skip: this._skip,
         timeout: this._timeout,
         retry: this._retry,
+        data: this._data,
       };
     }
   }
