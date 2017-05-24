@@ -125,7 +125,7 @@ describe('annotation: only', () => {
     `, {config});
 
     return expectReject(result, {
-      message: new RegExp('^' + escapeRe('ONLY is disallowed but found in 1 file(s):\n ./test/temp')),
+      message: new RegExp('^' + escapeRe('ONLY is disallowed but found in 1 file(s):\n')),
     });
   });
 

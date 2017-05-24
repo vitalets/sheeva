@@ -2,9 +2,8 @@
  * Runs specified code in fresh instance of Sheeva
  */
 
-const path = require('path');
 require('promise.prototype.finally.err').shim();
-const TempFiles = require('./tempfiles');
+const path = require('path');
 const Reporter = require('./reporter');
 
 const SHEEVA_PATH = `../../${process.env.SHEEVA_DIR || 'src'}/`;
@@ -32,8 +31,8 @@ module.exports = class SubSheeva {
    * @returns {Promise}
    */
   constructor(code, options) {
+    this._files = this._createFilesArray(code, options);
     this._options = options;
-    this._tempFiles = new TempFiles(code, options.session);
     this._reporter = new Reporter(options);
     this._config = this._createConfig(options.config);
     this._sheeva = null;
@@ -48,16 +47,25 @@ module.exports = class SubSheeva {
         return this._options.result
           ? attachToError(e, 'result', output)
           : attachToError(e, 'report', output || this._reporter.getReport());
-      })
-      .finally(() => this._tempFiles.cleanup());
+      });
+  }
+
+  _createFilesArray(code, {session}) {
+    code = Array.isArray(code) ? code : [code];
+    return code.map((item, index) => {
+      return {
+        name: `temp-${session.target.id}-${session.index}-${index}.js`,
+        content: item,
+      };
+    });
   }
 
   _createConfig(config) {
     const extraConfig = {
       reporters: this._reporter,
     };
-    if (this._tempFiles.files.length) {
-      extraConfig.files = this._tempFiles.files;
+    if (this._files.length) {
+      extraConfig.files = this._files;
     }
     return Object.assign({}, BASE_CONFIG, config, extraConfig);
   }

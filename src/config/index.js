@@ -53,8 +53,8 @@ class Configurator {
     assert(this._config.files.length, `Empty config.files`);
     this._config.files.forEach(file => {
       if (typeof file === 'string') return;
-      if (file && file.name && file.content) return;
-      throw new Error(`Files should be array of String or Object {name, content}, got ${file}`);
+      if (file && file.name) return;
+      throw new Error(`Files should be array of String or Object {name, content}, got ${JSON.stringify(file)}`);
     });
   }
 

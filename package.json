@@ -39,7 +39,7 @@
     "instrument": "babel src -d src-instrumented --source-maps"
   },
   "lint-staged": {
-    "src/**/*.js, test/**/*.js": "eslint"
+    "{src,test}/**/*.js": "eslint"
   },
   "dependencies": {
     "assert": "^1.4.1",

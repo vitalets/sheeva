@@ -12,12 +12,12 @@ const INCLUDE_EVENTS = new Set([
   events.WORKER_DELETE,
   events.SESSION_START,
   events.SESSION_END,
-  //events.SUITE_START,
-  //events.SUITE_END,
+  events.SUITE_START,
+  events.SUITE_END,
   //events.QUEUE_SPLIT,
   //events.HOOK_START,
   //events.HOOK_END,
-  //events.TEST_START,
+  events.TEST_START,
   events.TEST_END,
 ]);
 
@@ -33,9 +33,14 @@ module.exports = class DebugReporter {
   }
 
   _printEvent(event, data) {
+    if (event === events.RUNNER_START) {
+      console.log(`${event} files: ${data.result.matchedFiles.size}, tests: ${data.result.runner.tests.total}`);
+      return;
+    }
     const session = data.session ? ` session #${data.session.index}` : '';
+    const worker = data.worker ? ` worker #${data.worker.index}` : '';
     const name = this._getName(data);
-    console.log(`${event}${session}${name}`);
+    console.log(`${event}${worker}${session}${name}`);
   }
 
   _printError(event, data) {

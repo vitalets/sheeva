@@ -38,8 +38,53 @@ describe('config.files', () => {
     return expectResolve(result, ['TEST_END test 1']);
   });
 
-  xit('should process file as path', run => {});
-  xit('should process file as pattern', run => {});
-  xit('should process file as url', run => {});
+  // $if(() => typeof process === 'object' && process.versions && process.versions.node);
+  describe('node', () => {
+    it('should process file as path', run => {
+      const config = {files: ['test/data/test.js']};
+      const result = run([], {config});
+      return expectResolve(result, ['TEST_END test 1']);
+    });
+
+    it('should process directory (without slash)', run => {
+      const config = {files: 'test/data/subdir1'};
+      const result = run([], {config});
+      return expectResolve(result, [
+        'TEST_END test 1',
+        'TEST_END test 2'
+      ]);
+    });
+
+    it('should process directory (with slash)', run => {
+      const config = {files: ['test/data/subdir2/']};
+      const result = run([], {config});
+      return expectResolve(result, [
+        'TEST_END test 1',
+        'TEST_END test 2'
+      ]);
+    });
+
+    it('should process pattern *.js', run => {
+      const config = {files: ['test/data/subdir3/*.js']};
+      const result = run([], {config});
+      return expectResolve(result, [
+        'TEST_END test 1',
+        'TEST_END test 2'
+      ]);
+    });
+
+    it('should process pattern **', run => {
+      const config = {files: ['test/data/subdir4/**']};
+      const result = run([], {config});
+      return expectResolve(result, [
+        'TEST_END test 1',
+        'TEST_END test 2'
+      ]);
+    });
+  });
+
+  xdescribe('browser', () => {
+    xit('should process file as url', () => {});
+  });
 
 });
