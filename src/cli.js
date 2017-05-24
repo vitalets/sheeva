@@ -31,7 +31,7 @@ function run() {
 }
 
 function success(res) {
-  exit(res.errors.length);
+  exit(res.errors.size);
 }
 
 function fail(runnerError) {
