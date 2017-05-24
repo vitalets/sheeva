@@ -82,7 +82,7 @@ describe('annotation: if', () => {
     });
   });
 
-  it('should throw error if not fn passed to $ignore', run => {
+  it('should throw error if fn not passed', run => {
     const result = run(`
       $if(123); 
       describe('suite 0', () => {
@@ -91,6 +91,26 @@ describe('annotation: if', () => {
     `);
 
     return expectReject(result, '$if() should accept function as parameter');
+  });
+
+  it('should merge several conditions', run => {
+    const result = run(`
+      $if(() => true);
+      $if(() => true);
+      it('test 1', noop);
+
+      $if(() => true);
+      $if(() => false);
+      it('test 2', noop);
+
+      $if(() => false);
+      $if(() => true);
+      it('test 3', noop);
+    `);
+
+    return expectResolve(result, [
+      'TEST_END test 1',
+    ]);
   });
 
 });

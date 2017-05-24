@@ -15,13 +15,11 @@ module.exports = {
   newSessionPerFile: false,
   splitSuites: true,
   createTargets: function () {
-    return [
+    const targets = [
       {id: 'sync-target'},
       {id: 'async-target', delay: 10},
     ];
-  },
-  startRunner: function (config) {
-    config.targets.forEach(target => target.delay ? createSubConfig(target) : null);
+    return targets.map(addConfig);
   },
   callTestHookFn: function ({fn, session, context, hook, target}) {
     if (hook) {
@@ -32,23 +30,25 @@ module.exports = {
     const run = function (code, options = {}) {
       const configFromHooks = context.runOptions && context.runOptions.config;
       const configFromTest = options.config;
-      options.config = Object.assign({}, target.subConfig, configFromHooks, configFromTest);
-      const finalOptions = Object.assign({session}, context.runOptions, options);
-      return new SubSheeva(code, finalOptions).run();
+      const configFromTarget = target.config;
+      options.config = Object.assign({}, configFromTarget, configFromHooks, configFromTest);
+      const subSheevaOptions = Object.assign({session}, context.runOptions, options);
+      return new SubSheeva(code, subSheevaOptions).run();
     };
     return fn(run);
   },
 };
 
-function createSubConfig(target) {
-  target.subConfig = {
+function addConfig(target) {
+  target.config = {
     callTestHookFn: function (params) {
       const {fn, session, context, attempt} = params;
-      return params !== noop
+      return target.delay === undefined
         ? fn(context, session, attempt)
         : callAsync(target.delay, params);
     }
   };
+  return target;
 }
 
 function callAsync(delay, {fn, session, context, attempt}) {

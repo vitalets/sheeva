@@ -1,3 +1,4 @@
+$if(target => target.id === 'sync');
 describe('config.files', () => {
 
   it('should reject for empty config.files', run => {
