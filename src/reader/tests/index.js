@@ -4,7 +4,7 @@
 
 const {result} = require('../../result');
 const ExtraMap = require('../../utils/extra-map');
-const CurrentSuites = require('./current');
+const CurrentSuites = require('./current-suites');
 const Walker = require('./walker');
 const Bdd = require('./api/bdd');
 const factory = require('./factory');
@@ -30,5 +30,9 @@ module.exports = class TestsReader {
 
   fill() {
     this._walker.fill(this._topSuitesPerFn);
+  }
+
+  fillAsync() {
+    return this._walker.fillAsync(this._topSuitesPerFn);
   }
 };

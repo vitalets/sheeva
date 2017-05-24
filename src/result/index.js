@@ -44,7 +44,7 @@ class Result {
   _initReader() {
     this._result.topSuitesPerTarget = new ExtraMap();
     this._result.annotationsPerTarget = new ExtraMap();
-    this._result.processedFiles = new ExtraSet();
+    this._result.matchedFiles = new ExtraSet();
     config.targets.forEach(target => {
       this._result.annotationsPerTarget.set(target, {
         only: new ExtraSet(),

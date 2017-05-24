@@ -4,15 +4,13 @@
  * - flatten and sort
  */
 
+const assert = require('assert');
 const {result} = require('../result');
 const filter = require('./filter');
 const flatten = require('./flatten');
 
 module.exports = function () {
-  if (result.topSuitesPerTarget.size > 0) {
-    filter();
-    flatten();
-  } else {
-    throw new Error('No files matched');
-  }
+  assert(result.topSuitesPerTarget.size, 'No top suites');
+  filter();
+  flatten();
 };

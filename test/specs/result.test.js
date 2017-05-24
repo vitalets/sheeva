@@ -23,7 +23,7 @@ describe('result', () => {
         'annotationsPerTarget',
         'flatSuitesPerTarget',
         'executionPerTarget',
-        'processedFiles',
+        'matchedFiles',
         'sessions',
         'workers',
       ]);

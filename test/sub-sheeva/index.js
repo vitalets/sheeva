@@ -53,10 +53,13 @@ module.exports = class SubSheeva {
   }
 
   _createConfig(config) {
-    return Object.assign({}, BASE_CONFIG, config, {
-      files: this._tempFiles.files,
+    const extraConfig = {
       reporters: this._reporter,
-    });
+    };
+    if (this._tempFiles.files.length) {
+      extraConfig.files = this._tempFiles.files;
+    }
+    return Object.assign({}, BASE_CONFIG, config, extraConfig);
   }
 
   /**

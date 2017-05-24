@@ -24,6 +24,7 @@ class Configurator {
     this._merge(rawConfig);
     this._fixTypes();
     this._validateProps();
+    this._validateFiles();
     this._createTargets();
   }
 
@@ -45,6 +46,15 @@ class Configurator {
       const defaultValueType = typeof defaults[key];
       const msg = `Incorrect config option type for: ${key} (expected ${defaultValueType}, got ${valueType})`;
       assert.equal(valueType, defaultValueType, msg);
+    });
+  }
+
+  _validateFiles() {
+    assert(this._config.files.length, `Empty config.files`);
+    this._config.files.forEach(file => {
+      if (typeof file === 'string') return;
+      if (file && file.name && file.content) return;
+      throw new Error(`Files should be array of String or Object {name, content}, got ${file}`);
     });
   }
 

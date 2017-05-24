@@ -6,7 +6,7 @@
 const ExtraMap = require('../../utils/extra-map');
 const factory = require('./factory');
 
-module.exports = class Current {
+module.exports = class CurrentSuites {
   constructor(annotationsReader) {
     this._annotationsReader = annotationsReader;
     this._suites = null;
@@ -19,6 +19,7 @@ module.exports = class Current {
 
   /**
    * Sets array of suites to be filled from currently executed `describe` fn
+   * It is array because of several targets.
    *
    * @param {Array<Suite>} suites
    */

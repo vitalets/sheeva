@@ -92,10 +92,10 @@ describe('config targets', () => {
       },
     };
     const report = run(`
-        describe('suite', () => {
-          it('test 0', noop);
-        });
-      `, {config});
+      describe('suite', () => {
+        it('test 0', noop);
+      });
+    `, {config});
 
     return expectResolve(report, [
       'SESSION_START 0',

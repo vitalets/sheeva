@@ -42,6 +42,7 @@
     "src/**/*.js, test/**/*.js": "eslint"
   },
   "dependencies": {
+    "assert": "^1.4.1",
     "commander": "^2.9.0",
     "glob": "^7.1.2",
     "promise.prototype.finally.err": "^2.0.1"

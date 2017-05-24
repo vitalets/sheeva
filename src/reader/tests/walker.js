@@ -7,6 +7,16 @@ module.exports = class Walker {
     this._currentSuites = currentSuites;
   }
 
+  fillAsync(fnSuites) {
+    let result = Promise.resolve();
+    fnSuites.forEach((suites, fn) => {
+      result = result
+        .then(() => this._fillSuites(suites, fn))
+        .then(() => this._fillChildSuites());
+    });
+    return result;
+  }
+
   fill(fnSuites) {
     fnSuites.forEach((suites, fn) => {
       this._fillSuites(suites, fn);
@@ -16,10 +26,11 @@ module.exports = class Walker {
 
   _fillSuites(suites, fn) {
     this._currentSuites.set(suites);
-    fn();
+    return fn();
   }
 
   _fillChildSuites() {
+    // console.log('_fillChildSuites');
     this.fill(this._currentSuites.childFnSuites);
   }
 };

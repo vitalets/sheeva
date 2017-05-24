@@ -2,13 +2,14 @@
  * Read test files into suites tree structure
  */
 
-const path = require('path');
-const glob = require('glob');
+const assert = require('assert');
 const {config} = require('../config');
 const {result} = require('../result');
 const PropsInjector = require('../utils/props-injector');
 const AnnotationsReader = require('./annotations');
 const TestsReader = require('./tests');
+const EvalReader = require('./files/eval');
+const fsReader = require('./files/fs');
 
 module.exports = class Reader {
   /**
@@ -16,7 +17,8 @@ module.exports = class Reader {
    */
   constructor() {
     this._context = global;
-    this._files = result.processedFiles;
+    this._matchedFiles = result.matchedFiles;
+    this._filesReader = null;
     this._annotationsReader = new AnnotationsReader();
     this._testsReader = new TestsReader(this._annotationsReader);
     this._propsInjector = new PropsInjector();
@@ -26,25 +28,43 @@ module.exports = class Reader {
    * Reads patterns and creates suite tree
    */
   read() {
-    this._expandPatterns();
+    this._createFilesReader();
+    this._matchFiles();
     this._createTopSuites();
-    this._injectApi();
-    this._readFiles();
-    this._cleanupApi();
+    return this._filesReader.isAsync
+      ? this._fillTopSuitesAsync()
+      : this._fillTopSuites();
   }
 
-  _expandPatterns() {
-    config.files.forEach(pattern => {
-      const files = expandPattern(pattern);
-      files.forEach(file => this._files.add(file));
+  _createFilesReader() {
+    this._filesReader = typeof config.files[0] === 'string' ? fsReader : new EvalReader();
+  }
+
+  _matchFiles() {
+    config.files.forEach(file => {
+      const fileNames = this._filesReader.matchFile(file);
+      fileNames.forEach(fileName => this._matchedFiles.add(fileName));
     });
+    assert(this._matchedFiles.size, 'No files matched');
   }
 
   _createTopSuites() {
-    this._files.forEach(file => {
-      const fn = () => readFile(file);
-      config.targets.forEach(target => this._testsReader.addTopSuite(target, file, fn));
+    this._matchedFiles.forEach(fileName => {
+      const fn = () => this._filesReader.executeFile(fileName);
+      config.targets.forEach(target => this._testsReader.addTopSuite(target, fileName, fn));
     });
+  }
+
+  _fillTopSuites() {
+    this._injectApi();
+    this._testsReader.fill();
+    this._cleanupApi();
+  }
+
+  _fillTopSuitesAsync() {
+    this._injectApi();
+    return this._testsReader.fillAsync()
+      .finally(() => this._cleanupApi());
   }
 
   _injectApi() {
@@ -56,28 +76,7 @@ module.exports = class Reader {
     this._propsInjector.inject(this._context, methods);
   }
 
-  _readFiles() {
-    this._testsReader.fill();
-  }
-
   _cleanupApi() {
     this._propsInjector.cleanup();
   }
 };
-
-// todo: move to separate module for browser
-function readFile(file) {
-  require(path.resolve(file));
-}
-
-// todo: move to separate module for browser
-function expandPattern(pattern) {
-  const isPattern = pattern.indexOf('*') >= 0;
-  const isFile = /\.[a-z]{1,3}$/i.test(pattern);
-  if (!isPattern && !isFile) {
-    pattern = path.join(pattern, '**');
-  }
-  return glob.sync(pattern, {nodir: true});
-}
-
-

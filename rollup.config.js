@@ -1,8 +1,8 @@
 
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
-import builtins from 'rollup-plugin-node-builtins';
-import globals from 'rollup-plugin-node-globals';
+//import builtins from 'rollup-plugin-node-builtins';
+// import globals from 'rollup-plugin-node-globals';
 import filesize from 'rollup-plugin-filesize';
 
 export default {
@@ -12,10 +12,16 @@ export default {
   moduleName: 'Sheeva',
   sourceMap: true,
   plugins: [
-    resolve({jsnext: true, main: true}),
+    resolve({
+      jsnext: true,
+      main: true,
+      browser: true,
+      preferBuiltins: false,
+      extensions: ['.browser.js', '.js']
+    }),
     commonjs(),
-    globals(),
-    builtins(),
+  //  globals(),
+  //  builtins(),
     filesize(),
   ]
 };
