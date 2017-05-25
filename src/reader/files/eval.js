@@ -13,7 +13,7 @@ module.exports = class EvalReader {
   }
   executeFile(fileName) {
     const content = this._content.get(fileName);
-    const f = new Function(content);
+    const f = typeof content === 'function' ? content : new Function(content);
     f();
   }
 };

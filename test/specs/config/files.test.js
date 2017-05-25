@@ -1,4 +1,4 @@
-$if(target => target.id === 'sync');
+$if(target => target.id === 'sync-target');
 describe('config.files', () => {
 
   it('should reject for empty config.files', run => {
@@ -25,7 +25,7 @@ describe('config.files', () => {
     return expectReject(result, 'Files should be array of String or Object {name, content}, got 123');
   });
 
-  it('should process file as object', run => {
+  it('should process file as object with string content', run => {
     const config = {
       files: [{
         name: 'test.js',
@@ -33,6 +33,21 @@ describe('config.files', () => {
           describe('suite 1', () => {
             it('test 1', noop);
           });`
+      }],
+    };
+    const result = run([], {config});
+    return expectResolve(result, ['TEST_END test 1']);
+  });
+
+  it('should process file as object with function content', run => {
+    const config = {
+      files: [{
+        name: 'test.js',
+        content: () => {
+          describe('suite 1', () => {
+            it('test 1', noop);
+          });
+        }
       }],
     };
     const result = run([], {config});
