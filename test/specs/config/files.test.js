@@ -48,6 +48,12 @@ describe('config.files', () => {
 
   $if(() => typeof window !== 'undefined');
   describe('browser', () => {
+    it('should process file as string url', run => {
+      const config = {files: ['data/test.js']};
+      const result = run([], {config});
+      return expectResolve(result, ['TEST_END test 1']);
+    });
+
     it('should reject for incorrect url', run => {
       const config = {
         files: ['abc'],
