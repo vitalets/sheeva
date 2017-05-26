@@ -1,15 +1,20 @@
 
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
-import filesize from 'rollup-plugin-filesize';
+import globals from 'rollup-plugin-node-globals';
+import string from 'rollup-plugin-string';
 
 export default {
-  entry: `${process.env.SHEEVA_DIR || 'src'}/index.js`,
-  dest: 'dist/sheeva.js',
-  format: 'umd',
-  moduleName: 'Sheeva',
+  entry: 'test/run/browser/sheeva.config.js',
+  dest: 'dist/test/sheeva-config.js',
+  format: 'iife',
+  moduleName: 'sheevaConfig',
   sourceMap: true,
+  useStrict: false,
   plugins: [
+    string({
+      include: 'dist/sheeva.js'
+    }),
     resolve({
       jsnext: true,
       main: true,
@@ -18,7 +23,7 @@ export default {
       extensions: ['.browser.js', '.js']
     }),
     commonjs(),
-    filesize(),
+    globals(),
   ]
 };
 

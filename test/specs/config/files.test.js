@@ -9,14 +9,6 @@ describe('config.files', () => {
     return expectReject(result, 'Empty config.files');
   });
 
-  it('should reject for empty matched files', run => {
-    const config = {
-      files: ['abc'],
-    };
-    const result = run([], {config});
-    return expectReject(result, 'No files matched');
-  });
-
   it('should reject for invalid files', run => {
     const config = {
       files: [123],
@@ -54,8 +46,27 @@ describe('config.files', () => {
     return expectResolve(result, ['TEST_END test 1']);
   });
 
-  // $if(() => typeof process === 'object' && process.versions && process.versions.node);
+  $if(() => typeof window !== 'undefined');
+  describe('browser', () => {
+    it('should reject for incorrect url', run => {
+      const config = {
+        files: ['abc'],
+      };
+      const result = run([], {config});
+      return expectReject(result, 'Can not load script abc');
+    });
+  });
+
+  $if(() => typeof window === 'undefined');
   describe('node', () => {
+    it('should reject for empty matched files', run => {
+      const config = {
+        files: ['abc'],
+      };
+      const result = run([], {config});
+      return expectReject(result, 'No files matched');
+    });
+
     it('should process file as path', run => {
       const config = {files: ['test/data/test.js']};
       const result = run([], {config});

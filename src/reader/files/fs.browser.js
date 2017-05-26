@@ -17,7 +17,7 @@ exports.executeFile = function (url) {
     script.type = 'text/javascript';
     script.onload = () => resolve(script);
     script.onerror = () => reject(new Error(`Can not load script ${url}`));
-    script.src = url;
+    script.src = url + '?' + Date.now();
     document.getElementsByTagName('head')[0].appendChild(script);
   });
 };

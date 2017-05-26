@@ -16,7 +16,7 @@ module.exports = class Reader {
    * Constructor
    */
   constructor() {
-    this._context = global;
+    this._context = getGlobal();
     this._matchedFiles = result.matchedFiles;
     this._filesReader = null;
     this._annotationsReader = new AnnotationsReader();
@@ -80,3 +80,15 @@ module.exports = class Reader {
     this._propsInjector.cleanup();
   }
 };
+
+function getGlobal() {
+  if (typeof window !== 'undefined') {
+    return window;
+  } else if (typeof global !== 'undefined') {
+    return global;
+  } if (typeof self !== 'undefined') {
+    return self;
+  } else {
+    throw new Error('Unknown global context');
+  }
+}

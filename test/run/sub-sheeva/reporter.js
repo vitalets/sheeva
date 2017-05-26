@@ -5,7 +5,7 @@
 
 /* eslint-disable complexity */
 
-const events = require('../../src/events');
+const events = require('../../../src/events');
 
 const DEFAULT_INCLUDE = ['TEST_END'];
 

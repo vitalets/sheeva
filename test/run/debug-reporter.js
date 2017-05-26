@@ -4,7 +4,7 @@
 
 /* eslint-disable no-console */
 
-const events = require('../src/events');
+const events = require('../../src/events');
 const INCLUDE_EVENTS = new Set([
   events.RUNNER_START,
   events.RUNNER_END,

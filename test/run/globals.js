@@ -2,10 +2,6 @@
  * Globals for tests
  */
 
-process.on('unhandledRejection', r => console.error(r)); // eslint-disable-line no-console
-
-require('source-map-support').install();
-
 const expect = require('unexpected');
 
 Object.assign(global, {

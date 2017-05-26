@@ -3,10 +3,9 @@
  */
 
 require('promise.prototype.finally.err').shim();
-const path = require('path');
+const getSheeva = require('./get-sheeva');
 const Reporter = require('./reporter');
 
-const SHEEVA_PATH = `../../${process.env.SHEEVA_DIR || 'src'}/`;
 const BASE_CONFIG = {
   concurrency: 1,
   splitSuites: false,
@@ -39,7 +38,8 @@ module.exports = class SubSheeva {
   }
 
   run() {
-    this._sheeva = this._createSheeva();
+    const Sheeva = getSheeva();
+    this._sheeva = new Sheeva(this._config);
     let output = null;
     return this._sheeva.run()
       .then(result => output = this._options.result ? result : this._reporter.getReport())
@@ -68,24 +68,6 @@ module.exports = class SubSheeva {
       extraConfig.files = this._files;
     }
     return Object.assign({}, BASE_CONFIG, config, extraConfig);
-  }
-
-  /**
-   * Clear src cache to have fresh instance of Sheeva for concurrent testing
-   */
-  _createSheeva() {
-    this._clearRequireCache();
-    const Sheeva = require(SHEEVA_PATH);
-    return new Sheeva(this._config);
-  }
-
-  _clearRequireCache() {
-    Object.keys(require.cache).forEach(key => {
-      const relpath = path.relative(__dirname, key);
-      if (relpath.startsWith(SHEEVA_PATH)) {
-        delete require.cache[key];
-      }
-    });
   }
 };
 

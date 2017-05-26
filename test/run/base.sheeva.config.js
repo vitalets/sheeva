@@ -1,17 +1,12 @@
 /**
- * Main selftest runner
+ * Base config for self-testing
  */
 
 require('./globals');
 const SubSheeva = require('./sub-sheeva');
-const ConsoleReporter = require('sheeva-reporter-console');
-
-const append = process.env.TRAVIS || process.env.SHEEVA_APPEND;
 
 module.exports = {
-  files: './test/specs',
   concurrency: 5,
-  reporters: new ConsoleReporter({append}),
   newSessionPerFile: false,
   splitSuites: true,
   createTargets: function () {
@@ -19,7 +14,7 @@ module.exports = {
       {id: 'sync-target'},
       {id: 'async-target', delay: 10},
     ];
-    return targets.map(addConfig);
+    return targets.map(attachConfig);
   },
   callTestHookFn: function ({fn, session, context, hook, target}) {
     if (hook) {
@@ -39,7 +34,7 @@ module.exports = {
   },
 };
 
-function addConfig(target) {
+function attachConfig(target) {
   target.config = {
     callTestHookFn: function (params) {
       const {fn, session, context, attempt} = params;
