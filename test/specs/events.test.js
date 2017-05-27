@@ -89,7 +89,7 @@ describe('events', () => {
   describe('worker', () => {
     beforeEach(context => {
       context.runOptions.include = ['WORKER'];
-      context.runOptions.config = {concurrency: 2};
+      context.runOptions.config = {concurrency: 4};
       context.runOptions.flat = true;
     });
 
@@ -104,9 +104,12 @@ describe('events', () => {
         });
       `]);
 
+      // Extra worker (#2) is created and instantly deleted. Currently it is by design.
       return expectResolve(result, [
         'WORKER_ADD 0',
         'WORKER_ADD 1',
+        'WORKER_ADD 2',
+        'WORKER_DELETE 2',
         'WORKER_DELETE 0',
         'WORKER_DELETE 1',
       ]);
