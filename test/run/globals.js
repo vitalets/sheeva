@@ -5,6 +5,8 @@
 const expect = require('unexpected');
 
 Object.assign(global, {
+  IS_NODE: !process.browser,
+  IS_BROWSER: process.browser,
   noop: function () {},
   sleep: ms => new Promise(resolve => setTimeout(resolve, ms)),
   sleepError: (ms, err) => global.sleep(ms).then(() => { throw new Error(err); }),

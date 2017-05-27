@@ -14,7 +14,9 @@
     "expectReject": true,
     "$only": false,
     "$skip": false,
-    "$if": false
+    "$if": false,
+    "IS_NODE": false,
+    "IS_BROWSER": false
   },
 
   "rules": {

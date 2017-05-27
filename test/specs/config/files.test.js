@@ -46,9 +46,9 @@ describe('config.files', () => {
     return expectResolve(result, ['TEST_END test 1']);
   });
 
-  $if(() => typeof window !== 'undefined');
+  $if(IS_BROWSER);
   describe('browser', () => {
-    it('should process file as string url', run => {
+    it('should process file as url', run => {
       const config = {files: ['data/test.js']};
       const result = run([], {config});
       return expectResolve(result, ['TEST_END test 1']);
@@ -63,7 +63,7 @@ describe('config.files', () => {
     });
   });
 
-  $if(() => typeof window === 'undefined');
+  $if(IS_NODE);
   describe('node', () => {
     it('should reject for empty matched files', run => {
       const config = {
@@ -114,10 +114,6 @@ describe('config.files', () => {
         'TEST_END test 2'
       ]);
     });
-  });
-
-  xdescribe('browser', () => {
-    xit('should process file as url', () => {});
   });
 
 });

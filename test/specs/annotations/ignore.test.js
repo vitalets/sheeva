@@ -82,15 +82,22 @@ describe('annotation: ignore', () => {
     });
   });
 
-  it('should throw error if not fn passed to $ignore', run => {
+  it('should accept explicit value', run => {
     const result = run(`
-      $ignore(123); 
       describe('suite 0', () => {
+        $ignore(false);
         it('test 0', noop);
+        $ignore(true);
+        it('test 1', noop);
+        $ignore(null);
+        it('test 2', noop);
       });
     `);
 
-    return expectReject(result, '$ignore() should accept function as parameter');
+    return expectResolve(result, [
+      'TEST_END test 0',
+      'TEST_END test 2',
+    ]);
   });
 
 });

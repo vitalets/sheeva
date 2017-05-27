@@ -34,13 +34,13 @@ module.exports = class CurrentAnnotation {
     }
   }
 
-  addIgnore(fn) {
-    assert(typeof fn === 'function', '$ignore() should accept function as parameter');
+  addIgnore(value) {
+    const fn = typeof value === 'function' ? value : () => value;
     this._ignore.push(fn);
   }
 
-  addIf(fn) {
-    assert(typeof fn === 'function', '$if() should accept function as parameter');
+  addIf(value) {
+    const fn = typeof value === 'function' ? value : () => value;
     this._if.push(fn);
   }
 
@@ -58,7 +58,7 @@ module.exports = class CurrentAnnotation {
   }
 
   get(target) {
-    if (this._isIgnored(target)) {
+    if (this._isExcludedForTarget(target)) {
       return {
         ignored: true
       };
@@ -75,7 +75,7 @@ module.exports = class CurrentAnnotation {
     }
   }
 
-  _isIgnored(target) {
+  _isExcludedForTarget(target) {
     return this._ignore.some(fn => fn(target)) || this._if.some(fn => !fn(target));
   }
 };
