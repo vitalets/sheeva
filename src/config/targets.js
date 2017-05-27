@@ -18,9 +18,9 @@ module.exports = class Targets {
   create() {
     this._targets = this._config.createTargets();
     this._assertArray();
-    this._filter();
     this._assertLength();
     this._assertIds();
+    this._filter();
     this._setLabels();
     return this._targets;
   }
@@ -28,6 +28,7 @@ module.exports = class Targets {
   _filter() {
     if (this._config.target) {
       this._targets = this._targets.filter(target => this._config.target === target.id);
+      assert(this._targets.length, `Provided target '${this._config.target}' not found`);
     }
   }
 

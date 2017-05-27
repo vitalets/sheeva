@@ -55,11 +55,11 @@ describe('events', () => {
   describe('target', () => {
 
     beforeEach(context => {
-      context.runOptions.include = ['TARGET'];
+      context.runOptions.include = ['TARGET', 'TEST_END'];
       context.runOptions.flat = true;
     });
 
-    it('should emit TARGET_START / TARGET_END', run => {
+    it('should emit target events correctly', run => {
       const config = {
         createTargets: function () {
           return [
@@ -69,16 +69,18 @@ describe('events', () => {
         },
       };
       const report = run(`
-        describe('suite', () => {
-          it('test 0', noop);
-        });
-      `, {config});
+      describe('suite', () => {
+        it('test 0', noop);
+      });
+    `, {config});
 
       return expectResolve(report, [
         'TARGET_START target1',
+        'TEST_END test 0',
         'TARGET_END target1',
         'TARGET_START target2',
-        'TARGET_END target2',
+        'TEST_END test 0',
+        'TARGET_END target2'
       ]);
     });
 

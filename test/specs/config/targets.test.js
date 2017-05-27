@@ -40,32 +40,6 @@ describe('config targets', () => {
     });
   });
 
-  it('should emit target events correctly', run => {
-    const config = {
-      createTargets: function () {
-        return [
-          {id: 'target1'},
-          {id: 'target2'},
-        ];
-      },
-    };
-    const report = run(`
-      describe('suite', () => {
-        it('test 0', noop);
-      });
-    `, {config, flat: true, include: ['TARGET', 'TEST_END']});
-
-    return expectResolve(report, [
-      'TARGET_START target1',
-      'TEST_END test 0',
-      'TARGET_END target1',
-      'TARGET_START target2',
-      'TEST_END test 0',
-      'TARGET_END target2'
-    ]);
-  });
-
-
   it('should fail in case of no targets', run => {
     const config = {
       createTargets: function () {
@@ -79,6 +53,25 @@ describe('config targets', () => {
       `, {config});
 
     return expectReject(report, 'You should provide at least one target');
+  });
+
+  it('should fail for invalid config.target', run => {
+    const config = {
+      target: 'abc',
+      createTargets: function () {
+        return [
+          {id: 'target1'},
+          {id: 'target2'},
+        ];
+      },
+    };
+    const report = run(`
+        describe('suite', () => {
+          it('test 0', noop);
+        });
+      `, {config});
+
+    return expectReject(report, 'Provided target \'abc\' not found');
   });
 
   it('should filter targets by target option', run => {

@@ -34,7 +34,10 @@ module.exports = class DebugReporter {
 
   _printEvent(event, data) {
     if (event === events.RUNNER_START) {
-      console.log(`${event} files: ${data.result.matchedFiles.size}, tests: ${data.result.runner.tests.total}`);
+      const {config, matchedFiles, runner} = data.result;
+      console.log(
+        `${event} targets: ${config.targets.length}, files: ${matchedFiles.size}, tests: ${runner.tests.total}`
+      );
       return;
     }
     const session = data.session ? ` session #${data.session.index}` : '';
