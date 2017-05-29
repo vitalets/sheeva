@@ -31,6 +31,7 @@ describe('config.files', () => {
     return expectResolve(result, ['TEST_END test 1']);
   });
 
+  $ignore(IS_WEB_WORKER);
   it('should process file as object with function content', run => {
     const config = {
       files: [{
@@ -59,7 +60,9 @@ describe('config.files', () => {
         files: ['abc'],
       };
       const result = run([], {config});
-      return expectReject(result, 'Can not load script abc');
+      return expectReject(result, {
+        message: /The script at '.*abc.*' failed to load/,
+      });
     });
   });
 

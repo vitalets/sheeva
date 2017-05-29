@@ -1,6 +1,5 @@
 /**
- * Returns constructor of Sheeva.
- * todo: parallel self-testing in browser
+ * Returns fresh constructor of Sheeva.
  */
 
 // import sheeva as text file

@@ -1,4 +1,4 @@
-describe('multi errors', () => {
+describe('errors (multi)', () => {
 
   beforeEach(context => {
     context.runOptions.include = ['HOOK_END', 'TEST_END'];
@@ -124,7 +124,10 @@ describe('multi errors', () => {
   });
 
   it('should collect all errors', run => {
-    const report = run(`
+    const processOutput = result => {
+      return result.errors.toArray().map(item => item.error.message).join(' ');
+    };
+    const output = run(`
       describe('suite 1', () => {
         afterEach(() => { throw new Error('err2') });
         after(() => { throw new Error('err3') });
@@ -135,13 +138,9 @@ describe('multi errors', () => {
           it('test 0', noop);
         });
       });
-    `, {result: true});
+    `, {result: true, processOutput});
 
-    return expectResolve(report).then(result => {
-      expect(result.errors.size, 'to equal', 5);
-      const errors = result.errors.toArray().map(item => item.error.message).join(' ');
-      expect(errors, 'to equal', 'err4 err5 err2 err6 err3');
-    });
+    return expectResolve(output, 'err4 err5 err2 err6 err3');
   });
 
 

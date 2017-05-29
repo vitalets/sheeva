@@ -15,8 +15,10 @@
     "$only": false,
     "$skip": false,
     "$if": false,
+    "$ignore": false,
     "IS_NODE": false,
-    "IS_BROWSER": false
+    "IS_BROWSER": false,
+    "IS_WEB_WORKER": false
   },
 
   "rules": {

@@ -4,7 +4,6 @@
  */
 
 /* eslint-disable complexity */
-
 const events = require('../../../src/events');
 
 const DEFAULT_INCLUDE = ['TEST_END'];
@@ -17,7 +16,7 @@ module.exports = class LogReporter {
    * @param {Array} [options.include]
    * @param {Array} [options.exclude]
    * @param {Boolean} [options.flat]
-   * @param {Boolean} [options.raw]
+   * @param {Boolean} [options.rawEvents]
    */
   constructor(options) {
     this._options = {};
@@ -107,7 +106,7 @@ module.exports = class LogReporter {
     const loggedTargets = Object.keys(this._treeLog);
     const flat = this._options.flat || loggedTargets.length === 0 || this._isSingleTargetAndSession();
 
-    if (this._options.raw) {
+    if (this._options.rawEvents) {
       return this._getRawLog();
     } else if (flat) {
       return this._getFlatLog();
@@ -128,8 +127,7 @@ module.exports = class LogReporter {
   }
 
   _getRawLog() {
-    return this._events
-      .filter(item => this._isPassingFilter(item.event));
+    return this._events.filter(item => this._isPassingFilter(item.event));
   }
 
   _getFlatLog() {

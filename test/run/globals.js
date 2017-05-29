@@ -1,5 +1,5 @@
 /**
- * Globals for tests
+ * Globals for main sheeva tests
  */
 
 const expect = require('unexpected');
@@ -7,9 +7,7 @@ const expect = require('unexpected');
 Object.assign(global, {
   IS_NODE: !process.browser,
   IS_BROWSER: process.browser,
-  noop: function () {},
-  sleep: ms => new Promise(resolve => setTimeout(resolve, ms)),
-  sleepError: (ms, err) => global.sleep(ms).then(() => { throw new Error(err); }),
+  IS_WEB_WORKER: typeof self !== 'undefined',
   expect,
   expectResolve: function (promise, value) {
     return value === undefined
@@ -24,5 +22,5 @@ Object.assign(global, {
     } else {
       return expect(promise, 'to be rejected with error exhaustively satisfying', value);
     }
-  }
+  },
 });

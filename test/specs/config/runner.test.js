@@ -1,139 +1,109 @@
+
 describe('config runner', () => {
 
-  it('should call sync startRunner', run => {
-    let a = 0;
-    const config = {
-      startRunner: () => a++,
-    };
-    const result = run([`
-      describe('suite 1', () => {
-        it('test 1', noop);
-      });
-    `], {config});
+  /**
+   * These functions should not depend on any scope variables as they are stringified for web-workers
+   */
 
-    return expectResolve(result)
-      .then(() => expect(a, 'to equal', 1));
+  function getProcessOutput(localContext) {
+    return function () {
+      const context = typeof self !== 'undefined' ? self : localContext;
+      const {startRunner, endRunner} = context;
+      delete context.startRunner;
+      delete context.endRunner;
+      return {startRunner, endRunner};
+    };
+  }
+
+  function getStartRunner(localContext) {
+    return function () {
+      return Promise.resolve().then(() => {
+        const context = typeof self !== 'undefined' ? self : localContext;
+        context.startRunner = context.startRunner ? context.startRunner + 1 : 1;
+      });
+    };
+  }
+
+  function getEndRunner(localContext) {
+    return function () {
+      return Promise.resolve().then(() => {
+        const context = typeof self !== 'undefined' ? self : localContext;
+        context.endRunner = context.endRunner ? context.endRunner + 1 : 1;
+      });
+    };
+  }
+
+  beforeEach(context => {
+    const localContext = {};
+    context.runOptions = {
+      config: {
+        startRunner: getStartRunner(localContext),
+        endRunner: getEndRunner(localContext),
+      },
+      processOutput: getProcessOutput(localContext)
+    };
   });
 
-  it('should call async startRunner', run => {
-    let a = 0;
-    const config = {
-      startRunner: () => Promise.resolve().then(() => a++)
-    };
+  it('should call once startRunner / endRunner in success test', run => {
     const result = run([`
       describe('suite 1', () => {
         it('test 1', noop);
       });
-      `], {config});
+    `]);
 
-    return expectResolve(result)
-      .then(() => expect(a, 'to equal', 1));
-  });
-
-  it('should call sync endRunner', run => {
-    let a = 0;
-    const config = {
-      endRunner: () => a++,
-    };
-    const result = run([`
-      describe('suite 1', () => {
-        it('test 1', noop);
-      });
-      `], {config});
-
-    return expectResolve(result).then(() => {
-      expect(a, 'to equal', 1);
+    return expectResolve(result, {
+      startRunner: 1,
+      endRunner: 1,
     });
   });
 
-  it('should call async endRunner', run => {
-    let a = 0;
-    const config = {
-      endRunner: () => Promise.resolve().then(() => a++)
-    };
-    const result = run([`
-      describe('suite 1', () => {
-        it('test 1', noop);
-      });
-      `], {config});
-
-    return expectResolve(result)
-      .then(() => expect(a, 'to equal', 1));
-  });
-
-  it('should call startRunner / endRunner in success test', run => {
-    let a = 0;
-    let b = 0;
-    const config = {
-      startRunner: () => Promise.resolve().then(() => a++),
-      endRunner: () => Promise.resolve().then(() => b++)
-    };
-    const result = run([`
-      describe('suite 1', () => {
-        it('test 1', noop);
-      });
-      `], {config});
-
-    return expectResolve(result).then(() => {
-      expect(a, 'to equal', 1);
-      expect(b, 'to equal', 1);
-    });
-  });
-
-  it('should call startRunner / endRunner in failed test', run => {
-    let a = 0;
-    let b = 0;
-    const config = {
-      startRunner: () => Promise.resolve().then(() => a++),
-      endRunner: () => Promise.resolve().then(() => b++)
-    };
+  it('should call once startRunner / endRunner in failed test', run => {
     const result = run([`
       describe('suite 1', () => {
         it('test 1', () => { throw new Error('err') });
       });
-    `], {config});
+    `]);
 
-    return expectResolve(result).then(() => {
-      expect(a, 'to equal', 1);
-      expect(b, 'to equal', 1);
+    return expectResolve(result, {
+      startRunner: 1,
+      endRunner: 1,
     });
   });
 
   it('should not call startRunner, but call endRunner in case of error in createTargets', run => {
-    let a = 0;
-    let b = 0;
     const config = {
-      startRunner: () => Promise.resolve().then(() => a++),
-      endRunner: () => Promise.resolve().then(() => b++),
       createTargets: () => { throw new Error('err'); }
     };
     const result = run([`
       describe('suite 1', () => {
         it('test 1', noop);
       });
-      `], {config});
+      `], {config, result: true});
 
-    return expectReject(result, 'err')
-      .then(() => {
-        expect(a, 'to equal', 0);
-        expect(b, 'to equal', 1);
-      });
+    return expectReject(result, {
+      message: 'err',
+      result: {
+        endRunner: 1,
+      }
+    });
   });
 
   it('should call endRunner even if startRunner has error', run => {
-    let b = 0;
     const config = {
       startRunner: () => Promise.resolve().then(() => { throw new Error('err'); }),
-      endRunner: () => Promise.resolve().then(() => b++),
     };
     const result = run([`
       describe('suite 1', () => {
         it('test 1', noop);
       });
-      `], {config});
+      `], {config, result: true});
 
-    return expectReject(result, 'err')
-      .then(() => expect(b, 'to equal', 1));
+    return expectReject(result, {
+      message: 'err',
+      result: {
+        endRunner: 1,
+      }
+    });
   });
 
 });

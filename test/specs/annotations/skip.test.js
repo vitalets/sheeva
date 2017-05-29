@@ -74,6 +74,12 @@ describe('annotation: skip', () => {
   });
 
   it('should have skipped items summary in RUNNER_START', run => {
+    const assertions = {
+      'length': 1,
+      '0.data.result.skip.files.size': 2,
+      '0.data.result.skip.suites.size': 1,
+      '0.data.result.skip.tests.size': 1,
+    };
     const result = run([`
       $skip();
       describe('suite 1', () => {
@@ -86,15 +92,10 @@ describe('annotation: skip', () => {
       });
     `, `
       it('test 3', noop)
-    `], {include: ['RUNNER_START'], raw: true});
+    `], {include: ['RUNNER_START'], rawEvents: Object.keys(assertions)});
 
     return expectResolve(result)
-      .then(res => {
-        expect(res, 'to have length', 1);
-        expect(res[0].data.result.skip.files.size, 'to equal', 2);
-        expect(res[0].data.result.skip.suites.size, 'to equal', 1);
-        expect(res[0].data.result.skip.tests.size, 'to equal', 1);
-      });
+      .then(res => expect(res, 'to equal', assertions));
   });
 
 

@@ -125,11 +125,15 @@ describe('annotation: only', () => {
     `, {config});
 
     return expectReject(result, {
-      message: new RegExp('^' + escapeRe('ONLY is disallowed but found in 1 file(s):\n')),
+      message: new RegExp('^' + escapeRe('ONLY is disallowed but found in 1 file(s):')),
     });
   });
 
   it('should have only items summary in RUNNER_START', run => {
+    const assertions = {
+      'length': 1,
+      '0.data.result.only.files.size': 1
+    };
     const result = run([`
       $only();
       describe('suite 1', () => {
@@ -139,12 +143,9 @@ describe('annotation: only', () => {
       describe('suite 2', () => {
         it('test 2', noop);
       });
-    `], {include: ['RUNNER_START'], raw: true});
+    `], {include: ['RUNNER_START'], rawEvents: Object.keys(assertions)});
 
     return expectResolve(result)
-      .then(res => {
-        expect(res, 'to have length', 1);
-        expect(res[0].data.result.only.files.size, 'to equal', 1);
-      });
+      .then(res => expect(res, 'to equal', assertions));
   });
 });

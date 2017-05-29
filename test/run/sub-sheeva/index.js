@@ -3,6 +3,8 @@
  */
 
 require('promise.prototype.finally.err').shim();
+require('./globals');
+const objectPath = require('object-path').withInheritedProps;
 const getSheeva = require('./get-sheeva');
 const Reporter = require('./reporter');
 
@@ -20,13 +22,16 @@ module.exports = class SubSheeva {
    *
    * @param {String|Array} code
    * @param {Object} options
-   * @param {Object} options.session
+   * @param {Number} options.sessionIndex
+   * @param {String} options.targetId
+   * @param {Number} [options.delay]
    * @param {Object} [options.config]
    * @param {Array} [options.include]
    * @param {Array} [options.exclude]
    * @param {Boolean} [options.flat]
-   * @param {Boolean} [options.raw]
+   * @param {Boolean} [options.rawEvents]
    * @param {Boolean} [options.result]
+   * @param {Function} [options.processOutput]
    * @returns {Promise}
    */
   constructor(code, options) {
@@ -35,43 +40,83 @@ module.exports = class SubSheeva {
     this._reporter = new Reporter(options);
     this._config = this._createConfig(options.config);
     this._sheeva = null;
+    this._output = null;
   }
 
   run() {
     const Sheeva = getSheeva();
     this._sheeva = new Sheeva(this._config);
-    let output = null;
     return this._sheeva.run()
-      .then(result => output = this._options.result ? result : this._reporter.getReport())
-      .catch(e => {
-        return this._options.result
-          ? attachToError(e, 'result', output)
-          : attachToError(e, 'report', output || this._reporter.getReport());
-      });
+      .then(result => this._output = this._getOutput(result))
+      .catch(e => this._attachOutputToError(e));
   }
 
-  _createFilesArray(code, {session}) {
+  _createFilesArray(code, {targetId, sessionIndex}) {
     code = Array.isArray(code) ? code : [code];
     return code.map((item, index) => {
       return {
-        name: `temp-${session.target.id}-${session.index}-${index}.js`,
+        name: `temp-${targetId}-${sessionIndex}-${index}.js`,
         content: item,
       };
     });
   }
 
   _createConfig(config) {
+    const {delay} = this._options;
     const extraConfig = {
       reporters: this._reporter,
+      files: this._files,
+      callTestHookFn: delay === undefined ? syncCall : params => asyncCall(delay, params)
     };
-    if (this._files.length) {
-      extraConfig.files = this._files;
-    }
-    return Object.assign({}, BASE_CONFIG, config, extraConfig);
+    return Object.assign({}, BASE_CONFIG, extraConfig, config);
+  }
+
+  _getOutput(result) {
+    return this._options.result
+      ? this._processOutput(result, this._options.result)
+      : this._processOutput(this._reporter.getReport(), this._options.rawEvents);
+  }
+
+  _attachOutputToError(error) {
+    return this._options.result
+      ? attachToError(error, 'result', this._output || this._getOutput())
+      : attachToError(error, 'report', this._output || this._getOutput());
+  }
+
+  _processOutput(output, paths) {
+    output = Array.isArray(paths) ? extractByPaths(output, paths) : output;
+    return this._options.processOutput ? this._options.processOutput(output) : output;
   }
 };
 
 function attachToError(error, key, value) {
   Object.defineProperty(error, key, {value});
   return Promise.reject(error);
+}
+
+function syncCall({fn, session, context, attempt}) {
+  return fn(context, session, attempt);
+}
+
+function asyncCall(delay, {fn, session, context, attempt}) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      try {
+        syncCall({fn, session, context, attempt});
+        resolve();
+      } catch(e) {
+        reject(e);
+      }
+    }, delay);
+  });
+}
+
+function extractByPaths(obj, paths) {
+  return paths.reduce((res, key) => {
+    const value = objectPath.get(obj, key);
+    if (value !== undefined) {
+      res[key] = value;
+    }
+    return res;
+  }, {});
 }
