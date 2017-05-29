@@ -4,7 +4,7 @@
 
 const ConsoleReporter = require('sheeva-reporter-console');
 const helper = require('../helper');
-//const SubSheeva = require('../sub-sheeva');
+const SubSheeva = require('../sub-sheeva');
 const baseConfig = require('../base.sheeva.config');
 
 module.exports = Object.assign({}, baseConfig, {
@@ -12,11 +12,24 @@ module.exports = Object.assign({}, baseConfig, {
   // target: 'sync-target',
   files: 'specs.bundle.js',
   reporters: new ConsoleReporter(),
+  createTargets: function () {
+    const targets = baseConfig.createTargets();
+    // special target to run tests in tab (not web-worker)
+    targets.push({
+      id: 'sync-target-tab',
+      concurrency: 1
+    });
+    return targets;
+  },
   startSession: function (session) {
-    session.webWorker = new Worker('web-worker.js');
+    if (isWebWorkerTarget(session.target)) {
+      session.webWorker = new Worker('web-worker.js');
+    }
   },
   endSession: function (session) {
-    session.webWorker.terminate();
+    if (isWebWorkerTarget(session.target)) {
+      session.webWorker.terminate();
+    }
   },
   callTestHookFn: function ({fn, session, context, hook, target}) {
     if (hook) {
@@ -26,8 +39,9 @@ module.exports = Object.assign({}, baseConfig, {
 
     const run = function (code, optionsFromTest = {}) {
       const subSheevaOptions = helper.getSubSheevaOptions(optionsFromTest, {fn, session, context, hook, target});
-      //return new SubSheeva(code, subSheevaOptions).run();
-      return runInWebWorker(session, code, subSheevaOptions);
+      return isWebWorkerTarget(target)
+        ? runInWebWorker(session, code, subSheevaOptions)
+        : new SubSheeva(code, subSheevaOptions).run();
     };
     return fn(run);
   },
@@ -59,4 +73,8 @@ function stringifyFunctions(config) {
       config[key] = String(config[key]);
     }
   });
+}
+
+function isWebWorkerTarget(target) {
+  return target.id !== 'sync-target-tab';
 }

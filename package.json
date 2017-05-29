@@ -44,7 +44,8 @@
     "prepush": "npm run code && npm run ttdev -- --no-only && npm run copy-src",
     "copy-src": "rm -rf src-stable && cp -R src/ src-stable/",
     "runtyper": "npm run instrument && npm run test-runtyper",
-    "instrument": "babel src -d src-instrumented --source-maps"
+    "instrument": "babel src -d src-instrumented --source-maps",
+    "cores": "sysctl -n hw.ncpu"
   },
   "lint-staged": {
     "{src,test}/**/*.js": "eslint"
