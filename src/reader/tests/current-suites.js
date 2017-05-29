@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Appends suites/tests/hooks to current suites.
  * Also collects map of fn --> childSuites for next iteration.

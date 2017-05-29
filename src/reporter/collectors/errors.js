@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Collects hook and test errors
  */

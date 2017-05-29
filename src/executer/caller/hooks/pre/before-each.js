@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Calls `beforeEach` hooks for test.
  */

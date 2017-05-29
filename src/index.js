@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Sheeva entry point
  */

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Store targets that can not be splitted
  */

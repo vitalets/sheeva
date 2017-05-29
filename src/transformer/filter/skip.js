@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Filters tests by `skip` annotation
  */

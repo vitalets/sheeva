@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Events emitted to reporter
  */

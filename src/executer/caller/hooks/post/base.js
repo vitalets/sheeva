@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Base class for `after` and `afterEach` hooks.
  * Removes suites from stack, does not break on error but returns first error.

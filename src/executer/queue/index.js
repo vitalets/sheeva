@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Queue executes flat suite of tests serially.
  *

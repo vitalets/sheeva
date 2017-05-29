@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Calls `before` hooks for test.
  */

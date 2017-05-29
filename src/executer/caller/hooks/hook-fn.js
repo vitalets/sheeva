@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Calls hook fn (emits HOOK_START and HOOK_END)
  */

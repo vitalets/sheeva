@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Worker: executes sessions serially.
  */

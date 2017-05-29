@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Picks whole queues from first suitable target
  */

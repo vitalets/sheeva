@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Flatten and sort suites tree before execution.
  * Sorting is applied so that tests with more before/after hooks count are moved to the beginning,

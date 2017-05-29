@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Collects tests counters for each Target
  */

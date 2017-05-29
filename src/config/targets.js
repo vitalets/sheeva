@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Creates and checks targets (targets)
  *

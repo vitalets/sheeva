@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * BDD API:
  * - describe

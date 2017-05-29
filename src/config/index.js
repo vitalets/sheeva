@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Singleton config, validates and extends passed config with defaults.
  */

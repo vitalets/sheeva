@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Read test files into suites tree structure
  */

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Candidate for splitting.
  */

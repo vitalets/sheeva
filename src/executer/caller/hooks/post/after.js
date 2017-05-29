@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Calls `after` hooks for filled suite stack.
  */

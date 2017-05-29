@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Manage info about test retry.
  */

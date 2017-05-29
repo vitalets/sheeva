@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Collects START / END data for items
  */

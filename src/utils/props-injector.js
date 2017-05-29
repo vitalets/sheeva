@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Injects and cleanups props from target object
  */

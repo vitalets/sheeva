@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Exclude specified items from parents
  */

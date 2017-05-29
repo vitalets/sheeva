@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Fills suites via walking recursively by map of (fn, suites) and calling fn
  */

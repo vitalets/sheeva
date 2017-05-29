@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Calls test/hook function via `config.callTestHookFn`
  * Rejects result if timeout exceeded.

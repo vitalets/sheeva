@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Process all events and proxy to other reporters.
  */

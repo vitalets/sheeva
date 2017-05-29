@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Collects timing data for session start/end, hooks and tests.
  */

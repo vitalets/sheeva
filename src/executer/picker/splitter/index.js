@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Tries to split running queues for parallelization
  */

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Picks next queue for execution.
  */

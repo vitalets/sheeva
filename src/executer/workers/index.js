@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Workers manager: keeps workers count under concurrency limit
  */

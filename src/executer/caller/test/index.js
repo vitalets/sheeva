@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Calls test fn with beforeEach / afterEach hooks.
  * Used in Queue.

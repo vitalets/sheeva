@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Files reader for Node.js (via require call)
  */

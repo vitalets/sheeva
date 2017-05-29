@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * ES6 Map with extra methods
  */

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * ES6 Set with extra methods
  */

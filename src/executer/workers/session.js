@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Session belongs to particular target and runs test-queues on particular worker.
  * It performs setup and teardown by calling `config.startSession` / `config.endSession` hooks.

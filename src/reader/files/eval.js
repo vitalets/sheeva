@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Files reader used when files provided as objects with `name` and `content` (via eval)
  */

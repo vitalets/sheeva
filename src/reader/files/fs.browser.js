@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Files reader for browser (via script tag)
  */

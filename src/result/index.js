@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Singleton that collects all data while running and pass it reporters.
  */

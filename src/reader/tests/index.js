@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Tests structure reader
  */

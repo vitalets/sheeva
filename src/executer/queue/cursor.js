@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Manage current test position
  */

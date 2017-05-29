@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Base class for `before` and `beforeEach` hooks.
  * Adds suites to stack and breaks on the first error.

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Main class for executing tests:
  *

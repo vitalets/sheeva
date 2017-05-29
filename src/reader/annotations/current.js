@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Holds current annotation about nearest test/suite/hook
  */

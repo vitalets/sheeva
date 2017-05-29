@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Transforms tests:
  * - filters only, skip, tags

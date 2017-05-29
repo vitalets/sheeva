@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Factory that creates suite and test data structures
  *

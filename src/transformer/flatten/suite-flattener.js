@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Converts suite to one or several flatSuites by flattening children.
  * Also sort suites.

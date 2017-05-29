@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Includes only specified item paths in topSuites, removing all other
  */
