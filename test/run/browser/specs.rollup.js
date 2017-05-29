@@ -1,9 +1,9 @@
 
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import multiEntry from 'rollup-plugin-multi-entry';
+const resolve = require('rollup-plugin-node-resolve');
+const commonjs = require('rollup-plugin-commonjs');
+const multiEntry = require('rollup-plugin-multi-entry');
 
-export default {
+module.exports = {
   entry: 'test/specs/**/*.js',
   dest: 'dist/test/specs.bundle.js',
   format: 'iife',

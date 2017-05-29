@@ -17,7 +17,7 @@
   },
   "scripts": {
     "code": "npm run lint-all && npm run circular",
-    "lint-all": "eslint src test",
+    "lint-all": "eslint src test rollup.config.js",
     "lint-staged": "lint-staged",
     "lint-spellcheck": "eslint src -c .eslintrc-spellcheck --no-eslintrc",
     "circular": "madge --circular --warning src",
@@ -48,7 +48,8 @@
     "cores": "sysctl -n hw.ncpu"
   },
   "lint-staged": {
-    "{src,test}/**/*.js": "eslint"
+    "{src,test}/**/*.js": "eslint",
+    "rollup.config.js": "eslint"
   },
   "dependencies": {
     "assert": "^1.4.1",

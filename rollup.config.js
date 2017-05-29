@@ -1,9 +1,9 @@
 
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import filesize from 'rollup-plugin-filesize';
+const resolve = require('rollup-plugin-node-resolve');
+const commonjs = require('rollup-plugin-commonjs');
+const filesize = require('rollup-plugin-filesize');
 
-export default {
+module.exports = {
   entry: `${process.env.SHEEVA_DIR || 'src'}/index.js`,
   dest: 'dist/sheeva.js',
   format: 'umd',

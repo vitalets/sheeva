@@ -1,10 +1,10 @@
 
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import globals from 'rollup-plugin-node-globals';
-import string from 'rollup-plugin-string';
+const resolve = require('rollup-plugin-node-resolve');
+const commonjs = require('rollup-plugin-commonjs');
+const globals = require('rollup-plugin-node-globals');
+const string = require('rollup-plugin-string');
 
-export default {
+module.exports = {
   entry: 'test/run/browser/sheeva.config.js',
   dest: 'dist/test/sheeva-config.js',
   format: 'iife',
