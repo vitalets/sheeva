@@ -63,6 +63,10 @@ module.exports = class CurrentAnnotation {
         ignored: true
       };
     } else {
+      // only has priority over skip
+      if (this._only && this._skip) {
+        this._skip = false;
+      }
       return {
         target,
         tags: this._tags,

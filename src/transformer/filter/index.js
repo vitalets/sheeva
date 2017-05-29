@@ -15,6 +15,6 @@ module.exports = function () {
     only.filter();
   } else {
     new Tags().filter();
-    new Skip().filter();
   }
+  new Skip().filter();
 };

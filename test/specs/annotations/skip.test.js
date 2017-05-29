@@ -73,7 +73,7 @@ describe('annotation: skip', () => {
     ]);
   });
 
-  it('should have skipped items summary in RUNNER_START', run => {
+  it('should have skipped items summary in result', run => {
     const assertions = {
       'length': 1,
       '0.data.result.skip.files.size': 2,
@@ -98,5 +98,52 @@ describe('annotation: skip', () => {
       .then(res => expect(res, 'to equal', assertions));
   });
 
+  it('should skip inside only', run => {
+    const result = run(`
+      $only();
+      describe('suite 1', () => {
+        it('test 0', noop);
+        $skip();
+        it('test 1', noop);
+      });
+    `);
+
+    return expectResolve(result, [
+      'TEST_END test 0',
+    ]);
+  });
+
+  it('should not skip if only applied', run => {
+    const result = run(`
+      describe('suite 1', () => {
+        it('test 0', noop);
+        $only();
+        $skip();
+        it('test 1', noop);
+      });
+    `);
+
+    return expectResolve(result, [
+      'TEST_END test 1',
+    ]);
+  });
+
+  it('should skip inside tag', run => {
+    const config = {
+      tags: ['tag1']
+    };
+    const result = run(`
+      $tags('tag1');
+      describe('suite 1', () => {
+        it('test 0', noop);
+        $skip();
+        it('test 1', noop);
+      });
+    `, {config});
+
+    return expectResolve(result, [
+      'TEST_END test 0',
+    ]);
+  });
 
 });
