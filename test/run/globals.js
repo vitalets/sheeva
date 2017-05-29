@@ -1,8 +1,11 @@
+'use strict';
+
 /**
  * Globals for main sheeva tests
  */
 
-const expect = require('unexpected');
+// const expect = require('unexpected');
+const expect = require('unexpected/unexpected.js');
 
 Object.assign(global, {
   IS_NODE: !process.browser,

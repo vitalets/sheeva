@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Browser sheeva config
  */
@@ -10,7 +12,7 @@ const baseConfig = require('../base.sheeva.config');
 module.exports = Object.assign({}, baseConfig, {
   concurrency: 5,
   // target: 'sync-target',
-  files: 'specs.bundle.js',
+  files: 'specs.js',
   reporters: new ConsoleReporter(),
   createTargets: function () {
     const targets = baseConfig.createTargets();

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Reporter that just put events into log
  *

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Globals for sub-sheeva
  */

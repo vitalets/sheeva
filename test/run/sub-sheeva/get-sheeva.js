@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Returns fresh constructor of Sheeva (for parralel self-testing)
  */

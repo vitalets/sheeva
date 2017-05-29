@@ -1,3 +1,5 @@
+'use strict';
+
 
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
@@ -5,7 +7,7 @@ const multiEntry = require('rollup-plugin-multi-entry');
 
 module.exports = {
   entry: 'test/specs/**/*.js',
-  dest: 'dist/test/specs.bundle.js',
+  dest: 'dist/test/specs.js',
   format: 'iife',
   sourceMap: true,
   plugins: [

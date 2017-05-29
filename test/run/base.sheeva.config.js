@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Base config for self-testing
  */

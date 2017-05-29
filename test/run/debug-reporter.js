@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Reporter that just logs events to console (for debug)
  */

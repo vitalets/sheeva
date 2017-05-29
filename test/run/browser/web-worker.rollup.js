@@ -1,3 +1,5 @@
+'use strict';
+
 
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
@@ -10,7 +12,6 @@ module.exports = {
   format: 'iife',
   moduleName: 'webWorker',
   sourceMap: true,
-  useStrict: false,
   plugins: [
     string({
       include: 'dist/sheeva.js'

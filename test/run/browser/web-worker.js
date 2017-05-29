@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Web worker uses sub-sheeva to run tests
  */

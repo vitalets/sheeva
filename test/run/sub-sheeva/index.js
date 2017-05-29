@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Runs specified code in fresh instance of Sheeva
  */
