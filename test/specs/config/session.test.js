@@ -137,6 +137,21 @@ describe('config startSession / endSession hooks', () => {
     });
   });
 
+  it('should throw error when setting getter prop of session', run => {
+    'use strict';
+    const config = {
+      startSession: session => session.worker = 1,
+    };
+    const result = run([`
+        describe('suite 1', () => {
+          it('test 1', noop);
+          it('test 1', noop);
+        });
+      `], {config});
+
+    return expectReject(result, 'Cannot set property worker of #<Session> which has only a getter');
+  });
+
   /*
    it('should call startSession / endSession for concurrency = 2', run => {
    let a = 0;
