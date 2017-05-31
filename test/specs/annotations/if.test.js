@@ -1,3 +1,5 @@
+'use strict';
+
 describe('annotation: if', () => {
 
   it('should exclude/include test for particular target', run => {

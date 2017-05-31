@@ -1,3 +1,5 @@
+'use strict';
+
 describe('config.breakOnError', () => {
 
   beforeEach(context => {

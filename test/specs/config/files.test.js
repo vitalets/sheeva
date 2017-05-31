@@ -1,3 +1,5 @@
+'use strict';
+
 $if(target => target.id === 'sync-target');
 describe('config.files', () => {
 

@@ -1,3 +1,5 @@
+'use strict';
+
 describe('annotations: tags', () => {
 
   it('should run tagged test', run => {

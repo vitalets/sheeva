@@ -1,3 +1,5 @@
+'use strict';
+
 describe('single error in before', () => {
 
   beforeEach(context => {

@@ -1,3 +1,5 @@
+'use strict';
+
 describe('config common', () => {
 
   it('should fail for unknown option', run => {

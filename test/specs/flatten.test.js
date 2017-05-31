@@ -1,3 +1,5 @@
+'use strict';
+
 describe('flatten and sort', () => {
 
   it('should flatten suites on same level and sort by before/after hooks count', run => {

@@ -1,3 +1,5 @@
+'use strict';
+
 describe('annotation: skip', () => {
 
   it('should skip test', run => {

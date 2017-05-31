@@ -1,3 +1,5 @@
+'use strict';
+
 describe('config targets', () => {
 
   beforeEach(context => {

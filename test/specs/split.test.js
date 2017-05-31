@@ -1,3 +1,5 @@
+'use strict';
+
 describe('split files', () => {
 
   it('should split suite on 2 parallel sessions (and call needed hooks)', run => {

@@ -1,3 +1,5 @@
+'use strict';
+
 
 const escapeRe = require('escape-string-regexp');
 

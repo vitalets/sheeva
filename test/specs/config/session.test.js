@@ -1,3 +1,4 @@
+'use strict';
 
 describe('config startSession / endSession hooks', () => {
 
@@ -138,7 +139,6 @@ describe('config startSession / endSession hooks', () => {
   });
 
   it('should throw error when setting getter prop of session', run => {
-    'use strict';
     const config = {
       startSession: session => session.worker = 1,
     };

@@ -1,3 +1,5 @@
+'use strict';
+
 describe('events', () => {
 
   describe('runner', () => {
