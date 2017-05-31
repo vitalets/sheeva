@@ -16,9 +16,9 @@
     "$skip": false,
     "$if": false,
     "$ignore": false,
-    "IS_NODE": false,
-    "IS_BROWSER": false,
-    "IS_WEB_WORKER": false
+    "isBrowser": false,
+    "isTab": false,
+    "isWebWorker": false
   },
 
   "rules": {

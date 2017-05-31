@@ -15,21 +15,23 @@ module.exports = Object.assign({}, baseConfig, {
   files: 'specs.js',
   reporters: new ConsoleReporter(),
   createTargets: function () {
-    const targets = baseConfig.createTargets();
+    const targets = baseConfig.createTargets()
+      .map(target => Object.assign(target, {isWebWorker: true}));
     // special target to run tests in tab (not web-worker)
     targets.push({
       id: 'sync-target-tab',
-      concurrency: 1
+      concurrency: 1,
+      isTab: true,
     });
     return targets;
   },
   startSession: function (session) {
-    if (isWebWorkerTarget(session.target)) {
+    if (!session.target.isTab) {
       session.webWorker = new Worker('web-worker.js');
     }
   },
   endSession: function (session) {
-    if (isWebWorkerTarget(session.target)) {
+    if (!session.target.isTab) {
       session.webWorker.terminate();
     }
   },
@@ -41,9 +43,9 @@ module.exports = Object.assign({}, baseConfig, {
 
     const run = function (code, optionsFromTest = {}) {
       const subSheevaOptions = helper.getSubSheevaOptions(optionsFromTest, {fn, session, context, hook, target});
-      return isWebWorkerTarget(target)
-        ? runInWebWorker(session, code, subSheevaOptions)
-        : new SubSheeva(code, subSheevaOptions).run();
+      return session.target.isTab
+        ? new SubSheeva(code, subSheevaOptions).run()
+        : runInWebWorker(session, code, subSheevaOptions);
     };
     return fn(run);
   },
@@ -54,14 +56,13 @@ function runInWebWorker(session, code, subSheevaOptions) {
   stringifyFunctions(subSheevaOptions.config);
   return new Promise((resolve, reject) => {
     session.webWorker.onmessage = event => {
-      const {errorMsg, result, report} = event.data;
+      const {errorMsg, output} = event.data;
       if (errorMsg) {
         const error = new Error(errorMsg);
-        Object.defineProperty(error, 'report', {value: report});
-        Object.defineProperty(error, 'result', {value: result});
+        Object.defineProperty(error, 'output', {value: output});
         reject(error);
       } else {
-        resolve(result);
+        resolve(output);
       }
     };
     session.webWorker.onerror = event => reject(new Error(event.message));
@@ -75,8 +76,4 @@ function stringifyFunctions(config) {
       config[key] = String(config[key]);
     }
   });
-}
-
-function isWebWorkerTarget(target) {
-  return target.id !== 'sync-target-tab';
 }

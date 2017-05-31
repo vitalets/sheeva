@@ -12,8 +12,8 @@ self.addEventListener('message', function (e) {
   unstringifyFunctions(subSheevaOptions);
   unstringifyFunctions(subSheevaOptions.config);
   new SubSheeva(code, subSheevaOptions).run()
-    .then(result => self.postMessage({result}))
-    .catch(e => self.postMessage({errorMsg: e.message, report: e.report, result: e.result}));
+    .then(result => self.postMessage({output: result}))
+    .catch(e => self.postMessage({errorMsg: e.message, output: e.output}));
 });
 
 function unstringifyFunctions(config) {

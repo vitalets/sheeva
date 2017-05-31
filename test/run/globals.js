@@ -8,9 +8,9 @@
 const expect = require('unexpected/unexpected.js');
 
 Object.assign(global, {
-  IS_NODE: !process.browser,
-  IS_BROWSER: process.browser,
-  IS_WEB_WORKER: typeof self !== 'undefined',
+  isBrowser: target => isTab(target) || isWebWorker(target),
+  isTab: target => target.isTab,
+  isWebWorker: target => target.isWebWorker,
   expect,
   expectResolve: function (promise, value) {
     return value === undefined

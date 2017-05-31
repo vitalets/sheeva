@@ -49,8 +49,7 @@ describe('config.files', () => {
     return expectResolve(output).then(res => expect(res, 'to equal', assertions));
   });
 
-
-  $ignore(IS_WEB_WORKER);
+  $ignore(isWebWorker);
   it('should process file as object with function content', run => {
     const config = {
       files: [{
@@ -66,7 +65,7 @@ describe('config.files', () => {
     return expectResolve(output, ['TEST_END test 1']);
   });
 
-  $if(IS_BROWSER);
+  $if(isBrowser);
   describe('browser', () => {
     it('should process file as url', run => {
       const config = {files: ['data/test.js']};
@@ -85,7 +84,7 @@ describe('config.files', () => {
     });
   });
 
-  $if(IS_NODE);
+  $ignore(isBrowser);
   describe('node', () => {
     it('should reject for empty matched files', run => {
       const config = {

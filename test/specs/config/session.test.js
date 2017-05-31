@@ -141,6 +141,7 @@ describe('config startSession / endSession hooks', () => {
     });
   });
 
+  $ignore(isWebWorker);
   it('should throw error when setting getter prop of session', run => {
     const config = {
       startSession: session => session.worker = 1,
