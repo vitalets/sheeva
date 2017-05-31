@@ -6,7 +6,7 @@ const escapeRe = require('escape-string-regexp');
 describe('annotation: only', () => {
 
   it('should run only test by $only()', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         it('test 0', noop);
         $only();
@@ -19,13 +19,13 @@ describe('annotation: only', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 1',
     ]);
   });
 
   it('should run only describe by $only()', run => {
-    const result = run(`
+    const output = run(`
       $only();
       describe('suite 1', () => {
         it('test 2', noop);
@@ -36,14 +36,14 @@ describe('annotation: only', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 2',
       'TEST_END test 3',
     ]);
   });
 
   it('should run nested describes and its by $only()', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         it('test 0', noop);
         $only();
@@ -57,7 +57,7 @@ describe('annotation: only', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 1',
       'TEST_END test 2',
       'TEST_END test 3',
@@ -65,7 +65,7 @@ describe('annotation: only', () => {
   });
 
   it('should run several describes and its by $only', run => {
-    const result = run(`
+    const output = run(`
       describe('suite', () => {
         $only();
         it('test 0', noop);
@@ -92,7 +92,7 @@ describe('annotation: only', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 0',
       'TEST_END test 3',
       'TEST_END test 4',
@@ -102,7 +102,7 @@ describe('annotation: only', () => {
   });
 
   it('should correctly apply nested $only', run => {
-    const result = run(`
+    const output = run(`
       $only();
       describe('suite 1', () => {
         $only();
@@ -111,7 +111,7 @@ describe('annotation: only', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 2',
       'TEST_END test 3',
     ]);
@@ -119,14 +119,14 @@ describe('annotation: only', () => {
 
   it('should throw error if $only disallowed by config noOnly flag', run => {
     const config = {noOnly: true};
-    const result = run(`
+    const output = run(`
       describe('suite', () => {
         $only();
         it('test 0', noop);
       });
     `, {config});
 
-    return expectReject(result, {
+    return expectReject(output, {
       message: new RegExp('^' + escapeRe('ONLY is disallowed but found in 1 file(s):')),
     });
   });
@@ -136,7 +136,7 @@ describe('annotation: only', () => {
       'length': 1,
       '0.data.result.only.files.size': 1
     };
-    const result = run([`
+    const output = run([`
       $only();
       describe('suite 1', () => {
         it('test 1', noop);
@@ -145,9 +145,9 @@ describe('annotation: only', () => {
       describe('suite 2', () => {
         it('test 2', noop);
       });
-    `], {include: ['RUNNER_START'], rawEvents: Object.keys(assertions)});
+    `], {include: ['RUNNER_START'], keys: assertions, output: 'rawReport'});
 
-    return expectResolve(result)
+    return expectResolve(output)
       .then(res => expect(res, 'to equal', assertions));
   });
 });

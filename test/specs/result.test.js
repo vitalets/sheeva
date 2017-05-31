@@ -3,18 +3,18 @@
 describe('result', () => {
 
   beforeEach(context => {
-    context.runOptions.result = true;
+    context.runOptions.output = 'result';
   });
 
   it('should return result on success', run => {
     const processOutput = result => Object.keys(result).sort();
-    const result = run([`
+    const output = run([`
       describe('suite 1', () => {
         it('test 1', noop);
       });
     `], {processOutput});
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'annotationsPerTarget',
       'config',
       'errors',

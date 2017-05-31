@@ -15,14 +15,14 @@ describe('config targets', () => {
         ];
       },
     };
-    const report = run(`
+    const output = run(`
       describe('suite', () => {
         it('test 0', noop);
         it('test 1', noop);
       });
-    `, {config});
+    `, {config, output: 'treeReport'});
 
-    return expectResolve(report, {
+    return expectResolve(output, {
       target1: {
         session0: [
           'SESSION_START 0',
@@ -48,13 +48,13 @@ describe('config targets', () => {
         return [];
       },
     };
-    const report = run(`
+    const output = run(`
         describe('suite', () => {
           it('test 0', noop);
         });
       `, {config});
 
-    return expectReject(report, 'You should provide at least one target');
+    return expectReject(output, 'You should provide at least one target');
   });
 
   it('should fail for invalid config.target', run => {
@@ -67,13 +67,13 @@ describe('config targets', () => {
         ];
       },
     };
-    const report = run(`
+    const output = run(`
         describe('suite', () => {
           it('test 0', noop);
         });
       `, {config});
 
-    return expectReject(report, 'Provided target \'abc\' not found');
+    return expectReject(output, 'Provided target \'abc\' not found');
   });
 
   it('should filter targets by target option', run => {
@@ -86,13 +86,13 @@ describe('config targets', () => {
         ];
       },
     };
-    const report = run(`
+    const output = run(`
       describe('suite', () => {
         it('test 0', noop);
       });
     `, {config});
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'SESSION_START 0',
       'TEST_END test 0',
       'SESSION_END 0'

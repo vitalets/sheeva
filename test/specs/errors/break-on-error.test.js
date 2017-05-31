@@ -10,20 +10,20 @@ describe('config.breakOnError', () => {
   });
 
   it('should break for test', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         it('test 0', () => { throw new Error('err') });
         it('test 1', noop);
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 0 err',
     ]);
   });
 
   it('should call all `after` and `afterEach` hooks for test error', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         after(noop);
         afterEach(noop);
@@ -32,7 +32,7 @@ describe('config.breakOnError', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 0 err',
       'HOOK_END suite 1 afterEach',
       'HOOK_END suite 1 after'
@@ -40,7 +40,7 @@ describe('config.breakOnError', () => {
   });
 
   it('should call all `after` hooks for before error', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         before(() => { throw new Error('err') });
         after(noop);
@@ -50,7 +50,7 @@ describe('config.breakOnError', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'HOOK_END suite 1 before err',
       'HOOK_END suite 1 after'
     ]);
@@ -61,7 +61,7 @@ describe('config.breakOnError', () => {
     const config = {
       concurrency: 2,
     };
-    const result = run([`
+    const output = run([`
         describe('suite 1', () => {
           it('test 1', () => sleepError(10, 'err'));
         });
@@ -69,9 +69,9 @@ describe('config.breakOnError', () => {
         describe('suite 2', () => {
           it('test 2', () => sleep(100));
         });
-      `], {config, include: ['SESSION', 'TEST']});
+      `], {config, include: ['SESSION', 'TEST'], output: 'treeReport'});
 
-    return expectResolve(result, {
+    return expectResolve(output, {
       target1: {
         session0: [
           'SESSION_START 0',

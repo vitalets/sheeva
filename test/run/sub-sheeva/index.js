@@ -28,17 +28,20 @@ module.exports = class SubSheeva {
    * @param {Object} [options.config]
    * @param {Array} [options.include]
    * @param {Array} [options.exclude]
-   * @param {Boolean} [options.flat]
-   * @param {Boolean} [options.rawEvents]
-   * @param {Boolean} [options.result]
    * @param {Function} [options.processOutput]
+   * @param {Array|Object} [options.keys] which keys extract to final output
+   * @param {String} [options.output='flatReport'] what is to output: 'flatReport', 'treeReport', 'rawReport', 'result'
    * @returns {Promise}
    */
   constructor(code, options) {
-    this._files = this._createFilesArray(code, options);
+    this._code = Array.isArray(code) ? code : [code];
+    this._files = this._createFilesArray();
     this._options = options;
-    this._reporter = new Reporter(options);
-    this._config = this._createConfig(options.config);
+    this._reporter = new Reporter({
+      include: options.include,
+      exclude: options.exclude,
+    });
+    this._config = this._createConfig();
     this._sheeva = null;
     this._output = null;
   }
@@ -47,19 +50,18 @@ module.exports = class SubSheeva {
     const Sheeva = getSheeva();
     this._sheeva = new Sheeva(this._config);
     return this._sheeva.run()
-      .then(result => this._output = this._getOutput(result))
+      .then(result => this._setOutput(result))
       .catch(e => this._attachOutputToError(e));
   }
 
-  _createFilesArray(code) {
-    code = Array.isArray(code) ? code : [code];
-    return code.map(content => {
+  _createFilesArray() {
+    return this._code.map(content => {
       return {content};
     });
   }
 
-  _createConfig(config) {
-    const {delay} = this._options;
+  _createConfig() {
+    const {delay, config} = this._options;
     const extraConfig = {
       reporters: this._reporter,
       files: this._files,
@@ -68,28 +70,54 @@ module.exports = class SubSheeva {
     return Object.assign({}, BASE_CONFIG, extraConfig, config);
   }
 
-  _getOutput(result) {
-    return this._options.result
-      ? this._processOutput(result, this._options.result)
-      : this._processOutput(this._reporter.getReport(), this._options.rawEvents);
+  _setOutput(result) {
+    this._setOutputByType(result);
+    return this._processOutput();
+  }
+
+  _setOutputByType(result) { // eslint-disable-line complexity
+    switch (this._options.output) {
+      case 'result':
+        this._output = result;
+        break;
+      case 'treeReport':
+        this._output = this._reporter.getTreeLog();
+        break;
+      case 'rawReport':
+        this._output = this._reporter.getRawLog();
+        break;
+      case 'flatReport':
+      default:
+        this._output = this._reporter.getFlatLog();
+        break;
+    }
+  }
+
+  _processOutput() {
+    if (this._options.keys) {
+      const keys = Array.isArray(this._options.keys) ? this._options.keys : Object.keys(this._options.keys);
+      this._output = extractByPaths(this._output, keys);
+    }
+
+    if (this._options.processOutput) {
+      this._output = this._options.processOutput(this._output);
+    }
+
+    return this._output;
   }
 
   _attachOutputToError(error) {
-    return this._options.result
-      ? attachToError(error, 'result', this._output || this._getOutput())
-      : attachToError(error, 'report', this._output || this._getOutput());
-  }
-
-  _processOutput(output, paths) {
-    output = Array.isArray(paths) ? extractByPaths(output, paths) : output;
-    return this._options.processOutput ? this._options.processOutput(output) : output;
+    Object.defineProperty(error, 'output', {
+      value: this._output || this._setOutput()
+    });
+    return Promise.reject(error);
   }
 };
 
-function attachToError(error, key, value) {
-  Object.defineProperty(error, key, {value});
-  return Promise.reject(error);
-}
+// function attachToError(error, key, value) {
+//   Object.defineProperty(error, key, {value});
+//   return Promise.reject(error);
+// }
 
 function syncCall({fn, session, context, attempt}) {
   return fn(context, session, attempt);

@@ -44,14 +44,14 @@ describe('config startSession / endSession hooks', () => {
   describe('success cases', () => {
 
     it('should call startSession / endSession for single session (concurrency = 1)', run => {
-      const result = run(`
+      const output = run(`
         describe('suite 1', () => {
           it('test 1', noop);
           it('test 2', noop);
         });
       `);
 
-      return expectResolve(result, {
+      return expectResolve(output, {
         startSession: 1,
         endSession: 1,
       });
@@ -61,7 +61,7 @@ describe('config startSession / endSession hooks', () => {
       const config = {
         concurrency: 2,
       };
-      const result = run([`
+      const output = run([`
       describe('suite 1', () => {
         it('test 1', noop);
       });
@@ -71,7 +71,7 @@ describe('config startSession / endSession hooks', () => {
       });
       `], {config});
 
-      return expectResolve(result, {
+      return expectResolve(output, {
         startSession: 2,
         endSession: 2,
       });
@@ -82,14 +82,14 @@ describe('config startSession / endSession hooks', () => {
         concurrency: 2,
         splitSuites: true,
       };
-      const result = run([`
+      const output = run([`
         describe('suite 1', () => {
           it('test 1', noop);
           it('test 1', noop);
         });
       `], {config});
 
-      return expectResolve(result, {
+      return expectResolve(output, {
         startSession: 2,
         endSession: 2,
       });
@@ -105,15 +105,15 @@ describe('config startSession / endSession hooks', () => {
           throw new Error('err');
         },
       };
-      const result = run(`
+      const output = run(`
         describe('suite 1', () => {
           it('test 1', noop);
         });
-      `, {config, result: true});
+      `, {config, output: 'result'});
 
-      return expectReject(result, {
+      return expectReject(output, {
         message: 'err',
-        result: {
+        output: {
           endSession: 1,
         }
       });
@@ -125,15 +125,18 @@ describe('config startSession / endSession hooks', () => {
           throw new Error('err');
         }
       };
-      const result = run(`
+      const output = run(`
         describe('suite 1', () => {
           it('test 1', noop);
         });
       `, {config});
 
-      return expectReject(result, {
+      return expectReject(output, {
         message: 'err',
-        result: undefined
+        output: {
+          startSession: undefined,
+          endSession: undefined,
+        }
       });
     });
   });
@@ -142,14 +145,14 @@ describe('config startSession / endSession hooks', () => {
     const config = {
       startSession: session => session.worker = 1,
     };
-    const result = run([`
+    const output = run([`
         describe('suite 1', () => {
           it('test 1', noop);
           it('test 1', noop);
         });
       `], {config});
 
-    return expectReject(result, 'Cannot set property worker of #<Session> which has only a getter');
+    return expectReject(output, 'Cannot set property worker of #<Session> which has only a getter');
   });
 
   /*
@@ -166,7 +169,7 @@ describe('config startSession / endSession hooks', () => {
    },
    endSession: () => b++,
    };
-   const result = run([`
+   const output = run([`
    describe('suite 1', () => {
    it('test 1', noop);
    });
@@ -177,9 +180,9 @@ describe('config startSession / endSession hooks', () => {
    });
    `], {config});
 
-   return expectReject(result, {
+   return expectReject(output, {
    message: 'err',
-   report: {
+   output:{
    target1: {
    session0: [
    'SESSION_START 0',
@@ -207,16 +210,16 @@ describe('config startSession / endSession hooks', () => {
    },
    endSession: () => b++,
    };
-   const result = run([`
+   const output = run([`
    describe('suite 1', () => {
    it('test 1', noop);
    it('test 2', noop);
    });
    `], {config});
 
-   return expectReject(result, {
+   return expectReject(output, {
    message: 'err',
-   report: {
+   output:{
    target1: {
    session0: [
    'SESSION_START 0',

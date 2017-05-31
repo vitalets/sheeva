@@ -6,7 +6,7 @@ describe('annotations: tags', () => {
     const config = {
       tags: ['tag1']
     };
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         it('test 0', noop);
 
@@ -18,7 +18,7 @@ describe('annotations: tags', () => {
       });
     `, {config});
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 1',
     ]);
   });
@@ -27,7 +27,7 @@ describe('annotations: tags', () => {
     const config = {
       tags: ['tag1']
     };
-    const result = run(`
+    const output = run(`
       describe('suite 0', () => {
         it('test 0', noop);
       });
@@ -44,7 +44,7 @@ describe('annotations: tags', () => {
       });
     `, {config});
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 1',
       'TEST_END test 2',
     ]);
@@ -54,7 +54,7 @@ describe('annotations: tags', () => {
     const config = {
       tags: ['tag1', 'tag2']
     };
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         it('test 0', noop);
 
@@ -78,7 +78,7 @@ describe('annotations: tags', () => {
       });
     `, {config});
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 1',
       'TEST_END test 2',
       'TEST_END test 4',

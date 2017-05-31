@@ -1,6 +1,5 @@
 'use strict';
 
-
 describe('context', () => {
 
   beforeEach(context => {
@@ -8,7 +7,7 @@ describe('context', () => {
   });
 
   it('should create test context and pass it to each hooks', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         beforeEach((context, session) => {
           if (!context) {
@@ -47,7 +46,7 @@ describe('context', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'HOOK_END suite 1 beforeEach',
       'HOOK_END suite 1 beforeEach 1',
       'TEST_END test 1',
@@ -57,7 +56,7 @@ describe('context', () => {
   });
 
   it('should not create context for before/after hooks', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         before((context, session) => {
           if (context) {
@@ -75,7 +74,7 @@ describe('context', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'HOOK_END suite 1 before',
       'TEST_END test 1',
       'HOOK_END suite 1 after',

@@ -8,13 +8,13 @@ describe('errors in suite', () => {
   });
 
   it('should reject run in case of error in describe fn', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         throw new Error('err');
       });  
     `);
 
-    return expectReject(result, 'err');
+    return expectReject(output, 'err');
   });
 
 });

@@ -8,7 +8,7 @@ describe('errors in test', () => {
   });
 
   it('should run all hooks in case of test error', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         before(noop);
         after(noop);
@@ -26,7 +26,7 @@ describe('errors in test', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'HOOK_END suite 1 before',
       'HOOK_END suite 2 before',
       'HOOK_END suite 1 beforeEach',
@@ -40,7 +40,7 @@ describe('errors in test', () => {
   });
 
   it('should run all tests with errors', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         it('test 0', () => { throw new Error('err0') });
         describe('suite 2', () => {
@@ -50,7 +50,7 @@ describe('errors in test', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'TEST_END test 1 err1',
       'TEST_END test 2 err2',
       'TEST_END test 0 err0'

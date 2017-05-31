@@ -6,22 +6,22 @@ describe('config common', () => {
     const config = {
       abc: 1,
     };
-    const result = run(`
+    const output = run(`
       it('test 0', noop);
     `, {config});
 
-    return expectReject(result, 'Unknown config option: abc');
+    return expectReject(output, 'Unknown config option: abc');
   });
 
   it('should fail for incorrect option type', run => {
     const config = {
       createTargets: 1,
     };
-    const result = run(`
+    const output = run(`
       it('test 0', noop);
     `, {config});
 
-    return expectReject(result, 'Incorrect config option type for: createTargets (expected function, got number)');
+    return expectReject(output, 'Incorrect config option type for: createTargets (expected function, got number)');
   });
 
 });

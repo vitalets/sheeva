@@ -11,7 +11,7 @@ describe('annotation: ignore', () => {
         ];
       },
     };
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         it('test 0', noop);
 
@@ -21,9 +21,9 @@ describe('annotation: ignore', () => {
         $ignore(target => target.id !== 'target1');
         it('test 2', noop);
       });
-    `, {config});
+    `, {config, output: 'treeReport'});
 
-    return expectResolve(result, {
+    return expectResolve(output, {
       target1: {
         session0: [
           'TEST_END test 0',
@@ -48,7 +48,7 @@ describe('annotation: ignore', () => {
         ];
       },
     };
-    const result = run(`
+    const output = run(`
       describe('suite 0', () => {
         it('test 0', noop);
       });
@@ -64,9 +64,9 @@ describe('annotation: ignore', () => {
         it('test 3', noop);
         it('test 4', noop);
       });
-    `, {config});
+    `, {config, output: 'treeReport'});
 
-    return expectResolve(result, {
+    return expectResolve(output, {
       target1: {
         session0: [
           'TEST_END test 0',
@@ -85,7 +85,7 @@ describe('annotation: ignore', () => {
   });
 
   it('should accept explicit value', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 0', () => {
         $ignore(false);
         it('test 0', noop);
@@ -96,7 +96,7 @@ describe('annotation: ignore', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 0',
       'TEST_END test 2',
     ]);

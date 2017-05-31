@@ -9,13 +9,13 @@ describe('events', () => {
     });
 
     it('should emit runner events in normal case', run => {
-      const result = run([`
+      const output = run([`
         describe('suite 1', () => {
           it('test 1', noop);
         });
       `]);
 
-      return expectResolve(result, [
+      return expectResolve(output, [
         'RUNNER_INIT',
         'RUNNER_START',
         'RUNNER_END',
@@ -23,8 +23,8 @@ describe('events', () => {
     });
 
     it('should emit runner events for empty file', run => {
-      const result = run(``);
-      return expectResolve(result, [
+      const output = run(``);
+      return expectResolve(output, [
         'RUNNER_INIT',
         'RUNNER_START',
         'RUNNER_END',
@@ -36,15 +36,15 @@ describe('events', () => {
         startRunner: () => { throw new Error('err'); },
       };
 
-      const result = run([`
+      const output = run([`
         describe('suite 1', () => {
           it('test 1', noop);
         });
       `], {config});
 
-      return expectReject(result, {
+      return expectReject(output, {
         message: 'err',
-        report: [
+        output:[
           'RUNNER_INIT',
           'RUNNER_START',
           'RUNNER_END err',
@@ -70,13 +70,13 @@ describe('events', () => {
           ];
         },
       };
-      const report = run(`
+      const output = run(`
       describe('suite', () => {
         it('test 0', noop);
       });
     `, {config});
 
-      return expectResolve(report, [
+      return expectResolve(output, [
         'TARGET_START target1',
         'TEST_END test 0',
         'TARGET_END target1',
@@ -96,7 +96,7 @@ describe('events', () => {
     });
 
     it('should emit WORKER events', run => {
-      const result = run([`
+      const output = run([`
         describe('suite 1', () => {
           it('test 1', noop);
         });
@@ -107,7 +107,7 @@ describe('events', () => {
       `]);
 
       // Extra worker (#2) is created and instantly deleted. Currently it is by design.
-      return expectResolve(result, [
+      return expectResolve(output, [
         'WORKER_ADD 0',
         'WORKER_ADD 1',
         'WORKER_ADD 2',
@@ -129,7 +129,7 @@ describe('events', () => {
     });
 
     it('should emit for nested suites', run => {
-      const result = run(`
+      const output = run(`
         describe('suite 1', () => {
           describe('suite 2', () => {
             it('test 1', noop);
@@ -138,7 +138,7 @@ describe('events', () => {
         });
       `);
 
-      return expectResolve(result, [
+      return expectResolve(output, [
         'SUITE_START root',
         'SUITE_START suite 1',
         'SUITE_START suite 2',
@@ -149,19 +149,19 @@ describe('events', () => {
     });
 
     it('should emit for file suites', run => {
-      const result = run(`
+      const output = run(`
         it('test 0', noop);
         it('test 1', noop);
       `);
 
-      return expectResolve(result, [
+      return expectResolve(output, [
         'SUITE_START root',
         'SUITE_END root'
       ]);
     });
 
     it('should not emit for empty suites', run => {
-      const result = run(`
+      const output = run(`
         describe('suite', () => {
           describe('suite 1', noop);
           describe('suite 2', noop);
@@ -169,7 +169,7 @@ describe('events', () => {
         describe('suite 3', noop);
       `);
 
-      return expectResolve(result, []);
+      return expectResolve(output, []);
     });
 
   });
@@ -184,7 +184,7 @@ describe('events', () => {
     });
 
     it('should emit TEST_START / TEST_END', run => {
-      const result = run(`
+      const output = run(`
         describe('suite 1', () => {
           it('test 1', noop);
           describe('suite 2', () => {
@@ -195,7 +195,7 @@ describe('events', () => {
         it('test 4', noop);
       `);
 
-      return expectResolve(result, [
+      return expectResolve(output, [
         'TEST_START test 2',
         'TEST_END test 2',
         'TEST_START test 3',

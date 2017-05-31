@@ -3,20 +3,24 @@
 $if(target => target.id === 'sync-target');
 describe('annotation: data', () => {
 
+  beforeEach(context => {
+    context.runOptions.output = 'rawReport';
+  });
+
   it('should attach data to test', run => {
     const assertions = {
       '0.data.test.data.id': 123,
       '1.data.test.data': null,
     };
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         $data({id: 123});
         it('test 0', () => noop);
         it('test 1', () => noop);
       });
-    `, {rawEvents: Object.keys(assertions)});
+    `, {keys: assertions});
 
-    return expectResolve(result)
+    return expectResolve(output)
       .then(res => expect(res, 'to equal', assertions));
   });
 
@@ -24,14 +28,14 @@ describe('annotation: data', () => {
     const assertions = {
       '0.data.suite.data.id': 123
     };
-    const result = run(`
+    const output = run(`
       $data({id: 123});
       describe('suite 1', () => {
         it('test 0', () => noop);
       });
-    `, {include: ['SUITE_END'], rawEvents: Object.keys(assertions)});
+    `, {include: ['SUITE_END'], keys: assertions});
 
-    return expectResolve(result)
+    return expectResolve(output)
       .then(res => expect(res, 'to equal', assertions));
   });
 

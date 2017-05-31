@@ -3,7 +3,7 @@
 describe('annotation: skip', () => {
 
   it('should skip test', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         it('test 0', noop);
         $skip();
@@ -12,14 +12,14 @@ describe('annotation: skip', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 0',
       'TEST_END test 2',
     ]);
   });
 
   it('should skip suite', run => {
-    const result = run(`
+    const output = run(`
       $skip();
       describe('suite 1', () => {
         it('test 2', noop);
@@ -30,13 +30,13 @@ describe('annotation: skip', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 4',
     ]);
   });
 
   it('should apply nested skips', run => {
-    const result = run(`
+    const output = run(`
       $skip();
       describe('suite 1', () => {
         $skip();
@@ -48,13 +48,13 @@ describe('annotation: skip', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 4',
     ]);
   });
 
   it('should apply several skips', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         $skip();
         it('test 2', noop);
@@ -69,7 +69,7 @@ describe('annotation: skip', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 5',
       'TEST_END test 3',
     ]);
@@ -82,7 +82,7 @@ describe('annotation: skip', () => {
       '0.data.result.skip.suites.size': 1,
       '0.data.result.skip.tests.size': 1,
     };
-    const result = run([`
+    const output = run([`
       $skip();
       describe('suite 1', () => {
         it('test 1', noop);
@@ -94,14 +94,14 @@ describe('annotation: skip', () => {
       });
     `, `
       it('test 3', noop)
-    `], {include: ['RUNNER_START'], rawEvents: Object.keys(assertions)});
+    `], {include: ['RUNNER_START'], keys: assertions, output: 'rawReport'});
 
-    return expectResolve(result)
+    return expectResolve(output)
       .then(res => expect(res, 'to equal', assertions));
   });
 
   it('should skip inside only', run => {
-    const result = run(`
+    const output = run(`
       $only();
       describe('suite 1', () => {
         it('test 0', noop);
@@ -110,13 +110,13 @@ describe('annotation: skip', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 0',
     ]);
   });
 
   it('should not skip if only applied', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         it('test 0', noop);
         $only();
@@ -125,7 +125,7 @@ describe('annotation: skip', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 1',
     ]);
   });
@@ -134,7 +134,7 @@ describe('annotation: skip', () => {
     const config = {
       tags: ['tag1']
     };
-    const result = run(`
+    const output = run(`
       $tags('tag1');
       describe('suite 1', () => {
         it('test 0', noop);
@@ -143,7 +143,7 @@ describe('annotation: skip', () => {
       });
     `, {config});
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 0',
     ]);
   });

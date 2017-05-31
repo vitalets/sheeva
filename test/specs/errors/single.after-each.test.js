@@ -7,7 +7,7 @@ describe('single error in afterEach', () => {
   });
 
   it('should skip suite', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         afterEach(() => { throw new Error('err') });
         it('test 0', noop);
@@ -15,7 +15,7 @@ describe('single error in afterEach', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'TEST_END test 0',
       'HOOK_END suite 1 afterEach err',
       'SUITE_END suite 1',
@@ -24,7 +24,7 @@ describe('single error in afterEach', () => {
   });
 
   it('should skip only errored suite', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         describe('suite 2', () => {
           afterEach(() => { throw new Error('err') });
@@ -37,7 +37,7 @@ describe('single error in afterEach', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'TEST_END test 0',
       'HOOK_END suite 2 afterEach err',
       'SUITE_END suite 2',
@@ -49,7 +49,7 @@ describe('single error in afterEach', () => {
   });
 
   it('should call all `after` and `afterEach` hooks', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         after(noop);
         afterEach(noop);
@@ -63,7 +63,7 @@ describe('single error in afterEach', () => {
       });
     `, {include: ['HOOK_END']});
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'HOOK_END suite 2 afterEach err',
       'HOOK_END suite 1 afterEach',
       'HOOK_END suite 2 after',

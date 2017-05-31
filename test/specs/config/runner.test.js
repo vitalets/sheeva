@@ -47,26 +47,26 @@ describe('config runner', () => {
   });
 
   it('should call once startRunner / endRunner in success test', run => {
-    const result = run([`
+    const output = run([`
       describe('suite 1', () => {
         it('test 1', noop);
       });
     `]);
 
-    return expectResolve(result, {
+    return expectResolve(output, {
       startRunner: 1,
       endRunner: 1,
     });
   });
 
   it('should call once startRunner / endRunner in failed test', run => {
-    const result = run([`
+    const output = run([`
       describe('suite 1', () => {
         it('test 1', () => { throw new Error('err') });
       });
     `]);
 
-    return expectResolve(result, {
+    return expectResolve(output, {
       startRunner: 1,
       endRunner: 1,
     });
@@ -76,15 +76,15 @@ describe('config runner', () => {
     const config = {
       createTargets: () => { throw new Error('err'); }
     };
-    const result = run([`
+    const output = run([`
       describe('suite 1', () => {
         it('test 1', noop);
       });
-      `], {config, result: true});
+      `], {config, output: 'result'});
 
-    return expectReject(result, {
+    return expectReject(output, {
       message: 'err',
-      result: {
+      output: {
         endRunner: 1,
       }
     });
@@ -94,15 +94,15 @@ describe('config runner', () => {
     const config = {
       startRunner: () => Promise.resolve().then(() => { throw new Error('err'); }),
     };
-    const result = run([`
+    const output = run([`
       describe('suite 1', () => {
         it('test 1', noop);
       });
-      `], {config, result: true});
+      `], {config, output: 'result'});
 
-    return expectReject(result, {
+    return expectReject(output, {
       message: 'err',
-      result: {
+      output: {
         endRunner: 1,
       }
     });

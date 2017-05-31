@@ -3,7 +3,7 @@
 describe('flatten and sort', () => {
 
   it('should flatten suites on same level and sort by before/after hooks count', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         it('test 1', noop);
       });
@@ -18,7 +18,7 @@ describe('flatten and sort', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 2',
       'TEST_END test 3',
       'TEST_END test 1',
@@ -26,7 +26,7 @@ describe('flatten and sort', () => {
   });
 
   it('should flatten and sort suites inside parent suite', run => {
-    const result = run(`
+    const output = run(`
       describe('parent suite', () => {
         describe('suite 1', () => {
           it('test 1', noop);
@@ -43,7 +43,7 @@ describe('flatten and sort', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 2',
       'TEST_END test 3',
       'TEST_END test 1',
@@ -51,7 +51,7 @@ describe('flatten and sort', () => {
   });
 
   it('should flatten suites and sort by nested before/after hooks count', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         it('test 1', noop);
       });
@@ -70,7 +70,7 @@ describe('flatten and sort', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 3',
       'TEST_END test 2',
       'TEST_END test 1',
@@ -78,7 +78,7 @@ describe('flatten and sort', () => {
   });
 
   it('should move tests after suites', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         it('test 1', noop);
         describe('suite 2', () => {
@@ -87,7 +87,7 @@ describe('flatten and sort', () => {
       });
     `);
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 2',
       'TEST_END test 1',
     ]);
@@ -98,7 +98,7 @@ describe('flatten and sort', () => {
       newSessionPerFile: false,
       splitSuites: true,
     };
-    const result = run([`
+    const output = run([`
       describe('suite 1', () => {
         before(noop);
         it('test 1', noop);
@@ -114,7 +114,7 @@ describe('flatten and sort', () => {
       });      
     `], {config});
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 3',
       'TEST_END test 1',
       'TEST_END test 2',
@@ -125,7 +125,7 @@ describe('flatten and sort', () => {
     const config = {
       splitSuites: false,
     };
-    const result = run([`
+    const output = run([`
       describe('suite 1', () => {
         before(noop);
         it('test 1', noop);
@@ -139,9 +139,9 @@ describe('flatten and sort', () => {
         after(noop);
         it('test 3', noop);
       });      
-    `], {config, flat: true});
+    `], {config});
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_END test 3',
       'TEST_END test 2',
       'TEST_END test 1',
@@ -153,7 +153,7 @@ describe('flatten and sort', () => {
       newSessionPerFile: true,
     };
     const include = ['SESSION', 'TEST_END'];
-    const result = run([`
+    const output = run([`
       describe('suite 1', () => {
         before(noop);
         it('test 1', noop);
@@ -167,9 +167,9 @@ describe('flatten and sort', () => {
         after(noop);
         it('test 3', noop);
       });      
-    `], {config, include, flat: true});
+    `], {config, include});
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'SESSION_START 0',
       'TEST_END test 3',
       'TEST_END test 2',

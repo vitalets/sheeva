@@ -8,7 +8,7 @@ describe('split files', () => {
       splitSuites: true
     };
     const include = ['SESSION', 'SUITE', 'HOOK_END', 'TEST_END'];
-    const result = run([`
+    const output = run([`
       describe('suite 1', () => {
         before(noop);
         beforeEach(noop);
@@ -18,9 +18,9 @@ describe('split files', () => {
         it('test 2', noop);
         it('test 3', noop);
       });
-    `], {config, include});
+    `], {config, include, output: 'treeReport'});
 
-    return expectResolve(result, {
+    return expectResolve(output, {
         target1: {
           session0: [
             'SESSION_START 0',
@@ -61,7 +61,7 @@ describe('split files', () => {
       concurrency: 3,
       splitSuites: true
     };
-    const result = run([`
+    const output = run([`
       describe('suite 1', () => {
         it('test 1', noop);
         it('test 2', noop);
@@ -70,7 +70,7 @@ describe('split files', () => {
         it('test 5', noop);
         it('test 6', noop);
       });
-      `], {config});
+      `], {config, output: 'treeReport'});
 
     /*
      Split is not equal, because following steps:
@@ -80,7 +80,7 @@ describe('split files', () => {
 
      Maybe this should be improved in future.
     */
-    return expectResolve(result, {
+    return expectResolve(output, {
         target1: {
           session0: [
             'TEST_END test 1',
@@ -104,16 +104,16 @@ describe('split files', () => {
       concurrency: 10,
       splitSuites: true
     };
-    const result = run([`
+    const output = run([`
       describe('suite 1', () => {
         it('test 1', noop);
         it('test 2', noop);
         it('test 3', noop);
         it('test 4', noop);
       });
-      `], {config});
+      `], {config, output: 'treeReport'});
 
-    return expectResolve(result, {
+    return expectResolve(output, {
         target1: {
           session0: [
             'TEST_END test 1',
@@ -143,15 +143,15 @@ describe('split files', () => {
       concurrency: 2,
       splitSuites: true
     };
-    const result = run([`
+    const output = run([`
       describe('suite 1', () => {
         it('test 1', noop);
         it('test 2', noop);
         it('test 3', noop);
       });
-    `], {config, include: ['QUEUE_SPLIT'], rawEvents: Object.keys(assertions)});
+    `], {config, include: ['QUEUE_SPLIT'], keys: assertions, output: 'rawReport'});
 
-    return expectResolve(result)
+    return expectResolve(output)
       .then(res => expect(res, 'to equal', assertions));
   });
 

@@ -7,16 +7,16 @@ describe('config.files', () => {
     const config = {
       files: [],
     };
-    const result = run([], {config});
-    return expectReject(result, 'Empty config.files');
+    const output = run([], {config});
+    return expectReject(output, 'Empty config.files');
   });
 
   it('should reject for invalid files', run => {
     const config = {
       files: [123],
     };
-    const result = run([], {config});
-    return expectReject(result, 'Files should be array of String or Object {name, content}, got 123');
+    const output = run([], {config});
+    return expectReject(output, 'Files should be array of String or Object {name, content}, got 123');
   });
 
   it('should process file as object with string content', run => {
@@ -29,8 +29,8 @@ describe('config.files', () => {
           });`
       }],
     };
-    const result = run([], {config});
-    return expectResolve(result, ['TEST_END test 1']);
+    const output = run([], {config});
+    return expectResolve(output, ['TEST_END test 1']);
   });
 
   it('should generate file name if not passed for file as object', run => {
@@ -44,8 +44,9 @@ describe('config.files', () => {
         {content: `it('test 2', noop);`},
       ],
     };
-    const result = run([], {config, include: ['SUITE_END'], rawEvents: Object.keys(assertions)});
-    return expectResolve(result).then(res => expect(res, 'to equal', assertions));
+    const output = run([], {config, include: ['SUITE_END'], keys: assertions, output: 'rawReport'});
+
+    return expectResolve(output).then(res => expect(res, 'to equal', assertions));
   });
 
 
@@ -61,24 +62,24 @@ describe('config.files', () => {
         }
       }],
     };
-    const result = run([], {config});
-    return expectResolve(result, ['TEST_END test 1']);
+    const output = run([], {config});
+    return expectResolve(output, ['TEST_END test 1']);
   });
 
   $if(IS_BROWSER);
   describe('browser', () => {
     it('should process file as url', run => {
       const config = {files: ['data/test.js']};
-      const result = run([], {config});
-      return expectResolve(result, ['TEST_END test 1']);
+      const output = run([], {config});
+      return expectResolve(output, ['TEST_END test 1']);
     });
 
     it('should reject for incorrect url', run => {
       const config = {
         files: ['abc'],
       };
-      const result = run([], {config});
-      return expectReject(result, {
+      const output = run([], {config});
+      return expectReject(output, {
         message: /The script at '.*abc.*' failed to load/,
       });
     });
@@ -90,20 +91,20 @@ describe('config.files', () => {
       const config = {
         files: ['abc'],
       };
-      const result = run([], {config});
-      return expectReject(result, 'No files matched');
+      const output = run([], {config});
+      return expectReject(output, 'No files matched');
     });
 
     it('should process file as path', run => {
       const config = {files: ['test/data/test.js']};
-      const result = run([], {config});
-      return expectResolve(result, ['TEST_END test 1']);
+      const output = run([], {config});
+      return expectResolve(output, ['TEST_END test 1']);
     });
 
     it('should process directory (without slash)', run => {
       const config = {files: 'test/data/subdir1'};
-      const result = run([], {config});
-      return expectResolve(result, [
+      const output = run([], {config});
+      return expectResolve(output, [
         'TEST_END test 1',
         'TEST_END test 2'
       ]);
@@ -111,8 +112,8 @@ describe('config.files', () => {
 
     it('should process directory (with slash)', run => {
       const config = {files: ['test/data/subdir2/']};
-      const result = run([], {config});
-      return expectResolve(result, [
+      const output = run([], {config});
+      return expectResolve(output, [
         'TEST_END test 1',
         'TEST_END test 2'
       ]);
@@ -120,8 +121,8 @@ describe('config.files', () => {
 
     it('should process pattern *.js', run => {
       const config = {files: ['test/data/subdir3/*.js']};
-      const result = run([], {config});
-      return expectResolve(result, [
+      const output = run([], {config});
+      return expectResolve(output, [
         'TEST_END test 1',
         'TEST_END test 2'
       ]);
@@ -129,8 +130,8 @@ describe('config.files', () => {
 
     it('should process pattern **', run => {
       const config = {files: ['test/data/subdir4/**']};
-      const result = run([], {config});
-      return expectResolve(result, [
+      const output = run([], {config});
+      return expectResolve(output, [
         'TEST_END test 1',
         'TEST_END test 2'
       ]);

@@ -7,7 +7,7 @@ describe('single error in before', () => {
   });
 
   it('should skip suite', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         before(() => { throw new Error('err') });
         it('test 0', noop);
@@ -15,7 +15,7 @@ describe('single error in before', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'HOOK_END suite 1 before err',
       'SUITE_END suite 1',
       'SUITE_END root'
@@ -23,7 +23,7 @@ describe('single error in before', () => {
   });
 
   it('should skip only errored suite', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         describe('suite 2', () => {
           before(() => { throw new Error('err') });
@@ -35,7 +35,7 @@ describe('single error in before', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'HOOK_END suite 2 before err',
       'SUITE_END suite 2',
       'TEST_END test 1',
@@ -46,7 +46,7 @@ describe('single error in before', () => {
   });
 
   it('should call all `after` hooks', run => {
-    const report = run(`
+    const output = run(`
         describe('suite 1', () => {
           before(noop);
           after(noop);
@@ -64,7 +64,7 @@ describe('single error in before', () => {
         });
       `, {include: ['HOOK_END']});
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'HOOK_END suite 1 before',
       'HOOK_END suite 2 before err',
       'HOOK_END suite 2 after',

@@ -7,7 +7,7 @@ describe('hooks', () => {
   });
 
   it('should run all hooks without describe', run => {
-    const report = run(`
+    const output = run(`
       before(noop);
       before(noop);
       
@@ -24,7 +24,7 @@ describe('hooks', () => {
       it('test 1', noop);
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'SUITE_START root',
       'HOOK_END root before',
       'HOOK_END root before 1',
@@ -45,7 +45,7 @@ describe('hooks', () => {
   });
 
   it('should run all hooks with describe', run => {
-    const report = run(`
+    const output = run(`
       before(noop);
       beforeEach(noop);
       after(noop);
@@ -62,7 +62,7 @@ describe('hooks', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'SUITE_START root',
       'HOOK_END root before',
       'SUITE_START suite',

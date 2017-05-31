@@ -7,7 +7,7 @@ describe('errors (multi)', () => {
   });
 
   it('before + after', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         before(() => { throw new Error('err1') });
         after(() => { throw new Error('err2') });
@@ -15,14 +15,14 @@ describe('errors (multi)', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'HOOK_END suite 1 before err1',
       'HOOK_END suite 1 after err2'
     ]);
   });
 
   it('after + after', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         after(() => { throw new Error('err1') });
         describe('suite 2', () => {
@@ -32,7 +32,7 @@ describe('errors (multi)', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'TEST_END test 0',
       'HOOK_END suite 2 after err2',
       'HOOK_END suite 1 after err1'
@@ -40,7 +40,7 @@ describe('errors (multi)', () => {
   });
 
   it('test + after + after', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         after(() => { throw new Error('err1') });
         describe('suite 2', () => {
@@ -50,7 +50,7 @@ describe('errors (multi)', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'TEST_END test 0 err3',
       'HOOK_END suite 2 after err2',
       'HOOK_END suite 1 after err1'
@@ -58,7 +58,7 @@ describe('errors (multi)', () => {
   });
 
   it('beforeEach + afterEach + after', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         beforeEach(() => { throw new Error('err1') });
         afterEach(() => { throw new Error('err2') });
@@ -72,7 +72,7 @@ describe('errors (multi)', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'HOOK_END suite 1 beforeEach err1',
       'HOOK_END suite 1 afterEach err2',
       'HOOK_END suite 2 after err6',
@@ -81,7 +81,7 @@ describe('errors (multi)', () => {
   });
 
   it('beforeEach (nested) + afterEach + after', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         afterEach(() => { throw new Error('err2') });
         after(() => { throw new Error('err3') });
@@ -94,7 +94,7 @@ describe('errors (multi)', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'HOOK_END suite 2 beforeEach err4',
       'HOOK_END suite 2 afterEach err5',
       'HOOK_END suite 1 afterEach err2',
@@ -104,7 +104,7 @@ describe('errors (multi)', () => {
   });
 
   it('afterEach * 2 + after * 2', run => {
-    const report = run(`
+    const output = run(`
       describe('suite 1', () => {
         afterEach(() => { throw new Error('err2') });
         after(() => { throw new Error('err3') });
@@ -116,7 +116,7 @@ describe('errors (multi)', () => {
       });
     `);
 
-    return expectResolve(report, [
+    return expectResolve(output, [
       'TEST_END test 0',
       'HOOK_END suite 2 afterEach err5',
       'HOOK_END suite 1 afterEach err2',
@@ -140,7 +140,7 @@ describe('errors (multi)', () => {
           it('test 0', noop);
         });
       });
-    `, {result: true, processOutput});
+    `, {output: 'result', processOutput});
 
     return expectResolve(output, 'err4 err5 err2 err6 err3');
   });

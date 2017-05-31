@@ -6,7 +6,7 @@ describe('annotation: retry', () => {
   const include = ['HOOK_END', 'TEST'];
 
   it('should retry test', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         before(noop);
         after(noop);
@@ -18,7 +18,7 @@ describe('annotation: retry', () => {
       });
     `, {include});
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'HOOK_END suite 1 before',
       'HOOK_END suite 1 beforeEach',
       'TEST_START test 0',
@@ -33,7 +33,7 @@ describe('annotation: retry', () => {
   });
 
   it('should retry 2 times', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         before(noop);
         after(noop);
@@ -45,7 +45,7 @@ describe('annotation: retry', () => {
       });
     `, {include});
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'HOOK_END suite 1 before',
       'HOOK_END suite 1 beforeEach',
       'TEST_START test 0',
@@ -64,7 +64,7 @@ describe('annotation: retry', () => {
   });
 
   it('should retry with increased timeout when test failed by timeout', run => {
-    const result = run(`
+    const output = run(`
       describe('suite 1', () => {
         $retry();
         $timeout(20)
@@ -72,7 +72,7 @@ describe('annotation: retry', () => {
       });
     `, {include: ['TEST']});
 
-    return expectResolve(result, [
+    return expectResolve(output, [
       'TEST_START test 0',
       'TEST_RETRY test 0 Timeout 20 ms exceeded',
       'TEST_START test 0',

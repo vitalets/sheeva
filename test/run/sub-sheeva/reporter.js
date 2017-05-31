@@ -1,9 +1,8 @@
-'use strict';
-
 /**
- * Reporter that just put events into log
- *
+ * Reporter for sub-sheeva
  */
+
+'use strict';
 
 /* eslint-disable complexity */
 const events = require('../../../src/events');
@@ -17,19 +16,16 @@ module.exports = class LogReporter {
    * @param {Object} options
    * @param {Array} [options.include]
    * @param {Array} [options.exclude]
-   * @param {Boolean} [options.flat]
-   * @param {Boolean} [options.rawEvents]
    */
   constructor(options) {
-    this._options = {};
+    this._setOptions(options);
+    this._rawLog = [];
     this._flatLog = [];
     this._treeLog = {};
-    this._events = [];
-    this._setOptions(options);
   }
 
   handleEvent(event, data) { // eslint-disable-line complexity
-    this._events.push({event, data});
+    this._rawLog.push({event, data});
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
     const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
     switch (event) {
@@ -104,18 +100,38 @@ module.exports = class LogReporter {
     }
   }
 
-  getReport() {
-    const loggedTargets = Object.keys(this._treeLog);
-    const flat = this._options.flat || loggedTargets.length === 0 || this._isSingleTargetAndSession();
-
-    if (this._options.rawEvents) {
-      return this._getRawLog();
-    } else if (flat) {
-      return this._getFlatLog();
-    } else {
-      return this._getTreeLog();
-    }
+  getRawLog() {
+    return this._rawLog.filter(item => this._isPassingFilter(item.event));
   }
+
+  getFlatLog() {
+    return this._flatLog.filter(eventName => this._isPassingFilter(eventName));
+  }
+
+  getTreeLog() {
+    // todo: why this re-assignment is needed?
+    const treeLog = this._treeLog;
+    this._treeLog = {};
+    Object.keys(treeLog).forEach(targetId => {
+      Object.keys(treeLog[targetId]).forEach(sessionName => {
+        treeLog[targetId][sessionName] = treeLog[targetId][sessionName]
+          .filter(eventName => this._isPassingFilter(eventName));
+      });
+    });
+    return treeLog;
+  }
+  // getReport() {
+  //   const loggedTargets = Object.keys(this._treeLog);
+  //   const flat = this._options.flat || loggedTargets.length === 0 || this._isSingleTargetAndSession();
+  //
+  //   if (this._options.rawEvents) {
+  //     return this._getRawLog();
+  //   } else if (flat) {
+  //     return this._getFlatLog();
+  //   } else {
+  //     return this._getTreeLog();
+  //   }
+  // }
 
   _add({session}, str) {
     this._flatLog.push(str);
@@ -126,27 +142,6 @@ module.exports = class LogReporter {
       this._treeLog[target.id][sessionName] = this._treeLog[target.id][sessionName] || [];
       this._treeLog[target.id][sessionName].push(str);
     }
-  }
-
-  _getRawLog() {
-    return this._events.filter(item => this._isPassingFilter(item.event));
-  }
-
-  _getFlatLog() {
-    return this._flatLog
-      .filter(eventName => this._isPassingFilter(eventName));
-  }
-
-  _getTreeLog() {
-    const treeLog = this._treeLog;
-    this._treeLog = {};
-    Object.keys(treeLog).forEach(targetId => {
-      Object.keys(treeLog[targetId]).forEach(sessionName => {
-        treeLog[targetId][sessionName] = treeLog[targetId][sessionName]
-          .filter(eventName => this._isPassingFilter(eventName));
-      });
-    });
-    return treeLog;
   }
 
   _isPassingFilter(eventName) {
@@ -161,10 +156,10 @@ module.exports = class LogReporter {
     return result;
   }
 
-  _isSingleTargetAndSession() {
-    const loggedTargets = Object.keys(this._treeLog);
-    return (loggedTargets.length === 1 && Object.keys(this._treeLog[loggedTargets[0]]).length <= 1);
-  }
+  // _isSingleTargetAndSession() {
+  //   const loggedTargets = Object.keys(this._treeLog);
+  //   return (loggedTargets.length === 1 && Object.keys(this._treeLog[loggedTargets[0]]).length <= 1);
+  // }
 
   _setOptions(options) {
     if (!options.include && !options.exclude) {
