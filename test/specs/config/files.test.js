@@ -33,6 +33,22 @@ describe('config.files', () => {
     return expectResolve(result, ['TEST_END test 1']);
   });
 
+  it('should generate file name if not passed for file as object', run => {
+    const assertions = {
+      '0.data.suite.name': '0.js',
+      '1.data.suite.name': '1.js',
+    };
+    const config = {
+      files: [
+        {content: `it('test 1', noop);`},
+        {content: `it('test 2', noop);`},
+      ],
+    };
+    const result = run([], {config, include: ['SUITE_END'], rawEvents: Object.keys(assertions)});
+    return expectResolve(result).then(res => expect(res, 'to equal', assertions));
+  });
+
+
   $ignore(IS_WEB_WORKER);
   it('should process file as object with function content', run => {
     const config = {

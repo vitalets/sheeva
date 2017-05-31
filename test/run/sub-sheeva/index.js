@@ -24,8 +24,6 @@ module.exports = class SubSheeva {
    *
    * @param {String|Array} code
    * @param {Object} options
-   * @param {Number} options.sessionIndex
-   * @param {String} options.targetId
    * @param {Number} [options.delay]
    * @param {Object} [options.config]
    * @param {Array} [options.include]
@@ -53,13 +51,10 @@ module.exports = class SubSheeva {
       .catch(e => this._attachOutputToError(e));
   }
 
-  _createFilesArray(code, {targetId, sessionIndex}) {
+  _createFilesArray(code) {
     code = Array.isArray(code) ? code : [code];
-    return code.map((item, index) => {
-      return {
-        name: `temp-${targetId}-${sessionIndex}-${index}.js`,
-        content: item,
-      };
+    return code.map(content => {
+      return {content};
     });
   }
 

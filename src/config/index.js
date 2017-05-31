@@ -53,9 +53,14 @@ class Configurator {
 
   _validateFiles() {
     assert(this._config.files.length, `Empty config.files`);
-    this._config.files.forEach(file => {
-      if (typeof file === 'string') return;
-      if (file && file.name) return;
+    this._config.files.forEach((file, index) => {
+      if (typeof file === 'string') {
+        return;
+      }
+      if (file && typeof file === 'object' && file.hasOwnProperty('content')) {
+        file.name = file.name || `${index}.js`;
+        return;
+      }
       throw new Error(`Files should be array of String or Object {name, content}, got ${JSON.stringify(file)}`);
     });
   }
