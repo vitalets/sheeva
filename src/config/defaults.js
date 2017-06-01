@@ -111,6 +111,23 @@ module.exports = {
   },
 
   /**
+   * Start runner hook, called after tests are read and transformed, but before execution
+   *
+   * @param {Config} config
+   * @returns {Promise}
+   */
+  startRunner: function (config) { }, // eslint-disable-line no-unused-vars
+
+  /**
+   * End runner hook
+   * For Webdriver tests it may be stopping local selenium server
+   *
+   * @param {Config} config
+   * @returns {Promise}
+   */
+  endRunner: function (config) { }, // eslint-disable-line no-unused-vars
+
+  /**
    * Attach any data to session.
    * For Webdriver tests it is usually a `driver` instance.
    *
@@ -129,10 +146,27 @@ module.exports = {
   endSession: function (session) { }, // eslint-disable-line no-unused-vars
 
   /**
-   * Function that actually calls each test and hook.
-   * This convenient way to passed needed arguments in your tests.
-   * By default session and context are passed.
-   * For Webdriver tests it is usually a `session.driver` instance.
+   * Function that is called for each hook.
+   * Allows to define which arguments are passed to the hook fn.
+   *
+   * @param {Object} params
+   * @param {Object} params.session
+   * @param {Function} params.fn
+   * @param {Object} params.context
+   * @param {Object} params.target
+   * @param {Suite} params.suite
+   * @param {Hook} params.hook
+   *
+   * @returns {Function}
+   */
+  callHookFn: function (params) {
+    const {fn, context, session, attempt} = params;
+    return fn(context, session, attempt);
+  },
+
+  /**
+   * Function that is called for each test.
+   * Allows to define which arguments are passed to the test fn.
    *
    * @param {Object} params
    * @param {Object} params.session
@@ -141,31 +175,12 @@ module.exports = {
    * @param {Object} params.target
    * @param {Suite} params.suite
    * @param {Number} params.attempt
-   * @param {Test} [params.test]
-   * @param {Hook} [params.hook]
+   * @param {Test} params.test
    *
    * @returns {Function}
    */
-  callTestHookFn: function (params) {
+  callTestFn: function (params) {
     const {fn, context, session, attempt} = params;
     return fn(context, session, attempt);
   },
-
-  /**
-   * Start runner hook, called after tests are read and transformed, but before execution
-   * For Webdriver tests it may be starting local selenium server
-   *
-   * @param {Config} config
-   * @returns {Promise}
-   */
-  startRunner: function (config) { }, // eslint-disable-line no-unused-vars
-
-  /**
-   * End runner hook
-   * For Webdriver tests it may be stopping local selenium server
-   *
-   * @param {Config} config
-   * @returns {Promise}
-   */
-  endRunner: function (config) { }, // eslint-disable-line no-unused-vars
 };

@@ -15,16 +15,11 @@ const append = process.env.TRAVIS || process.env.SHEEVA_APPEND;
 module.exports = Object.assign({}, baseConfig, {
   files: './test/specs',
   reporters: new ConsoleReporter({append}),
-  callTestHookFn: function ({fn, session, context, hook, target}) {
-    if (hook) {
-      context.runOptions = context.runOptions || {};
-      return fn(context);
-    }
-
+  callTestFn: function (params) {
     const run = function (code, optionsFromTest = {}) {
-      const subSheevaOptions = helper.getSubSheevaOptions(optionsFromTest, {fn, session, context, hook, target});
+      const subSheevaOptions = helper.getSubSheevaOptions(optionsFromTest, params);
       return new SubSheeva(code, subSheevaOptions).run();
     };
-    return fn(run);
+    return params.fn(run);
   },
 });

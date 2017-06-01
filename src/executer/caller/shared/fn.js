@@ -1,20 +1,19 @@
-'use strict';
-
 /**
- * Calls test/hook function via `config.callTestHookFn`
- * Rejects result if timeout exceeded.
+ * Calls wrapped test/hook function with timeout.
  */
 
-const {config} = require('../../../config');
+'use strict';
 
 const Fn = module.exports = class Fn {
   /**
    * Constructor
    *
-   * @param {Object} options
+   * @param {Function} fn
+   * @param {Number} options
    * @param {Number} options.timeout
    */
-  constructor(options = {}) {
+  constructor(fn, options = {}) {
+    this._fn = fn;
     this._timeout = options.timeout;
     this._timer = null;
     this._result = null;
@@ -28,7 +27,7 @@ const Fn = module.exports = class Fn {
    */
   call(params) {
     try {
-      this._result = config.callTestHookFn(params);
+      this._result = this._fn(params);
       return this._isAsync() && this._hasTimeout()
         ? this._raceWithTimeout()
         : Promise.resolve(this._result);

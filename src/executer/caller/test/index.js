@@ -82,7 +82,7 @@ const TestCaller = module.exports = class TestCaller {
       context: this._context,
       attempt: this._retry.attempt,
     };
-    return new Fn({timeout: this._retry.timeout}).call(params);
+    return new Fn(config.callTestFn, {timeout: this._retry.timeout}).call(params);
   }
 
   _emit(event, data) {

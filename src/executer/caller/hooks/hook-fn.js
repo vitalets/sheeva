@@ -1,8 +1,8 @@
-'use strict';
-
 /**
- * Calls hook fn (emits HOOK_START and HOOK_END)
+ * Calls hook fn with HOOK_START / HOOK_END events
  */
+
+'use strict';
 
 const {config} = require('../../../config');
 const reporter = require('../../../reporter');
@@ -44,7 +44,7 @@ const HookFn = module.exports = class HookFn {
       suite: this._hook.parent,
       context: this._context,
     };
-    return new Fn({timeout: this._timeout}).call(params);
+    return new Fn(config.callHookFn, {timeout: this._timeout}).call(params);
   }
 
   _handleError(error) {

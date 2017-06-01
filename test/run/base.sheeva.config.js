@@ -16,4 +16,8 @@ module.exports = {
       {id: 'async-target', delay: 10},
     ];
   },
+  callHookFn: function ({fn, context}) {
+    context.runOptions = context.runOptions || {};
+    return fn(context);
+  }
 };

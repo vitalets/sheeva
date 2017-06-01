@@ -35,27 +35,22 @@ module.exports = Object.assign({}, baseConfig, {
       session.webWorker.terminate();
     }
   },
-  callTestHookFn: function ({fn, session, context, hook, target}) {
-    if (hook) {
-      context.runOptions = context.runOptions || {};
-      return fn(context);
-    }
-
+  callTestFn: function (params) {
     const run = function (code, optionsFromTest = {}) {
-      const subSheevaOptions = helper.getSubSheevaOptions(optionsFromTest, {fn, session, context, hook, target});
-      return session.target.isTab
+      const subSheevaOptions = helper.getSubSheevaOptions(optionsFromTest, params);
+      return params.target.isTab
         ? new SubSheeva(code, subSheevaOptions).run()
-        : runInWebWorker(session, code, subSheevaOptions);
+        : runInWebWorker(params.session.webWorker, code, subSheevaOptions);
     };
-    return fn(run);
+    return params.fn(run);
   },
 });
 
-function runInWebWorker(session, code, subSheevaOptions) {
+function runInWebWorker(webWorker, code, subSheevaOptions) {
   stringifyFunctions(subSheevaOptions);
   stringifyFunctions(subSheevaOptions.config);
   return new Promise((resolve, reject) => {
-    session.webWorker.onmessage = event => {
+    webWorker.onmessage = event => {
       const {errorMsg, output} = event.data;
       if (errorMsg) {
         const error = new Error(errorMsg);
@@ -65,8 +60,8 @@ function runInWebWorker(session, code, subSheevaOptions) {
         resolve(output);
       }
     };
-    session.webWorker.onerror = event => reject(new Error(event.message));
-    session.webWorker.postMessage({code, subSheevaOptions});
+    webWorker.onerror = event => reject(new Error(event.message));
+    webWorker.postMessage({code, subSheevaOptions});
   });
 }
 
