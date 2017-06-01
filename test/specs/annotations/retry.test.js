@@ -1,6 +1,6 @@
 'use strict';
 
-$if(target => target.id === 'sync-target');
+$if(isSyncTarget);
 describe('annotation: retry', () => {
 
   const include = ['HOOK_END', 'TEST'];

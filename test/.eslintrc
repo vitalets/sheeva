@@ -16,6 +16,7 @@
     "$skip": false,
     "$if": false,
     "$ignore": false,
+    "isSyncTarget": false,
     "isBrowser": false,
     "isTab": false,
     "isWebWorker": false

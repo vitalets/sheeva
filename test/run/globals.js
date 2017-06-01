@@ -4,10 +4,12 @@
  * Globals for main sheeva tests
  */
 
-// const expect = require('unexpected');
+// use pre-built unexpected as it can not be built with rollup normally
+// see: https://github.com/unexpectedjs/unexpected/issues/369
 const expect = require('unexpected/unexpected.js');
 
 Object.assign(global, {
+  isSyncTarget: target => !target.hasOwnProperty('delay'),
   isBrowser: target => isTab(target) || isWebWorker(target),
   isTab: target => target.isTab,
   isWebWorker: target => target.isWebWorker,

@@ -56,7 +56,7 @@ describe('config.breakOnError', () => {
     ]);
   });
 
-  $if(target => target.id === 'sync-target');
+  $if(isSyncTarget);
   it('should terminate all sessions in case of test error', run => {
     const config = {
       concurrency: 2,

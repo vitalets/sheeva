@@ -15,8 +15,14 @@ const append = process.env.TRAVIS || process.env.SHEEVA_APPEND;
 module.exports = Object.assign({}, baseConfig, {
   files: './test/specs',
   reporters: new ConsoleReporter({append}),
+  createTargets: function () {
+    return [
+      {id: 'node-sync'},
+      {id: 'node-async', delay: 10},
+    ];
+  },
   callTestFn: function (params) {
-    const run = function (code, optionsFromTest = {}) {
+    const run = (code, optionsFromTest = {}) => {
       const subSheevaOptions = helper.getSubSheevaOptions(optionsFromTest, params);
       return new SubSheeva(code, subSheevaOptions).run();
     };

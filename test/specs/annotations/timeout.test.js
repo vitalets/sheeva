@@ -1,6 +1,6 @@
 'use strict';
 
-$if(target => target.id === 'sync-target');
+$if(isSyncTarget);
 describe('annotation: timeout', () => {
 
   it('should fail after test timeout', run => {

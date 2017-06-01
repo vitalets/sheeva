@@ -11,38 +11,36 @@ const baseConfig = require('../base.sheeva.config');
 
 module.exports = Object.assign({}, baseConfig, {
   concurrency: 5,
-  // target: 'sync-target',
+  // target: 'web-worker-sync',
   files: 'specs.js',
   reporters: new ConsoleReporter(),
   createTargets: function () {
-    const targets = baseConfig.createTargets()
-      .map(target => Object.assign(target, {isWebWorker: true}));
-    // special target to run tests in tab (not web-worker)
-    targets.push({
-      id: 'sync-target-tab',
-      concurrency: 1,
-      isTab: true,
-    });
-    return targets;
+    return [
+      {id: 'tab-sync', isTab: true, concurrency: 1},
+      {id: 'tab-async', isTab: true, delay: 10, concurrency: 1},
+      {id: 'web-worker-sync', isWebWorker: true},
+      {id: 'web-worker-async', isWebWorker: true, delay: 10},
+    ];
   },
   startSession: function (session) {
-    if (!session.target.isTab) {
+    if (session.target.isWebWorker) {
       session.webWorker = new Worker('web-worker.js');
     }
   },
   endSession: function (session) {
-    if (!session.target.isTab) {
+    if (session.target.isWebWorker) {
       session.webWorker.terminate();
     }
   },
   callTestFn: function (params) {
-    const run = function (code, optionsFromTest = {}) {
+    const {fn, target, session} = params;
+    const run = (code, optionsFromTest = {}) => {
       const subSheevaOptions = helper.getSubSheevaOptions(optionsFromTest, params);
-      return params.target.isTab
-        ? new SubSheeva(code, subSheevaOptions).run()
-        : runInWebWorker(params.session.webWorker, code, subSheevaOptions);
+      return target.isWebWorker
+        ? runInWebWorker(session.webWorker, code, subSheevaOptions)
+        : new SubSheeva(code, subSheevaOptions).run();
     };
-    return params.fn(run);
+    return fn(run);
   },
 });
 

@@ -1,6 +1,6 @@
 'use strict';
 
-$if(target => target.id === 'sync-target');
+$if(isSyncTarget);
 describe('config.files', () => {
 
   it('should reject for empty config.files', run => {
