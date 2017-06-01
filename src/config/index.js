@@ -24,17 +24,20 @@ class Configurator {
   init(rawConfig) {
     this._clear();
     this._merge(rawConfig);
-    this._fixTypes();
+    this._normalizeProps();
     this._validateProps();
     this._validateFiles();
     this._createTargets();
   }
 
   _merge(rawConfig) {
+    if (rawConfig.callTestFn && !rawConfig.callHookFn) {
+      rawConfig.callHookFn = rawConfig.callTestFn;
+    }
     Object.assign(this._config, defaults, rawConfig);
   }
 
-  _fixTypes() {
+  _normalizeProps() {
     this._config.files = utils.ensureArray(this._config.files);
     this._config.reporters = utils.ensureArray(this._config.reporters);
     this._config.concurrency = parseInt(this._config.concurrency, 10);

@@ -66,7 +66,6 @@ module.exports = class SubSheeva {
       reporters: this._reporter,
       files: this._files,
       callTestFn: delay === undefined ? syncCall : params => asyncCall(delay, params),
-      callHookFn: delay === undefined ? syncCall : params => asyncCall(delay, params),
     };
     return Object.assign({}, BASE_CONFIG, extraConfig, config);
   }

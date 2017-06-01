@@ -24,4 +24,14 @@ describe('config common', () => {
     return expectReject(output, 'Incorrect config option type for: createTargets (expected function, got number)');
   });
 
+  $ignore(isWebWorker);
+  it('should use callTestFn for callHookFn if it is not passed', run => {
+    const config = {
+      callTestFn: () => {},
+    };
+    const output = run(``, {config, output: 'result'});
+    return expectResolve(output)
+      .then(r => expect(r.config.callHookFn, 'to equal', config.callTestFn));
+  });
+
 });

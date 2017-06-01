@@ -160,8 +160,8 @@ module.exports = {
    * @returns {Function}
    */
   callHookFn: function (params) {
-    const {fn, context, session, attempt} = params;
-    return fn(context, session, attempt);
+    const {fn, context, session} = params;
+    return fn(context, session);
   },
 
   /**
