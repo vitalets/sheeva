@@ -120,9 +120,12 @@ module.exports = class Executer {
   }
 
   _tryEmitTargetEnd(target) {
-    // todo: optimize
-    if (!this._hasPendingJobs(target) && !this._executionPerTarget.get(target).ended) {
-      this._executionPerTarget.get(target).ended = true;
+    if (this._hasPendingJobs(target)) {
+      return;
+    }
+    const execution = this._executionPerTarget.get(target);
+    if (!execution.ended) {
+      execution.ended = true;
       reporter.handleEvent(TARGET_END, {target});
     }
   }
