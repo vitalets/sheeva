@@ -96,8 +96,7 @@ describe('annotation: skip', () => {
       it('test 3', noop)
     `], {include: ['RUNNER_START'], keys: assertions, output: 'rawReport'});
 
-    return expectResolve(output)
-      .then(res => expect(res, 'to equal', assertions));
+    return expectResolve(output, assertions);
   });
 
   it('should skip inside only', run => {

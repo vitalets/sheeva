@@ -151,8 +151,7 @@ describe('split files', () => {
       });
     `], {config, include: ['QUEUE_SPLIT'], keys: assertions, output: 'rawReport'});
 
-    return expectResolve(output)
-      .then(res => expect(res, 'to equal', assertions));
+    return expectResolve(output, assertions);
   });
 
 });

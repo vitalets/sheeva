@@ -20,8 +20,7 @@ describe('annotation: data', () => {
       });
     `, {keys: assertions});
 
-    return expectResolve(output)
-      .then(res => expect(res, 'to equal', assertions));
+    return expectResolve(output, assertions);
   });
 
   it('should attach data to suite', run => {
@@ -35,8 +34,7 @@ describe('annotation: data', () => {
       });
     `, {include: ['SUITE_END'], keys: assertions});
 
-    return expectResolve(output)
-      .then(res => expect(res, 'to equal', assertions));
+    return expectResolve(output, assertions);
   });
 
 });

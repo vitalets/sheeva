@@ -147,7 +147,6 @@ describe('annotation: only', () => {
       });
     `], {include: ['RUNNER_START'], keys: assertions, output: 'rawReport'});
 
-    return expectResolve(output)
-      .then(res => expect(res, 'to equal', assertions));
+    return expectResolve(output, assertions);
   });
 });

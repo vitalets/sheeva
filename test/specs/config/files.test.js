@@ -46,7 +46,7 @@ describe('config.files', () => {
     };
     const output = run([], {config, include: ['SUITE_END'], keys: assertions, output: 'rawReport'});
 
-    return expectResolve(output).then(res => expect(res, 'to equal', assertions));
+    return expectResolve(output, assertions);
   });
 
   $ignore(isWebWorker);
