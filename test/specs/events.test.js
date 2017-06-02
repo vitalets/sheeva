@@ -116,7 +116,30 @@ describe('events', () => {
   });
 
   describe('session', () => {
-    // todo
+    beforeEach(context => {
+      context.runOptions.include = ['SESSION'];
+      context.runOptions.config = {concurrency: 4};
+      context.runOptions.flat = true;
+    });
+
+    it('should emit SESSION events', run => {
+      const output = run([`
+        describe('suite 1', () => {
+          it('test 1', noop);
+        });
+      `, `
+        describe('suite 2', () => {
+          it('test 2', noop);
+        });
+      `]);
+
+      return expectResolve(output, [
+        'SESSION_START 0',
+        'SESSION_START 1',
+        'SESSION_END 0',
+        'SESSION_END 1'
+      ]);
+    });
   });
 
   describe('suite', () => {
@@ -172,7 +195,74 @@ describe('events', () => {
   });
 
   describe('hooks', () => {
-    // todo
+    beforeEach(context => {
+      context.runOptions.include = ['HOOK', 'TEST'];
+    });
+
+    it('should emit BEFORE / AFTER events', run => {
+      const output = run(`
+        describe('suite 1', () => {
+          before(() => noop);
+          after(() => noop);
+          it('test 1', noop);
+          describe('suite 2', () => {
+            before(() => noop);
+            after(() => noop);
+            it('test 2', noop);
+          });
+        });
+      `);
+
+      return expectResolve(output, [
+        'HOOK_START suite 1 before',
+        'HOOK_END suite 1 before',
+        'HOOK_START suite 2 before',
+        'HOOK_END suite 2 before',
+        'TEST_START test 2',
+        'TEST_END test 2',
+        'HOOK_START suite 2 after',
+        'HOOK_END suite 2 after',
+        'TEST_START test 1',
+        'TEST_END test 1',
+        'HOOK_START suite 1 after',
+        'HOOK_END suite 1 after'
+      ]);
+    });
+
+    it('should emit BEFORE EACH / AFTER EACH events', run => {
+      const output = run(`
+        describe('suite 1', () => {
+          beforeEach(() => noop);
+          afterEach(() => noop);
+          it('test 1', noop);
+          describe('suite 2', () => {
+            beforeEach(() => noop);
+            afterEach(() => noop);
+            it('test 2', noop);
+          });
+        });
+      `);
+
+      return expectResolve(output, [
+        'HOOK_START suite 1 beforeEach',
+        'HOOK_END suite 1 beforeEach',
+        'HOOK_START suite 2 beforeEach',
+        'HOOK_END suite 2 beforeEach',
+        'TEST_START test 2',
+        'TEST_END test 2',
+        'HOOK_START suite 2 afterEach',
+        'HOOK_END suite 2 afterEach',
+        'HOOK_START suite 1 afterEach',
+        'HOOK_END suite 1 afterEach',
+        'HOOK_START suite 1 beforeEach',
+        'HOOK_END suite 1 beforeEach',
+        'TEST_START test 1',
+        'TEST_END test 1',
+        'HOOK_START suite 1 afterEach',
+        'HOOK_END suite 1 afterEach'
+      ]);
+    });
+
   });
 
   describe('test', () => {
