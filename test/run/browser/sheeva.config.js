@@ -17,7 +17,6 @@ module.exports = Object.assign({}, baseConfig, {
   createTargets: function () {
     return [
       {id: 'tab-sync', isTab: true, concurrency: 1},
-      {id: 'tab-async', isTab: true, delay: 10, concurrency: 1},
       {id: 'web-worker-sync', isWebWorker: true},
       {id: 'web-worker-async', isWebWorker: true, delay: 10},
     ];

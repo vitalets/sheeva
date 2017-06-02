@@ -57,9 +57,10 @@ describe('config startSession / endSession hooks', () => {
       });
     });
 
-    it('should call startSession / endSession for several sessions (concurrency = 2)', run => {
+    it('should call startSession / endSession for concurrency = 2 (files = 2, splitSuites = false)', run => {
       const config = {
         concurrency: 2,
+        splitSuites: false,
       };
       const output = run([`
       describe('suite 1', () => {
@@ -77,7 +78,7 @@ describe('config startSession / endSession hooks', () => {
       });
     });
 
-    it('should call startSession / endSession for several sessions (splitSuites = true)', run => {
+    it('should call startSession / endSession for concurrency = 2 (files = 1, splitSuites = true)', run => {
       const config = {
         concurrency: 2,
         splitSuites: true,
@@ -85,7 +86,7 @@ describe('config startSession / endSession hooks', () => {
       const output = run([`
         describe('suite 1', () => {
           it('test 1', noop);
-          it('test 1', noop);
+          it('test 2', noop);
         });
       `], {config});
 
@@ -149,7 +150,7 @@ describe('config startSession / endSession hooks', () => {
     const output = run([`
         describe('suite 1', () => {
           it('test 1', noop);
-          it('test 1', noop);
+          it('test 2', noop);
         });
       `], {config});
 

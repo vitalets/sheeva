@@ -4,7 +4,6 @@
  * Workers manager: keeps workers count under concurrency limit
  */
 
-const {config} = require('../../config');
 const {result} = require('../../result');
 const reporter = require('../../reporter');
 const {WORKER_ADD, WORKER_DELETE} = require('../../events');
@@ -16,55 +15,50 @@ module.exports = class Workers {
    */
   constructor() {
     this._workers = result.workers;
-    this._terminating = false;
-    this._onEmpty = () => {};
-    this._onFreeWorker = () => {};
-    this._onSessionStart = () => {};
-    this._onSessionEnd = () => {};
   }
 
-  set onEmpty(handler) {
-    this._onEmpty = handler;
-  }
-
-  set onFreeWorker(handler) {
-    this._onFreeWorker = handler;
-  }
-
-  set onSessionStart(handler) {
-    this._onSessionStart = handler;
-  }
-
-  set onSessionEnd(handler) {
-    this._onSessionEnd = handler;
+  get size() {
+    return this._workers.size;
   }
 
   toArray() {
     return this._workers.toArray();
   }
 
-  fill() {
-    while (!this._isConcurrencyReached()) {
-      const worker = this._createWorker();
-      const queue = this._onFreeWorker(worker);
-      if (!queue) {
-        break;
-      }
-    }
+  /**
+   * Adds new worker to pool
+   *
+   * @param {Queue} queue initial queue that worker will run after creation
+   * @returns {Promise}
+   */
+  add(queue) {
+    const workerIndex = this._workers.size;
+    const worker = new Worker(workerIndex, queue);
+    this._workers.add(worker);
+    reporter.handleEvent(WORKER_ADD, {worker});
+    return worker.start()
+      .then(() => worker);
   }
 
+  /**
+   * Deletes single worker and session
+   *
+   * @param {Worker} worker
+   * @returns {Promise}
+   */
   delete(worker) {
-    return worker.deleteSession()
-      .then(() => this._destroyWorker(worker))
-      .then(() => this._terminating ? null : this._checkEmpty());
+    return Promise.resolve()
+      .then(() => worker.deleteSession())
+      .finally(() => this._deleteWorker(worker));
   }
 
   /**
    * Terminates all worker sessions and ignore other errors in favor of first runner error
    */
   terminate() {
-    this._terminating = true;
-    const tasks = this._workers.mapToArray(worker => this.delete(worker).catch(() => {}));
+    const tasks = this._workers.mapToArray(worker => {
+      return this.delete(worker).catch(() => {});
+    });
     return Promise.all(tasks);
   }
 
@@ -82,28 +76,11 @@ module.exports = class Workers {
     return false;
   }
 
-  _isConcurrencyReached() {
-    return config.concurrency && this._workers.size === config.concurrency;
-  }
-
-  _createWorker() {
-    const workerIndex = this._workers.size;
-    const worker = new Worker(workerIndex);
-    worker.onSessionStart = this._onSessionStart;
-    worker.onSessionEnd = this._onSessionEnd;
-    this._workers.add(worker);
-    reporter.handleEvent(WORKER_ADD, {worker});
-    return worker;
-  }
-
-  _destroyWorker(worker) {
-    this._workers.delete(worker);
-    reporter.handleEvent(WORKER_DELETE, {worker});
-  }
-
-  _checkEmpty() {
-    if (this._workers.size === 0) {
-      this._onEmpty();
-    }
+  _deleteWorker(worker) {
+    return worker.end()
+      .finally(() => {
+        this._workers.delete(worker);
+        reporter.handleEvent(WORKER_DELETE, {worker});
+      });
   }
 };

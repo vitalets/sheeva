@@ -40,7 +40,7 @@
     "copy-tests-html": "cp -rf test/run/browser/index.html dist/test/",
     "copy-tests-data": "cp -rf test/data dist/test/",
     "copy-unexpected": "cp -rf node_modules/unexpected/unexpected.js dist/test/",
-    "devtool": "devtool src-stable/cli -- --config=test/run/node/sheeva.config.js --target=node-sync --reporters=./test/debug-reporter.js --timeout=0",
+    "devtool": "devtool src-stable/cli -- --config=test/run/node/sheeva.config.js --target=node-sync --reporters=./test/run/debug-reporter.js --timeout=0",
     "precommit": "npm run lint-staged && npm run circular && npm run tt -- --no-only",
     "prepush": "npm run code && npm run ttdev -- --no-only && npm run copy-src",
     "copy-src": "rm -rf src-stable && cp -R src/ src-stable/",

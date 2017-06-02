@@ -12,6 +12,7 @@
  * - Caller calls test function with needed hooks.
  */
 
+const {config} = require('../config');
 const {result} = require('../result');
 const reporter = require('../reporter');
 const utils = require('../utils');
@@ -39,35 +40,52 @@ module.exports = class Executer {
     return this._promised.call(() => {
       this._workers = new Workers();
       this._picker = new Picker(this._workers);
-      this._setWorkersHandlers();
-      this._workers.fill();
+      this._startWorkers();
     });
   }
 
-  _setWorkersHandlers() {
-    this._workers.onFreeWorker = worker => this._handleFreeWorker(worker);
-    this._workers.onEmpty = () => this._end();
-    this._workers.onSessionStart = session => this._tryEmitTargetStart(session.target);
-    this._workers.onSessionEnd = session => this._tryEmitTargetEnd(session.target);
+  _startWorkers() {
+    while (!this._isConcurrencyReached()) {
+      const queue = this._picker.pickNextQueue();
+      if (queue) {
+        this._addWorker(queue)
+          .then(worker => this._runQueue(worker, queue))
+          .catch(e => this._terminate(e));
+      } else {
+        this._checkEnd();
+        break;
+      }
+    }
   }
 
   _handleFreeWorker(worker) {
     const queue = this._picker.pickNextQueue(worker.session);
-
     if (queue) {
-      worker.run(queue)
-        .then(() => this._handleFreeWorker(worker))
-        .catch(e => this._terminate(e));
+      this._runQueue(worker, queue);
     } else {
-      this._workers.delete(worker)
-        .catch(e => this._terminate(e));
+      this._deleteWorker(worker);
     }
-
-    return queue;
   }
 
-  _end() {
-    this._promised.resolve();
+  _addWorker(queue) {
+    return this._workers.add(queue)
+      .then(worker => {
+        worker.onSessionStart = session => this._tryEmitTargetStart(session.target);
+        worker.onSessionEnd = session => this._tryEmitTargetEnd(session.target);
+        return worker;
+      });
+  }
+
+  _deleteWorker(worker) {
+    this._workers.delete(worker)
+      .then(() => this._checkEnd())
+      .catch(e => this._terminate(e));
+  }
+
+  _runQueue(worker, queue) {
+    worker.run(queue)
+      .then(() => this._handleFreeWorker(worker))
+      .catch(e => this._terminate(e));
   }
 
   /**
@@ -83,6 +101,16 @@ module.exports = class Executer {
       });
   }
 
+  _isConcurrencyReached() {
+    return config.concurrency && this._workers.size === config.concurrency;
+  }
+
+  _checkEnd() {
+    if (this._workers.size === 0) {
+      this._promised.resolve();
+    }
+  }
+
   _tryEmitTargetStart(target) {
     const execution = this._executionPerTarget.get(target);
     if (!execution.started) {
@@ -92,6 +120,7 @@ module.exports = class Executer {
   }
 
   _tryEmitTargetEnd(target) {
+    // todo: optimize
     if (!this._hasPendingJobs(target) && !this._executionPerTarget.get(target).ended) {
       this._executionPerTarget.get(target).ended = true;
       reporter.handleEvent(TARGET_END, {target});

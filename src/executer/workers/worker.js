@@ -12,11 +12,12 @@ module.exports = class Worker {
    * Constructor
    *
    * @param {Number} index
+   * @param {Queue} queue initial queue that worker will run after creation
    */
-  constructor(index) {
+  constructor(index, queue) {
     this._index = index;
+    this._queue = queue;
     this._session = null;
-    this._queue = null;
     this._onSessionStart = () => {};
     this._onSessionEnd = () => {};
   }
@@ -41,12 +42,22 @@ module.exports = class Worker {
     this._onSessionEnd = handler;
   }
 
+  start() {
+    return Promise.resolve()
+      .then(() => config.startWorker(this));
+  }
+
+  end() {
+    return Promise.resolve()
+      .then(() => config.endWorker(this));
+  }
+
   run(queue) {
     this._queue = queue;
     return Promise.resolve()
       .then(() => this._needNewSession() ? this._reCreateSession() : null)
-      .then(() => this._runQueue())
-      .then(() => this._queue = null);
+      .then(() => this._queue.runOn(this._session))
+      .finally(() => this._queue = null);
   }
 
   deleteSession() {
@@ -88,9 +99,5 @@ module.exports = class Worker {
 
   _needNewSession() {
     return !this._session || config.newSessionPerFile || this._session.target !== this._queue.target;
-  }
-
-  _runQueue() {
-    return this._queue.runOn(this._session);
   }
 };

@@ -1,8 +1,10 @@
-'use strict';
-
 /**
  * Default config values
  */
+
+'use strict';
+
+/* eslint-disable no-unused-vars */
 
 /**
  * @type {Config}
@@ -14,7 +16,7 @@ module.exports = {
   files: [],
 
   /**
-   * Max number of concurrent sessions
+   * Max number of parallel workers
    */
   concurrency: 1,
 
@@ -54,26 +56,17 @@ module.exports = {
   tags: [],
 
   /**
-   * todo: store timing information in file
-   */
-  //useTimings: true,
-
-  /**
    * Disallow ONLY tests. Useful for pre-commit / pre-push hooks.
-   * @type {Boolean}
    */
   noOnly: false,
 
   /**
    * Default test/hook timeout in ms
-   *
-   * @type {Number}
    */
   timeout: 10000,
 
   /**
    * Run target with particular id
-   * @type {String}
    */
   target: '',
 
@@ -111,39 +104,54 @@ module.exports = {
   },
 
   /**
-   * Start runner hook, called after tests are read and transformed, but before execution
+   * Called after tests are read and transformed, but before execution
    *
    * @param {Config} config
    * @returns {Promise}
    */
-  startRunner: function (config) { }, // eslint-disable-line no-unused-vars
+  startRunner: function (config) { },
 
   /**
-   * End runner hook
-   * For Webdriver tests it may be stopping local selenium server
+   * Called when all tests are executed
    *
    * @param {Config} config
    * @returns {Promise}
    */
-  endRunner: function (config) { }, // eslint-disable-line no-unused-vars
+  endRunner: function (config) { },
+
+  /**
+   * Called when virtual worker is starting.
+   * Can start any real worker, e.g. WebWorker or Node.js instance.
+   *
+   * @param {Worker} worker
+   * @returns {Promise}
+   */
+  startWorker: function (worker) { },
+
+  /**
+   * Called when virtual worker is ending.
+   * Can stop any real worker, e.g. WebWorker or Node.js instance.
+   *
+   * @param {Worker} worker
+   * @returns {Promise}
+   */
+  endWorker: function (worker) { },
 
   /**
    * Attach any data to session.
-   * For Webdriver tests it is usually a `driver` instance.
    *
    * @param {Session} session
    * @returns {Promise}
    */
-  startSession: function (session) { }, // eslint-disable-line no-unused-vars
+  startSession: function (session) { },
 
   /**
    * Cleanup session data.
-   * For Webdriver tests it is usually a `session.driver.quit()`
    *
    * @param {Session} session
    * @returns {Promise}
    */
-  endSession: function (session) { }, // eslint-disable-line no-unused-vars
+  endSession: function (session) { },
 
   /**
    * Function that is called for each hook.
