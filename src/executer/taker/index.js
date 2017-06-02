@@ -1,20 +1,20 @@
-'use strict';
-
 /**
- * Picks next queue for execution.
+ * Takes next queue for execution.
  */
 
+'use strict';
+
 const {config} = require('../../config');
-const Queues = require('./queues');
+const Picker = require('./picker');
 const Splitter = require('./splitter');
 
-module.exports = class Picker {
+module.exports = class Taker {
   /**
    * Constructor
    */
   constructor(workers) {
     this._workers = workers;
-    this._queues = new Queues();
+    this._picker = new Picker();
     this._splitter = new Splitter(workers);
     this._session = null;
     this._target = null;
@@ -23,16 +23,16 @@ module.exports = class Picker {
   /**
    * Tries to pick next queue for provided session (target) or for any available target.
    *
-   * - if there is passed session, try to pick queue for the same target first
+   * - if there is passed session, try to get queue for the same target first
    * - if there is no passed session (empty worker) - try to get queue from any available target (by order)
    *
    * @param {Session} [session]
    * @returns {Queue|undefined}
    */
-  pickNextQueue(session) {
+  getNextQueue(session) {
     this._session = session;
     this._target = session && session.target;
-    return this._target && this._pickForSingleTarget(this._target) || this._pickForAvailableTargets();
+    return this._target && this._getForTarget(this._target) || this._getForAnyTarget();
   }
 
   /**
@@ -42,25 +42,25 @@ module.exports = class Picker {
    * @returns {Array<Queue>}
    */
   getRemainingQueues(target) {
-    return this._queues.getRemaining(target);
+    return this._picker.getRemainingQueues(target);
   }
 
-  _pickForSingleTarget(target) {
+  _getForTarget(target) {
     const targets = [target];
-    return this._pickForTargets(targets);
+    return this._getForTargets(targets);
   }
 
-  _pickForAvailableTargets() {
+  _getForAnyTarget() {
     const targets = this._getAvailableTargets();
-    return this._pickForTargets(targets);
+    return this._getForTargets(targets);
   }
 
-  _pickForTargets(targets) {
-    return this._tryPickWholeQueue(targets) || this._trySplitRunningQueues(targets);
+  _getForTargets(targets) {
+    return this._tryPickQueue(targets) || this._trySplitRunningQueues(targets);
   }
 
-  _tryPickWholeQueue(targets) {
-    return this._queues.pickNext(targets);
+  _tryPickQueue(targets) {
+    return this._picker.tryPick(targets);
   }
 
   _trySplitRunningQueues(targets) {

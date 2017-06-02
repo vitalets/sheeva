@@ -1,13 +1,13 @@
-'use strict';
-
 /**
- * Picks whole queues from first suitable target
+ * Picks whole queue from first suitable target
  */
 
-const {result} = require('../../result');
-const Queue = require('../queue');
+'use strict';
 
-module.exports = class Queues {
+const {result} = require('../../../result');
+const Queue = require('../../queue');
+
+module.exports = class Picker {
   /**
    * Constructor
    */
@@ -22,18 +22,16 @@ module.exports = class Queues {
    * @param {Array} targets
    * @returns {Queue}
    */
-  pickNext(targets) {
+  tryPick(targets) {
     for (let target of targets) {
       const queues = this._targetQueues.get(target);
       if (queues.length) {
-        // console.log(`${target.id}: picked queue with ${queues[0].tests.length} test(s)`);
         return queues.shift();
       }
     }
   }
 
-  // todo: getRemainingQueues
-  getRemaining(target) {
+  getRemainingQueues(target) {
     return this._targetQueues.get(target);
   }
 

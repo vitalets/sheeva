@@ -6,7 +6,7 @@
  * - Executor creates workers and keeps their count below concurrency limit.
  * - Workers are working concurrently.
  * - Each worker executes sessions serially.
- * - Session takes queue after queue from picker and executes it.
+ * - Session takes queue after queue from taker and executes it.
  * - Picker returns whole queues or tries split when reasonable.
  * - Queue moves internal cursor test by test and executes them via caller.
  * - Caller calls test function with needed hooks.
@@ -17,7 +17,7 @@ const {result} = require('../result');
 const reporter = require('../reporter');
 const utils = require('../utils');
 const {TARGET_START, TARGET_END} = require('../events');
-const Picker = require('./picker');
+const Taker = require('./taker');
 const Workers = require('./workers');
 const HookFn = require('./caller/hooks/hook-fn');
 const TestCaller = require('./caller/test');
@@ -29,7 +29,7 @@ module.exports = class Executer {
   constructor() {
     this._executionPerTarget = result.executionPerTarget;
     this._workers = null;
-    this._picker = null;
+    this._taker = null;
     this._promised = new utils.Promised();
   }
 
@@ -39,14 +39,14 @@ module.exports = class Executer {
   run() {
     return this._promised.call(() => {
       this._workers = new Workers();
-      this._picker = new Picker(this._workers);
+      this._taker = new Taker(this._workers);
       this._startWorkers();
     });
   }
 
   _startWorkers() {
     while (!this._isConcurrencyReached()) {
-      const queue = this._picker.pickNextQueue();
+      const queue = this._taker.getNextQueue();
       if (queue) {
         this._addWorker(queue)
           .then(worker => this._runQueue(worker, queue))
@@ -59,7 +59,7 @@ module.exports = class Executer {
   }
 
   _handleFreeWorker(worker) {
-    const queue = this._picker.pickNextQueue(worker.session);
+    const queue = this._taker.getNextQueue(worker.session);
     if (queue) {
       this._runQueue(worker, queue);
     } else {
@@ -131,6 +131,6 @@ module.exports = class Executer {
   }
 
   _hasPendingJobs(target) {
-    return this._picker.getRemainingQueues(target).length || this._workers.hasWorkersForTarget(target);
+    return this._taker.getRemainingQueues(target).length || this._workers.hasWorkersForTarget(target);
   }
 };
