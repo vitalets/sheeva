@@ -5,7 +5,7 @@
  */
 
 const {config} = require('../../config');
-const Session = require('./session');
+const Session = require('../session');
 
 module.exports = class Worker {
   /**
