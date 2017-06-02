@@ -99,4 +99,26 @@ describe('config targets', () => {
     ]);
   });
 
+  it('should use id as label', run => {
+    const assertions = {
+      'config.targets.0.label': 'target1',
+      'config.targets.1.label': 'target2',
+    };
+    const config = {
+      createTargets: function () {
+        return [
+          {id: 'target1'},
+          {id: 'target2'},
+        ];
+      },
+    };
+    const output = run(`
+      describe('suite', () => {
+        it('test 0', noop);
+      });
+    `, {config, output: 'result', keys: assertions});
+
+    return expectResolve(output, assertions);
+  });
+
 });

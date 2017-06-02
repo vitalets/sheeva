@@ -53,7 +53,9 @@ module.exports = class Targets {
 
   _setLabels() {
     this._targets.forEach(target => {
-      target.label = target.label || this._config.createTargetLabel(target);
+      if (!target.label) {
+        target.label = target.id;
+      }
     });
   }
 };

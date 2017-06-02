@@ -81,26 +81,20 @@ module.exports = {
       {
         /**
          * Each target must have unique id
-         * @type {String}
          */
         id: 'default-target',
+
+        /**
+         * Target label for reporting. Equals ID if empty.
+         */
+        label: '',
+
         /**
          * Target own concurrency limit
-         * @type {Number}
          */
         concurrency: 0,
       }
     ];
-  },
-
-  /**
-   * Creates one-line target label to be shown in reports
-   *
-   * @param {Object} target
-   * @returns {String}
-   */
-  createTargetLabel: function (target) {
-    return target.id;
   },
 
   /**
