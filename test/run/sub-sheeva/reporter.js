@@ -24,7 +24,7 @@ module.exports = class LogReporter {
     this._treeLog = {};
   }
 
-  handleEvent(event, data) { // eslint-disable-line complexity
+  handleEvent(event, data) {
     this._rawLog.push({event, data});
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
     const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
@@ -109,9 +109,7 @@ module.exports = class LogReporter {
   }
 
   getTreeLog() {
-    // todo: why this re-assignment is needed?
     const treeLog = this._treeLog;
-    this._treeLog = {};
     Object.keys(treeLog).forEach(targetId => {
       Object.keys(treeLog[targetId]).forEach(sessionName => {
         treeLog[targetId][sessionName] = treeLog[targetId][sessionName]
@@ -120,18 +118,6 @@ module.exports = class LogReporter {
     });
     return treeLog;
   }
-  // getReport() {
-  //   const loggedTargets = Object.keys(this._treeLog);
-  //   const flat = this._options.flat || loggedTargets.length === 0 || this._isSingleTargetAndSession();
-  //
-  //   if (this._options.rawEvents) {
-  //     return this._getRawLog();
-  //   } else if (flat) {
-  //     return this._getFlatLog();
-  //   } else {
-  //     return this._getTreeLog();
-  //   }
-  // }
 
   _add({session}, str) {
     this._flatLog.push(str);
@@ -155,11 +141,6 @@ module.exports = class LogReporter {
     }
     return result;
   }
-
-  // _isSingleTargetAndSession() {
-  //   const loggedTargets = Object.keys(this._treeLog);
-  //   return (loggedTargets.length === 1 && Object.keys(this._treeLog[loggedTargets[0]]).length <= 1);
-  // }
 
   _setOptions(options) {
     if (!options.include && !options.exclude) {
