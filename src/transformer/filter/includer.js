@@ -36,8 +36,9 @@ module.exports = class Includer {
       const isIncluded = this._isIncluded(suite);
       if (!isIncluded) {
         this._topSuites.delete(key);
+      } else {
+        delete suite.includedParent;
       }
-      // todo: delete suite.includedParent
     });
   }
 
@@ -61,11 +62,4 @@ module.exports = class Includer {
   _includeChildrenWithFlag(item) {
     item.children = item.children.filter(child => this._isIncluded(child));
   }
-
-  //todo: seems checking item.isSuite is redundant as includedParent is set only to suites
-  // _includeChildrenWithFlag(item) {
-  //   if (item.isSuite) {
-  //     item.children = this._includeWithFlag(item.children);
-  //   }
-  // }
 };

@@ -139,7 +139,6 @@ module.exports = class Queue {
   }
 
   _executeAfterHooks() {
-    // todo: try catch to call after even if findCommonSuiteWithNextTest throws
     const stopSuite = this._cursor.findCommonSuiteWithNextTest();
     return this._afterHooks.call(stopSuite);
   }
