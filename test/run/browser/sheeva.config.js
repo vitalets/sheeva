@@ -5,9 +5,9 @@
  */
 
 const ConsoleReporter = require('sheeva-reporter-console');
-const helper = require('../helper');
-const SubSheeva = require('../sub-sheeva');
-const baseConfig = require('../base.sheeva.config');
+const helper = require('../shared/helper');
+const SubSheeva = require('../shared/sub-sheeva');
+const baseConfig = require('../shared/base.sheeva.config');
 
 module.exports = Object.assign({}, baseConfig, {
   concurrency: 5,

@@ -6,9 +6,9 @@
 
 process.on('unhandledRejection', r => console.error(r)); // eslint-disable-line no-console
 require('source-map-support').install();
-const helper = require('../helper');
-const SubSheeva = require('../sub-sheeva');
-const baseConfig = require('../base.sheeva.config');
+const helper = require('../shared/helper');
+const SubSheeva = require('../shared/sub-sheeva');
+const baseConfig = require('../shared/base.sheeva.config');
 const ConsoleReporter = require('sheeva-reporter-console');
 const append = process.env.TRAVIS || process.env.SHEEVA_APPEND;
 

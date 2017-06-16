@@ -4,7 +4,7 @@
  * Web worker uses sub-sheeva to run tests
  */
 
-const SubSheeva = require('../sub-sheeva');
+const SubSheeva = require('../shared/sub-sheeva');
 const FN_RE = /(^function)|(=>)/;
 
 self.addEventListener('message', function (e) {
