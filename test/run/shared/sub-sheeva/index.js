@@ -8,6 +8,7 @@ require('promise.prototype.finally.err').shim();
 require('./globals');
 const objectPath = require('object-path').withInheritedProps;
 const getSheeva = require('./get-sheeva');
+
 const Reporter = require('./reporter');
 
 const BASE_CONFIG = {
@@ -18,7 +19,7 @@ const BASE_CONFIG = {
   },
 };
 
-module.exports = class SubSheeva {
+const SubSheevaRunner = module.exports = class SubSheevaRunner {
   /**
    * Constructor
    *
@@ -114,10 +115,12 @@ module.exports = class SubSheeva {
   }
 };
 
-// function attachToError(error, key, value) {
-//   Object.defineProperty(error, key, {value});
-//   return Promise.reject(error);
-// }
+SubSheevaRunner.createOptions = function (target, optionsFromTest, optionsFromContext = {}) {
+  const config = Object.assign({}, optionsFromContext.config, optionsFromTest.config);
+  return Object.assign({
+    delay: target.delay,
+  }, optionsFromContext, optionsFromTest, {config});
+};
 
 function syncCall({fn, session, context, attempt}) {
   return fn(context, session, attempt);
