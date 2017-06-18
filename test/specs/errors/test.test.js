@@ -4,7 +4,7 @@
 describe('errors in test', () => {
 
   beforeEach(context => {
-    context.runOptions.include = ['HOOK_END', 'TEST_END'];
+    context.options.include = ['HOOK_END', 'TEST_END'];
   });
 
   it('should run all hooks in case of test error', run => {

@@ -5,7 +5,7 @@ describe('events', () => {
   describe('runner', () => {
 
     beforeEach(context => {
-      context.runOptions.include = ['RUNNER'];
+      context.options.include = ['RUNNER'];
     });
 
     it('should emit runner events in normal case', run => {
@@ -53,7 +53,7 @@ describe('events', () => {
   describe('executer', () => {
 
     beforeEach(context => {
-      context.runOptions.include = ['EXECUTER'];
+      context.options.include = ['EXECUTER'];
     });
 
     it('should emit in normal case', run => {
@@ -82,8 +82,8 @@ describe('events', () => {
   describe('target', () => {
 
     beforeEach(context => {
-      context.runOptions.include = ['TARGET', 'TEST_END'];
-      context.runOptions.flat = true;
+      context.options.include = ['TARGET', 'TEST_END'];
+      context.options.flat = true;
     });
 
     it('should emit target events correctly', run => {
@@ -115,9 +115,9 @@ describe('events', () => {
 
   describe('worker', () => {
     beforeEach(context => {
-      context.runOptions.include = ['WORKER'];
-      context.runOptions.config = {concurrency: 4};
-      context.runOptions.flat = true;
+      context.options.include = ['WORKER'];
+      context.options.config = {concurrency: 4};
+      context.options.flat = true;
     });
 
     it('should emit WORKER events', run => {
@@ -142,9 +142,9 @@ describe('events', () => {
 
   describe('session', () => {
     beforeEach(context => {
-      context.runOptions.include = ['SESSION'];
-      context.runOptions.config = {concurrency: 4};
-      context.runOptions.flat = true;
+      context.options.include = ['SESSION'];
+      context.options.config = {concurrency: 4};
+      context.options.flat = true;
     });
 
     it('should emit SESSION events', run => {
@@ -170,7 +170,7 @@ describe('events', () => {
   describe('suite', () => {
 
     beforeEach(context => {
-      context.runOptions.include = ['SUITE'];
+      context.options.include = ['SUITE'];
     });
 
     it('should emit for nested suites', run => {
@@ -221,7 +221,7 @@ describe('events', () => {
 
   describe('hooks', () => {
     beforeEach(context => {
-      context.runOptions.include = ['HOOK', 'TEST'];
+      context.options.include = ['HOOK', 'TEST'];
     });
 
     it('should emit BEFORE / AFTER events', run => {
@@ -292,7 +292,7 @@ describe('events', () => {
 
   describe('test', () => {
     beforeEach(context => {
-      context.runOptions.include = ['TEST'];
+      context.options.include = ['TEST'];
     });
 
     it('should emit TEST_START / TEST_END', run => {

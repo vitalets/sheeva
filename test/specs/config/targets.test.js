@@ -3,7 +3,7 @@
 describe('config targets', () => {
 
   beforeEach(context => {
-    context.runOptions.include = ['SESSION', 'TEST_END'];
+    context.options.include = ['SESSION', 'TEST_END'];
   });
 
   it('should run tests in all targets', run => {

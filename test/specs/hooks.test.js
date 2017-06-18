@@ -3,7 +3,7 @@
 describe('hooks', () => {
 
   beforeEach(context => {
-    context.runOptions.include = ['SUITE', 'HOOK_END', 'TEST_END'];
+    context.options.include = ['SUITE', 'HOOK_END', 'TEST_END'];
   });
 
   it('should run all hooks without describe', run => {

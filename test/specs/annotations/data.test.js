@@ -4,7 +4,7 @@ $if(isSyncTarget);
 describe('annotation: data', () => {
 
   beforeEach(context => {
-    context.runOptions.output = 'rawReport';
+    context.options.output = 'rawReport';
   });
 
   it('should attach data to test', run => {

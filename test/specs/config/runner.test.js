@@ -37,7 +37,7 @@ describe('config runner', () => {
 
   beforeEach(context => {
     const localContext = {};
-    context.runOptions = {
+    context.options = {
       config: {
         startRunner: getStartRunner(localContext),
         endRunner: getEndRunner(localContext),

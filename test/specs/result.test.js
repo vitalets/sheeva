@@ -3,7 +3,7 @@
 describe('result', () => {
 
   beforeEach(context => {
-    context.runOptions.output = 'result';
+    context.options.output = 'result';
   });
 
   it('should return result on success', run => {

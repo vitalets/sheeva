@@ -32,7 +32,7 @@ describe('config startWorker / endWorker', () => {
 
   beforeEach(context => {
     const localContext = {};
-    context.runOptions = {
+    context.options = {
       config: {
         startWorker: getStartWorker(localContext),
         endWorker: getEndWorker(localContext),

@@ -32,7 +32,7 @@ describe('config startSession / endSession hooks', () => {
 
   beforeEach(context => {
     const localContext = {};
-    context.runOptions = {
+    context.options = {
       config: {
         startSession: getStartSession(localContext),
         endSession: getEndSession(localContext),

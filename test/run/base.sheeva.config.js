@@ -13,12 +13,12 @@ module.exports = {
   newSessionPerFile: false,
   splitSuites: true,
   callHookFn: function ({fn, context}) {
-    context.runOptions = context.runOptions || {};
+    context.options = context.options || {};
     return fn(context);
   },
   callTestFn: function ({fn, context, target}) {
     const run = (code, optionsFromTest = {}) => {
-      const subSheevaOptions = mergeWith({delay: target.delay}, context.runOptions, optionsFromTest, customizer);
+      const subSheevaOptions = mergeWith({delay: target.delay}, context.options, optionsFromTest, customizer);
       return new SubSheevaRunner(code, subSheevaOptions).run();
     };
     return fn(run);

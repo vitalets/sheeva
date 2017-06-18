@@ -3,7 +3,7 @@
 describe('single error in before', () => {
 
   beforeEach(context => {
-    context.runOptions.include = ['HOOK_END', 'TEST_END', 'SUITE_END'];
+    context.options.include = ['HOOK_END', 'TEST_END', 'SUITE_END'];
   });
 
   it('should skip suite', run => {

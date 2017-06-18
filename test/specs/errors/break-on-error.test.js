@@ -3,8 +3,8 @@
 describe('config.breakOnError', () => {
 
   beforeEach(context => {
-    context.runOptions.include = ['TEST_END', 'HOOK_END'];
-    context.runOptions.config = {
+    context.options.include = ['TEST_END', 'HOOK_END'];
+    context.options.config = {
       breakOnError: true,
     };
   });

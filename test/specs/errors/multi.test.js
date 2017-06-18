@@ -3,7 +3,7 @@
 describe('errors (multi)', () => {
 
   beforeEach(context => {
-    context.runOptions.include = ['HOOK_END', 'TEST_END'];
+    context.options.include = ['HOOK_END', 'TEST_END'];
   });
 
   it('before + after', run => {

@@ -4,7 +4,7 @@
 describe('errors in suite', () => {
 
   beforeEach(context => {
-    context.runOptions.include = ['HOOK_END', 'TEST_END'];
+    context.options.include = ['HOOK_END', 'TEST_END'];
   });
 
   it('should reject run in case of error in describe fn', run => {
