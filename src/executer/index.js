@@ -16,11 +16,17 @@ const {config} = require('../config');
 const {result} = require('../result');
 const reporter = require('../reporter');
 const utils = require('../utils');
-const {TARGET_START, TARGET_END} = require('../events');
 const Taker = require('./taker');
 const Workers = require('./workers');
 const HookFn = require('./caller/hooks/hook-fn');
 const TestCaller = require('./caller/test');
+
+const {
+  EXECUTER_START,
+  EXECUTER_END,
+  TARGET_START,
+  TARGET_END,
+} = require('../events');
 
 module.exports = class Executer {
   /**
@@ -38,6 +44,7 @@ module.exports = class Executer {
    */
   run() {
     return this._promised.call(() => {
+      reporter.handleEvent(EXECUTER_START);
       this._workers = new Workers();
       this._taker = new Taker(this._workers);
       this._startWorkers();
@@ -94,11 +101,7 @@ module.exports = class Executer {
   _terminate(error) {
     this._workers.terminate()
       // todo: catch and emit extra error
-      .finally(() => {
-          return HookFn.isHookError(error) || TestCaller.isTestError(error)
-            ? this._promised.resolve()
-            : this._promised.reject(error);
-      });
+      .finally(() => this._end(error));
   }
 
   _isConcurrencyReached() {
@@ -107,6 +110,17 @@ module.exports = class Executer {
 
   _checkEnd() {
     if (this._workers.size === 0) {
+      this._end();
+    }
+  }
+
+  _end(error) {
+    reporter.handleEvent(EXECUTER_END, {error});
+    if (error) {
+      return HookFn.isHookError(error) || TestCaller.isTestError(error)
+        ? this._promised.resolve()
+        : this._promised.reject(error);
+    } else {
       this._promised.resolve();
     }
   }

@@ -6,12 +6,7 @@
 
 module.exports = {
   /**
-   * Triggered after runner is initialized
-   */
-  RUNNER_INIT: 'RUNNER_INIT',
-
-  /**
-   * Triggered after runner has processed files and flatten tests but before executing
+   * Triggered on runner start
    */
   RUNNER_START: 'RUNNER_START',
 
@@ -19,6 +14,16 @@ module.exports = {
    * Triggered after all targets and tests are executed or error occurred
    */
   RUNNER_END: 'RUNNER_END',
+
+  /**
+   * Triggered when tests are read and transformed, but before execution
+   */
+  EXECUTER_START: 'EXECUTER_START',
+
+  /**
+   * Triggered when execution is ended
+   */
+  EXECUTER_END: 'EXECUTER_END',
 
   /**
    * Triggered before the first session of target is started

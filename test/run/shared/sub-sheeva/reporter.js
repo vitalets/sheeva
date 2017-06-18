@@ -29,15 +29,19 @@ module.exports = class LogReporter {
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
     const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
     switch (event) {
-      case events.RUNNER_INIT: {
-        this._add(data, `${event}`);
-        break;
-      }
       case events.RUNNER_START: {
         this._add(data, `${event}`);
         break;
       }
       case events.RUNNER_END: {
+        this._add(data, `${event}${errMessage}`);
+        break;
+      }
+      case events.EXECUTER_START: {
+        this._add(data, `${event}`);
+        break;
+      }
+      case events.EXECUTER_END: {
         this._add(data, `${event}${errMessage}`);
         break;
       }

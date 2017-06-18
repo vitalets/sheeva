@@ -16,7 +16,6 @@ describe('events', () => {
       `]);
 
       return expectResolve(output, [
-        'RUNNER_INIT',
         'RUNNER_START',
         'RUNNER_END',
       ]);
@@ -25,7 +24,6 @@ describe('events', () => {
     it('should emit runner events for empty file', run => {
       const output = run(``);
       return expectResolve(output, [
-        'RUNNER_INIT',
         'RUNNER_START',
         'RUNNER_END',
       ]);
@@ -45,11 +43,38 @@ describe('events', () => {
       return expectReject(output, {
         message: 'err',
         output:[
-          'RUNNER_INIT',
           'RUNNER_START',
           'RUNNER_END err',
         ]
       });
+    });
+  });
+
+  describe('executer', () => {
+
+    beforeEach(context => {
+      context.runOptions.include = ['EXECUTER'];
+    });
+
+    it('should emit in normal case', run => {
+      const output = run([`
+        describe('suite 1', () => {
+          it('test 1', noop);
+        });
+      `]);
+
+      return expectResolve(output, [
+        'EXECUTER_START',
+        'EXECUTER_END',
+      ]);
+    });
+
+    it('should emit for empty file', run => {
+      const output = run(``);
+      return expectResolve(output, [
+        'EXECUTER_START',
+        'EXECUTER_END',
+      ]);
     });
 
   });
