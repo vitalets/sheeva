@@ -11,7 +11,7 @@
  */
 module.exports = {
   /**
-   * Test files pattern or array of patterns, e.g. './test/*.js'
+   * Test files pattern or array of patterns, e.g. './test/*.js', or array of objects {name, content}
    */
   files: [],
 

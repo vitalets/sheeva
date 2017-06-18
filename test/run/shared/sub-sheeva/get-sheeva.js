@@ -1,22 +1,19 @@
 'use strict';
 
 /**
- * Returns fresh constructor of Sheeva (for parralel self-testing)
+ * Returns fresh constructor of Sheeva (for parallel self-testing)
  */
 
 const path = require('path');
-const SHEEVA_PATH = `../../../../${process.env.SHEEVA_DIR || 'src'}/`;
+const sheevaDir = process.env.SHEEVA_DIR || 'src';
+const sheevaPath = `../../../../${sheevaDir}/`;
 
 module.exports = function getSheeva() {
-  clearRequireCache();
-  return require(SHEEVA_PATH);
-};
-
-function clearRequireCache() {
   Object.keys(require.cache).forEach(key => {
     const relpath = path.relative(__dirname, key);
-    if (relpath.startsWith(SHEEVA_PATH)) {
+    if (relpath.startsWith(sheevaPath)) {
       delete require.cache[key];
     }
   });
-}
+  return require(sheevaPath);
+};

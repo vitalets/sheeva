@@ -6,7 +6,8 @@
 
 // use pre-built unexpected as it can not be built with rollup normally
 // see: https://github.com/unexpectedjs/unexpected/issues/369
-const expect = require('unexpected/unexpected.js');
+//const expect = require('unexpected/unexpected.js');
+const expect = require('unexpected');
 
 Object.assign(global, {
   isSyncTarget: target => !target.hasOwnProperty('delay'),

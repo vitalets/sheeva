@@ -1,5 +1,13 @@
 'use strict';
 
+const Sheeva = require('../../../../dist/sheeva');
+//const wwConfig = require('./worker.sheeva.config');
+const config = require('./sheeva.config');
+
+new Sheeva(config).run();
+
+'use strict';
+
 /**
  * Web worker uses sub-sheeva to run tests
  */
