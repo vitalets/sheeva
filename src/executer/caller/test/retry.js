@@ -4,7 +4,7 @@
  * Manage info about test retry.
  */
 
-const {config} = require('../../../config');
+const {config} = require('../../../configurator');
 const Fn = require('../shared/fn');
 
 const RETRY_TIMEOUT_INCREASE_FACTOR = 1.5;

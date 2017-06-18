@@ -5,7 +5,7 @@
  * It performs setup and teardown by calling `config.startSession` / `config.endSession` hooks.
  */
 
-const {config} = require('../../config');
+const {config} = require('../../configurator');
 const {result} = require('../../result');
 const reporter = require('../../reporter');
 

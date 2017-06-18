@@ -4,7 +4,7 @@
  * Process all events and proxy to other reporters.
  */
 
-const {config} = require('../config');
+const {config} = require('../configurator');
 const {result} = require('../result');
 const {EXTRA_ERROR} = require('../events');
 const ErrorsCollector = require('./collectors/errors');

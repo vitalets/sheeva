@@ -5,7 +5,7 @@
  */
 
 const assert = require('assert');
-const {config} = require('../config');
+const {config} = require('../configurator');
 const {result} = require('../result');
 const PropsInjector = require('../utils/props-injector');
 const AnnotationsReader = require('./annotations');

@@ -7,7 +7,7 @@
 require('promise.prototype.finally.err').shim();
 
 const utils = require('./utils');
-const configInstance = require('./config');
+const configurator = require('./configurator');
 const reporter = require('./reporter');
 const {RUNNER_START, RUNNER_STARTED, RUNNER_END} = require('./events');
 const resultInstance = require('./result');
@@ -42,20 +42,20 @@ module.exports = class Sheeva {
   }
 
   _init() {
-    configInstance.init(this._rawConfig);
+    configurator.init(this._rawConfig);
     resultInstance.init();
     reporter.init();
     reporter.handleEvent(RUNNER_START);
   }
 
   _startRunner() {
-    const {config} = configInstance;
+    const {config} = configurator;
     return utils.thenCall(() => config.startRunner(config))
       .then(() => reporter.handleEvent(RUNNER_STARTED));
   }
 
   _end(error) {
-    const {config} = configInstance;
+    const {config} = configurator;
     return Promise.resolve()
       .then(() => config.endRunner(config))
       .catch(e => error ? reporter.handleError(e) : Promise.reject(e))

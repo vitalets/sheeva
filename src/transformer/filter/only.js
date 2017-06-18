@@ -4,7 +4,7 @@
  * Filters tests by `only` annotation
  */
 
-const {config} = require('../../config');
+const {config} = require('../../configurator');
 const {result} = require('../../result');
 const Includer = require('./includer');
 

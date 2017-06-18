@@ -14,7 +14,7 @@
  * @property {Number} suiteHooksCount max number of suite-level hooks (before / after)
  */
 
-const {config} = require('../../config');
+const {config} = require('../../configurator');
 
 module.exports = class SuiteFlattener {
   /**

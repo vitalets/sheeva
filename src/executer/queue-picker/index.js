@@ -4,7 +4,7 @@
 
 'use strict';
 
-const {config} = require('../../config');
+const {config} = require('../../configurator');
 const Shifter = require('./shifter');
 const Splitter = require('./splitter');
 

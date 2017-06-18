@@ -4,7 +4,7 @@
 
 'use strict';
 
-const {config} = require('../../../config');
+const {config} = require('../../../configurator');
 const reporter = require('../../../reporter');
 const {HOOK_START, HOOK_END} = require('../../../events');
 const Fn = require('../shared/fn');

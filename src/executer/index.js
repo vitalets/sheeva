@@ -12,7 +12,7 @@
  * - Caller calls test function with needed hooks.
  */
 
-const {config} = require('../config');
+const {config} = require('../configurator');
 const {result} = require('../result');
 const reporter = require('../reporter');
 const utils = require('../utils');

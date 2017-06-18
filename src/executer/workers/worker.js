@@ -4,7 +4,7 @@
  * Worker: executes sessions serially.
  */
 
-const {config} = require('../../config');
+const {config} = require('../../configurator');
 const Session = require('../session');
 
 module.exports = class Worker {

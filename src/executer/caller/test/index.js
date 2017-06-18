@@ -5,7 +5,7 @@
  * Used in Queue.
  */
 
-const {config} = require('../../../config');
+const {config} = require('../../../configurator');
 const reporter = require('../../../reporter');
 const {TEST_START, TEST_RETRY, TEST_END} = require('../../../events');
 const BeforeEach = require('../hooks/pre/before-each');

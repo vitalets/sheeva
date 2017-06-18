@@ -11,7 +11,7 @@
 
 const assert = require('assert');
 const utils = require('../../utils');
-const {config} = require('../../config');
+const {config} = require('../../configurator');
 const reporter = require('../../reporter');
 const {EXTRA_ERROR} = require('../../events');
 const BeforeHooks = require('../caller/hooks/pre/before');
