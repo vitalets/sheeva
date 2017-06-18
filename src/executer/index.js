@@ -16,7 +16,7 @@ const {config} = require('../config');
 const {result} = require('../result');
 const reporter = require('../reporter');
 const utils = require('../utils');
-const Taker = require('./taker');
+const QueuePicker = require('./queue-picker');
 const Workers = require('./workers');
 const HookFn = require('./caller/hooks/hook-fn');
 const TestCaller = require('./caller/test');
@@ -35,7 +35,7 @@ module.exports = class Executer {
   constructor() {
     this._executionPerTarget = result.executionPerTarget;
     this._workers = null;
-    this._taker = null;
+    this._picker = null;
     this._promised = new utils.Promised();
   }
 
@@ -46,14 +46,14 @@ module.exports = class Executer {
     return this._promised.call(() => {
       reporter.handleEvent(EXECUTER_START);
       this._workers = new Workers();
-      this._taker = new Taker(this._workers);
+      this._picker = new QueuePicker(this._workers);
       this._startWorkers();
     });
   }
 
   _startWorkers() {
     while (!this._isConcurrencyReached()) {
-      const queue = this._taker.getNextQueue();
+      const queue = this._picker.getNextQueue();
       if (queue) {
         this._addWorker(queue)
           .then(worker => this._runQueue(worker, queue))
@@ -66,7 +66,7 @@ module.exports = class Executer {
   }
 
   _handleFreeWorker(worker) {
-    const queue = this._taker.getNextQueue(worker.session);
+    const queue = this._picker.getNextQueue(worker.session);
     if (queue) {
       this._runQueue(worker, queue);
     } else {
@@ -145,6 +145,6 @@ module.exports = class Executer {
   }
 
   _hasPendingJobs(target) {
-    return this._taker.getRemainingQueues(target).length || this._workers.hasWorkersForTarget(target);
+    return this._picker.getRemainingQueues(target).length || this._workers.hasWorkersForTarget(target);
   }
 };

@@ -25,14 +25,6 @@ module.exports = class Sheeva {
     this._rawConfig = rawConfig;
   }
 
-  prepare() {
-
-  }
-
-  execute() {
-
-  }
-
   /**
    * Run tests execution
    *

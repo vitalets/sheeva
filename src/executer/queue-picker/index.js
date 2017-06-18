@@ -5,16 +5,16 @@
 'use strict';
 
 const {config} = require('../../config');
-const Picker = require('./picker');
+const Shifter = require('./shifter');
 const Splitter = require('./splitter');
 
-module.exports = class Taker {
+module.exports = class QueuePicker {
   /**
    * Constructor
    */
   constructor(workers) {
     this._workers = workers;
-    this._picker = new Picker();
+    this._shifter = new Shifter();
     this._splitter = new Splitter(workers);
     this._session = null;
     this._target = null;
@@ -42,7 +42,7 @@ module.exports = class Taker {
    * @returns {Array<Queue>}
    */
   getRemainingQueues(target) {
-    return this._picker.getRemainingQueues(target);
+    return this._shifter.getRemainingQueues(target);
   }
 
   _getForTarget(target) {
@@ -56,11 +56,11 @@ module.exports = class Taker {
   }
 
   _getForTargets(targets) {
-    return this._tryPickQueue(targets) || this._trySplitRunningQueues(targets);
+    return this._tryShiftQueue(targets) || this._trySplitRunningQueues(targets);
   }
 
-  _tryPickQueue(targets) {
-    return this._picker.tryPick(targets);
+  _tryShiftQueue(targets) {
+    return this._shifter.tryShift(targets);
   }
 
   _trySplitRunningQueues(targets) {

@@ -1,5 +1,5 @@
 /**
- * Picks whole queue from first suitable target
+ * Shifts whole queue from first suitable target
  */
 
 'use strict';
@@ -7,7 +7,7 @@
 const {result} = require('../../../result');
 const Queue = require('../../queue');
 
-module.exports = class Picker {
+module.exports = class Shifter {
   /**
    * Constructor
    */
@@ -17,12 +17,12 @@ module.exports = class Picker {
   }
 
   /**
-   * Picks first available queue from targets
+   * Shifts first available queue from targets
    *
    * @param {Array} targets
    * @returns {Queue}
    */
-  tryPick(targets) {
+  tryShift(targets) {
     for (let target of targets) {
       const queues = this._targetQueues.get(target);
       if (queues.length) {
