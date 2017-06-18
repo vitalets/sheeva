@@ -5,14 +5,14 @@
  */
 
 const {config} = require('../../configurator');
-const {result} = require('../../result');
+const state = require('../../state');
 const Includer = require('./includer');
 
 module.exports = class Only {
   constructor() {
-    this._topSuitesPerTarget = result.topSuitesPerTarget;
-    this._annotationsPerTarget = result.annotationsPerTarget;
-    this._summary = result.only;
+    this._topSuitesPerTarget = state.topSuitesPerTarget;
+    this._annotationsPerTarget = state.annotationsPerTarget;
+    this._summary = state.only;
     this._found = this._hasOnly();
   }
 

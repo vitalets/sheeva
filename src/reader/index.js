@@ -6,7 +6,7 @@
 
 const assert = require('assert');
 const {config} = require('../configurator');
-const {result} = require('../result');
+const state = require('../state');
 const PropsInjector = require('../utils/props-injector');
 const AnnotationsReader = require('./annotations');
 const TestsReader = require('./tests');
@@ -19,7 +19,7 @@ module.exports = class Reader {
    */
   constructor() {
     this._context = getGlobal();
-    this._matchedFiles = result.matchedFiles;
+    this._matchedFiles = state.matchedFiles;
     this._filesReader = null;
     this._annotationsReader = new AnnotationsReader();
     this._testsReader = new TestsReader(this._annotationsReader);

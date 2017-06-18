@@ -6,7 +6,7 @@
 
 /* eslint-disable complexity, max-statements */
 
-const {result} = require('../../result');
+const state = require('../../state');
 const {
   SESSION_START,
   SESSION_STARTED,
@@ -18,7 +18,7 @@ const {
 
 module.exports = class SessionsCollector {
   constructor() {
-    this._sessions = result.sessions;
+    this._sessions = state.sessions;
   }
 
   handleEvent(event, data) {

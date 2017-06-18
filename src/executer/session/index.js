@@ -6,7 +6,7 @@
  */
 
 const {config} = require('../../configurator');
-const {result} = require('../../result');
+const state = require('../../state');
 const reporter = require('../../reporter');
 
 const {
@@ -35,8 +35,8 @@ module.exports = class Session {
     this._worker = worker;
     this._target = target;
     this._status = STATUS.CREATED;
-    this._index = result.sessions.size;
-    result.sessions.set(this, {});
+    this._index = state.sessions.size;
+    state.sessions.set(this, {});
   }
 
   get target() {

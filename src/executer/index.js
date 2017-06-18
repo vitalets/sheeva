@@ -13,7 +13,7 @@
  */
 
 const {config} = require('../configurator');
-const {result} = require('../result');
+const state = require('../state');
 const reporter = require('../reporter');
 const utils = require('../utils');
 const QueuePicker = require('./queue-picker');
@@ -33,7 +33,7 @@ module.exports = class Executer {
    * Constructor
    */
   constructor() {
-    this._executionPerTarget = result.executionPerTarget;
+    this._executionPerTarget = state.executionPerTarget;
     this._workers = null;
     this._picker = null;
     this._promised = new utils.Promised();

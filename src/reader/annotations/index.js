@@ -4,13 +4,13 @@
  * Annotations
  */
 
-const {result} = require('../../result');
+const state = require('../../state');
 const CurrentAnnotation = require('./current');
 const Api = require('./api');
 
 module.exports = class AnnotationsReader {
   constructor() {
-    this._annotationsPerTarget = result.annotationsPerTarget;
+    this._annotationsPerTarget = state.annotationsPerTarget;
     this._currentAnnotation = new CurrentAnnotation();
     this._api = new Api(this._currentAnnotation).getMethods();
   }

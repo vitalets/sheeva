@@ -39,7 +39,7 @@ module.exports = class DebugReporter {
 
   _printEvent(event, data) {
     if (event === events.RUNNER_STARTED) {
-      const {config, matchedFiles, runner} = data.result;
+      const {config, matchedFiles, runner} = data.state;
       console.log(
         `${event} targets: ${config.targets.length}, files: ${matchedFiles.size}, tests: ${runner.tests.total}`
       );

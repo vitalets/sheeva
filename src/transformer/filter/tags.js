@@ -5,7 +5,7 @@
  */
 
 const {config} = require('../../configurator');
-const {result} = require('../../result');
+const state = require('../../state');
 const ExtraSet = require('../../utils/extra-set');
 const Includer = require('./includer');
 
@@ -14,9 +14,9 @@ module.exports = class Tags {
    * Constructor
    */
   constructor() {
-    this._topSuitesPerTarget = result.topSuitesPerTarget;
-    this._annotationsPerTarget = result.annotationsPerTarget;
-    this._summary = result.tags;
+    this._topSuitesPerTarget = state.topSuitesPerTarget;
+    this._annotationsPerTarget = state.annotationsPerTarget;
+    this._summary = state.tags;
     this._configTags = config.tags;
   }
 

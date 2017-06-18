@@ -1,34 +1,34 @@
-'use strict';
-
 /**
- * Singleton that collects all data while running and pass it reporters.
+ * Runner state singleton.
  */
+
+'use strict';
 
 const {config} = require('../configurator');
 const ExtraMap = require('../utils/extra-map');
 const ExtraSet = require('../utils/extra-set');
 
-class Result {
-  constructor() {
-    this._result = {};
-  }
-
-  get result() {
-    return this._result;
-  }
-
+class State {
   init() {
     this._clear();
-    this._initCommon();
+    this.config = config;
+    this.errors = new ExtraMap();
+    this._initRunner();
     this._initReader();
     this._initTransformer();
     this._initExecuter();
   }
 
-  _initCommon() {
-    this._result.config = config;
-    this._result.errors = new ExtraMap();
-    this._result.runner = {
+  /**
+   * Returns serializable result
+   */
+  getResult() {
+
+  }
+
+  // todo: maybe move to result class
+  _initRunner() {
+    this.runner = {
       times: {
         init: 0,
         start: 0,
@@ -44,11 +44,11 @@ class Result {
   }
 
   _initReader() {
-    this._result.topSuitesPerTarget = new ExtraMap();
-    this._result.annotationsPerTarget = new ExtraMap();
-    this._result.matchedFiles = new ExtraSet();
+    this.topSuitesPerTarget = new ExtraMap();
+    this.annotationsPerTarget = new ExtraMap();
+    this.matchedFiles = new ExtraSet();
     config.targets.forEach(target => {
-      this._result.annotationsPerTarget.set(target, {
+      this.annotationsPerTarget.set(target, {
         only: new ExtraSet(),
         skip: new ExtraSet(),
         tags: new ExtraMap(),
@@ -57,26 +57,26 @@ class Result {
   }
 
   _initTransformer() {
-    this._result.flatSuitesPerTarget = new ExtraMap();
-    this._result.only = {
+    this.flatSuitesPerTarget = new ExtraMap();
+    this.only = {
       files: new ExtraSet()
     };
-    this._result.skip = {
+    this.skip = {
       files: new ExtraSet(),
       suites: new ExtraSet(),
       tests: new ExtraSet(),
     };
-    this._result.tags = {
+    this.tags = {
       intersected: new ExtraSet()
     };
   }
 
   _initExecuter() {
-    this._result.sessions = new ExtraMap();
-    this._result.executionPerTarget = new ExtraMap();
-    this._result.workers = new ExtraSet();
+    this.sessions = new ExtraMap();
+    this.executionPerTarget = new ExtraMap();
+    this.workers = new ExtraSet();
     config.targets.forEach((target, index) => {
-      this._result.executionPerTarget.set(target, {
+      this.executionPerTarget.set(target, {
         index,
         started: false,
         ended: false,
@@ -91,10 +91,8 @@ class Result {
   }
 
   _clear() {
-    Object.keys(this._result).forEach(key => {
-      delete this._result[key];
-    });
+    Object.keys(this).forEach(key => delete this[key]);
   }
 }
 
-module.exports = new Result();
+module.exports = new State();

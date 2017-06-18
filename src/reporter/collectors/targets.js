@@ -4,13 +4,13 @@
 
 'use strict';
 
-const {result} = require('../../result');
+const state = require('../../state');
 const {RUNNER_STARTED, TEST_END} = require('../../events');
 
 module.exports = class TargetsCollector {
   constructor() {
-    this._executionPerTarget = result.executionPerTarget;
-    this._flatSuitesPerTarget = result.flatSuitesPerTarget;
+    this._executionPerTarget = state.executionPerTarget;
+    this._flatSuitesPerTarget = state.flatSuitesPerTarget;
   }
 
   handleEvent(event, data) {

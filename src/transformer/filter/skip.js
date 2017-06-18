@@ -4,14 +4,14 @@
  * Filters tests by `skip` annotation
  */
 
-const {result} = require('../../result');
+const state = require('../../state');
 const Excluder = require('./excluder');
 
 module.exports = class Skip {
   constructor() {
-    this._topSuitesPerTarget = result.topSuitesPerTarget;
-    this._annotationsPerTarget = result.annotationsPerTarget;
-    this._summary = result.skip;
+    this._topSuitesPerTarget = state.topSuitesPerTarget;
+    this._annotationsPerTarget = state.annotationsPerTarget;
+    this._summary = state.skip;
   }
 
   filter() {

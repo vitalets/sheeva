@@ -9,11 +9,11 @@ require('promise.prototype.finally.err').shim();
 const utils = require('./utils');
 const configurator = require('./configurator');
 const reporter = require('./reporter');
-const {RUNNER_START, RUNNER_STARTED, RUNNER_END} = require('./events');
-const resultInstance = require('./result');
+const state = require('./state');
 const Reader = require('./reader');
 const transform = require('./transformer');
 const Executer = require('./executer');
+const {RUNNER_START, RUNNER_STARTED, RUNNER_END} = require('./events');
 
 module.exports = class Sheeva {
   /**
@@ -38,12 +38,14 @@ module.exports = class Sheeva {
       .then(() => this._startRunner())
       .then(() => new Executer().run())
       .finally(e => this._end(e))
-      .then(() => resultInstance.result);
+      // todo: return Result instead of state
+      //.then(() => state.getResult());
+      .then(() => state);
   }
 
   _init() {
     configurator.init(this._rawConfig);
-    resultInstance.init();
+    state.init();
     reporter.init();
     reporter.handleEvent(RUNNER_START);
   }

@@ -4,12 +4,12 @@
  * Collects hook and test errors
  */
 
-const {result} = require('../../result');
+const state = require('../../state');
 const {HOOK_END, TEST_END, EXTRA_ERROR} = require('../../events');
 
 module.exports = class ErrorsCollector {
   constructor() {
-    this._errors = result.errors;
+    this._errors = state.errors;
   }
 
   handleEvent(event, data) { // eslint-disable-line complexity

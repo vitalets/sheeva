@@ -134,7 +134,7 @@ describe('annotation: only', () => {
   it('should have only items summary in RUNNER_STARTED', run => {
     const assertions = {
       'length': 1,
-      '0.data.result.only.files.size': 1
+      '0.data.state.only.files.size': 1
     };
     const output = run([`
       $only();

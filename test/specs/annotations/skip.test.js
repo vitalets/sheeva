@@ -78,9 +78,9 @@ describe('annotation: skip', () => {
   it('should have skipped items summary in result', run => {
     const assertions = {
       'length': 1,
-      '0.data.result.skip.files.size': 2,
-      '0.data.result.skip.suites.size': 1,
-      '0.data.result.skip.tests.size': 1,
+      '0.data.state.skip.files.size': 2,
+      '0.data.state.skip.suites.size': 1,
+      '0.data.state.skip.tests.size': 1,
     };
     const output = run([`
       $skip();

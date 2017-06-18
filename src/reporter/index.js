@@ -5,7 +5,7 @@
  */
 
 const {config} = require('../configurator');
-const {result} = require('../result');
+const state = require('../state');
 const {EXTRA_ERROR} = require('../events');
 const ErrorsCollector = require('./collectors/errors');
 const TargetsCollector = require('./collectors/targets');
@@ -38,7 +38,7 @@ class Reporter {
       this._currentEvent = event;
       this._currentData = Object.assign({}, data);
       this._addTimestamp();
-      this._addResult();
+      this._addState();
       this._proxyToCollectors();
       this._proxyToReporters();
     }
@@ -77,8 +77,8 @@ class Reporter {
     this._currentData.timestamp = Date.now();
   }
 
-  _addResult() {
-    this._currentData.result = result;
+  _addState() {
+    this._currentData.state = state;
   }
 
   _proxyToReporters() {

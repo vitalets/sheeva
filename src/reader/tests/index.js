@@ -4,7 +4,7 @@
  * Tests structure reader
  */
 
-const {result} = require('../../result');
+const state = require('../../state');
 const ExtraMap = require('../../utils/extra-map');
 const CurrentSuites = require('./current-suites');
 const Walker = require('./walker');
@@ -13,7 +13,7 @@ const factory = require('./factory');
 
 module.exports = class TestsReader {
   constructor(annotationsReader) {
-    this._topSuitesPerTarget = result.topSuitesPerTarget;
+    this._topSuitesPerTarget = state.topSuitesPerTarget;
     this._currentSuites = new CurrentSuites(annotationsReader);
     this._api = new Bdd(this._currentSuites, annotationsReader.current).getMethods();
     this._walker = new Walker(this._currentSuites);

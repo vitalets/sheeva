@@ -9,11 +9,11 @@
  *
  */
 
-const {result} = require('../../result');
+const state = require('../../state');
 const SuiteFlattener = require('./suite-flattener');
 
 module.exports = function () {
-  const {topSuitesPerTarget, flatSuitesPerTarget} = result;
+  const {topSuitesPerTarget, flatSuitesPerTarget} = state;
   topSuitesPerTarget.forEach((topSuites, target) => {
     const flatSuites = new SuiteFlattener({children: topSuites.toArray()}).flatten();
     flatSuitesPerTarget.set(target, flatSuites);

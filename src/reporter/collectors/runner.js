@@ -6,7 +6,7 @@
 
 /* eslint-disable complexity, max-statements */
 
-const {result} = require('../../result');
+const state = require('../../state');
 const {
   RUNNER_START,
   RUNNER_STARTED,
@@ -16,8 +16,8 @@ const {
 
 module.exports = class RunnerCollector {
   constructor() {
-    this._runner = result.runner;
-    this._executionPerTarget = result.executionPerTarget;
+    this._runner = state.runner;
+    this._executionPerTarget = state.executionPerTarget;
   }
 
   handleEvent(event, data) {

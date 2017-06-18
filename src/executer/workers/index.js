@@ -4,7 +4,7 @@
  * Workers manager: keeps workers count under concurrency limit
  */
 
-const {result} = require('../../result');
+const state = require('../../state');
 const reporter = require('../../reporter');
 const {WORKER_ADD, WORKER_DELETE} = require('../../events');
 const Worker = require('./worker');
@@ -14,7 +14,7 @@ module.exports = class Workers {
    * Constructor
    */
   constructor() {
-    this._workers = result.workers;
+    this._workers = state.workers;
   }
 
   get size() {

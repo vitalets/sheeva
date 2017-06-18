@@ -4,7 +4,7 @@
 
 'use strict';
 
-const {result} = require('../../../result');
+const state = require('../../../state');
 const Queue = require('../../queue');
 
 module.exports = class Shifter {
@@ -13,6 +13,7 @@ module.exports = class Shifter {
    */
   constructor() {
     this._targetQueues = new Map();
+    this._flatSuitesPerTarget = state.flatSuitesPerTarget;
     this._createQueues();
   }
 
@@ -36,7 +37,7 @@ module.exports = class Shifter {
   }
 
   _createQueues() {
-    result.flatSuitesPerTarget.forEach((flatSuites, target) => {
+    this._flatSuitesPerTarget.forEach((flatSuites, target) => {
       const queues = flatSuites.map(flatSuite => new Queue(flatSuite.tests));
       this._targetQueues.set(target, queues);
     });
