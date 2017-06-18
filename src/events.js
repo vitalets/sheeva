@@ -6,9 +6,14 @@
 
 module.exports = {
   /**
-   * Triggered on runner start
+   * Triggered before reading tests
    */
   RUNNER_START: 'RUNNER_START',
+
+  /**
+   * Triggered when tests are read and transformed, but before execution
+   */
+  RUNNER_STARTED: 'RUNNER_STARTED',
 
   /**
    * Triggered after all targets and tests are executed or error occurred

@@ -4,9 +4,9 @@
 
 'use strict';
 
-require('./globals');
+require('../helpers/globals');
 const mergeWith = require('lodash.mergewith');
-const SubSheevaRunner = require('./sub-sheeva');
+const SubSheevaRunner = require('../helpers/sub-sheeva');
 
 module.exports = {
   concurrency: 5,

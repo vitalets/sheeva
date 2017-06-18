@@ -1,11 +1,11 @@
-'use strict';
-
 /**
  * Collects tests counters for each Target
  */
 
+'use strict';
+
 const {result} = require('../../result');
-const {RUNNER_START, TEST_END} = require('../../events');
+const {RUNNER_STARTED, TEST_END} = require('../../events');
 
 module.exports = class TargetsCollector {
   constructor() {
@@ -15,7 +15,7 @@ module.exports = class TargetsCollector {
 
   handleEvent(event, data) {
     switch (event) {
-      case RUNNER_START:
+      case RUNNER_STARTED:
         this._calcTotal();
         break;
       case TEST_END:

@@ -5,7 +5,7 @@
 'use strict';
 
 const ConsoleReporter = require('sheeva-reporter-console');
-const baseConfig = require('../../shared/base.sheeva.config');
+const baseConfig = require('../../base.sheeva.config');
 
 const req = require.context('../../../specs', true, /\.js$/);
 const files = req.keys().map(name => {

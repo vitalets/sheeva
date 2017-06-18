@@ -1,15 +1,15 @@
-'use strict';
-
 /**
  * Collects runner times
  */
+
+'use strict';
 
 /* eslint-disable complexity, max-statements */
 
 const {result} = require('../../result');
 const {
-  RUNNER_INIT,
   RUNNER_START,
+  RUNNER_STARTED,
   RUNNER_END,
   TEST_END,
 } = require('../../events');
@@ -22,12 +22,12 @@ module.exports = class RunnerCollector {
 
   handleEvent(event, data) {
     switch (event) {
-      case RUNNER_INIT: {
-        this._runner.times.init = data.timestamp;
-        break;
-      }
       case RUNNER_START: {
         this._runner.times.start = data.timestamp;
+        break;
+      }
+      case RUNNER_STARTED: {
+        this._runner.times.started = data.timestamp;
         this._calcTestsTotal();
         break;
       }

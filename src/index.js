@@ -9,7 +9,7 @@ require('promise.prototype.finally.err').shim();
 const utils = require('./utils');
 const configInstance = require('./config');
 const reporter = require('./reporter');
-const {RUNNER_START, RUNNER_END} = require('./events');
+const {RUNNER_START, RUNNER_STARTED, RUNNER_END} = require('./events');
 const resultInstance = require('./result');
 const Reader = require('./reader');
 const transform = require('./transformer');
@@ -58,7 +58,8 @@ module.exports = class Sheeva {
 
   _startRunner() {
     const {config} = configInstance;
-    return utils.thenCall(() => config.startRunner(config));
+    return utils.thenCall(() => config.startRunner(config))
+      .then(() => reporter.handleEvent(RUNNER_STARTED));
   }
 
   _end(error) {

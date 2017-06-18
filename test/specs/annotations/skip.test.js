@@ -94,7 +94,7 @@ describe('annotation: skip', () => {
       });
     `, `
       it('test 3', noop)
-    `], {include: ['RUNNER_START'], keys: assertions, output: 'rawReport'});
+    `], {include: ['RUNNER_STARTED'], keys: assertions, output: 'rawReport'});
 
     return expectResolve(output, assertions);
   });

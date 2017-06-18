@@ -6,7 +6,7 @@
 
 const path = require('path');
 const sheevaDir = process.env.SHEEVA_DIR || 'src';
-const sheevaPath = `../../../../${sheevaDir}/`;
+const sheevaPath = `../../../${sheevaDir}/`;
 
 module.exports = function getSheeva() {
   Object.keys(require.cache).forEach(key => {

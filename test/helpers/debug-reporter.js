@@ -6,10 +6,13 @@
 
 /* eslint-disable no-console */
 
-const events = require('../../../src/events');
+const events = require('../../src/events');
 const INCLUDE_EVENTS = new Set([
   events.RUNNER_START,
+  events.RUNNER_STARTED,
   events.RUNNER_END,
+  events.EXECUTER_START,
+  events.EXECUTER_END,
   events.WORKER_ADD,
   events.WORKER_DELETE,
   events.SESSION_START,
@@ -35,7 +38,7 @@ module.exports = class DebugReporter {
   }
 
   _printEvent(event, data) {
-    if (event === events.RUNNER_START) {
+    if (event === events.RUNNER_STARTED) {
       const {config, matchedFiles, runner} = data.result;
       console.log(
         `${event} targets: ${config.targets.length}, files: ${matchedFiles.size}, tests: ${runner.tests.total}`

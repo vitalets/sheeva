@@ -131,7 +131,7 @@ describe('annotation: only', () => {
     });
   });
 
-  it('should have only items summary in RUNNER_START', run => {
+  it('should have only items summary in RUNNER_STARTED', run => {
     const assertions = {
       'length': 1,
       '0.data.result.only.files.size': 1
@@ -145,7 +145,7 @@ describe('annotation: only', () => {
       describe('suite 2', () => {
         it('test 2', noop);
       });
-    `], {include: ['RUNNER_START'], keys: assertions, output: 'rawReport'});
+    `], {include: ['RUNNER_STARTED'], keys: assertions, output: 'rawReport'});
 
     return expectResolve(output, assertions);
   });
