@@ -134,17 +134,16 @@ module.exports = class Executer {
   }
 
   _tryEmitTargetEnd(target) {
-    if (this._hasPendingJobs(target)) {
-      return;
-    }
-    const execution = this._executionPerTarget.get(target);
-    if (!execution.ended) {
-      execution.ended = true;
-      reporter.handleEvent(TARGET_END, {target});
+    if (this._isTargetFinished(target)) {
+      const execution = this._executionPerTarget.get(target);
+      if (!execution.ended) {
+        execution.ended = true;
+        reporter.handleEvent(TARGET_END, {target});
+      }
     }
   }
 
-  _hasPendingJobs(target) {
-    return this._picker.getRemainingQueues(target).length || this._workers.hasWorkersForTarget(target);
+  _isTargetFinished(target) {
+    return !this._picker.hasPendingTestsForTarget(target) && !this._workers.hasWorkersForTarget(target);
   }
 };

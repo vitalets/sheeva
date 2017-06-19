@@ -12,9 +12,7 @@ module.exports = class Shifter {
    * Constructor
    */
   constructor() {
-    this._targetQueues = new Map();
     this._flatSuitesPerTarget = state.flatSuitesPerTarget;
-    this._createQueues();
   }
 
   /**
@@ -25,21 +23,20 @@ module.exports = class Shifter {
    */
   tryShift(targets) {
     for (let target of targets) {
-      const queues = this._targetQueues.get(target);
-      if (queues.length) {
-        return queues.shift();
+      const flatSuites = this._flatSuitesPerTarget.get(target);
+      if (flatSuites.length) {
+        const flatSuite = flatSuites.shift();
+        return new Queue(flatSuite.tests);
       }
     }
   }
 
-  getRemainingQueues(target) {
-    return this._targetQueues.get(target);
-  }
-
-  _createQueues() {
-    this._flatSuitesPerTarget.forEach((flatSuites, target) => {
-      const queues = flatSuites.map(flatSuite => new Queue(flatSuite.tests));
-      this._targetQueues.set(target, queues);
-    });
+  /**
+   * Does target have pending tests (flat suites)
+   *
+   * @param {Target} target
+   */
+  hasPendingTestsForTarget(target) {
+    return Boolean(this._flatSuitesPerTarget.get(target).length);
   }
 };

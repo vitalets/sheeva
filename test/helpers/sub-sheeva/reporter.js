@@ -15,7 +15,7 @@ module.exports = class LogReporter {
    * @param {Array} [options.include]
    * @param {Array} [options.exclude]
    */
-  constructor(options) {
+  constructor(options = {}) {
     this._options = options;
     this._rawLog = [];
     this._flatLog = [];

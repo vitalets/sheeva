@@ -26,16 +26,37 @@ module.exports = class Sheeva {
   }
 
   /**
+   * Prepare:
+   * - configure
+   * - read tests
+   * - transform tests
+   *
+   * @returns {Promise}
+   */
+  prepare() {
+    return Promise.resolve()
+      .then(() => this._init())
+      .then(() => new Reader().read())
+      .then(() => transform())
+      .then(() => this._startRunner());
+  }
+
+  execute() {
+
+  }
+
+  end() {
+
+  }
+
+  /**
    * Run tests execution
    *
    * @returns {Promise}
    */
   run() {
     return Promise.resolve()
-      .then(() => this._init())
-      .then(() => new Reader().read())
-      .then(() => transform())
-      .then(() => this._startRunner())
+      .then(() => this.prepare())
       .then(() => new Executer().run())
       .finally(e => this._end(e))
       // todo: return Result instead of state

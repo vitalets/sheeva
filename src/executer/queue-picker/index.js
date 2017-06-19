@@ -36,13 +36,13 @@ module.exports = class QueuePicker {
   }
 
   /**
-   * Returns remaining queues for target
+   * Does target have pending tests (flat suites)
    *
    * @param {Target} target
-   * @returns {Array<Queue>}
+   * @returns {Boolean}
    */
-  getRemainingQueues(target) {
-    return this._shifter.getRemainingQueues(target);
+  hasPendingTestsForTarget(target) {
+    return this._shifter.hasPendingTestsForTarget(target);
   }
 
   _getForTarget(target) {
