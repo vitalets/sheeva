@@ -2,17 +2,25 @@
 
 /**
  * Converts suite to one or several flatSuites by flattening children.
- * Also sort suites.
+ * Also sort suites by count of `before|after` hooks.
  *
- * 1. If suite has before/after hooks, flatten() returns array with single flatSuite element
- * 2. If suite does not have before/after hooks, flatten() returns array with several flatSuites corresponding
- *    to children suites. When it occurs for file suite it is basically `suite splitting` because each sub-suite
- *    can be sorted individually to beginning or end of target suites (depending on it's before/after count).
+ * 1. Flatten all child sub suites to array of flatSuites
+ * 2. Flatten all child tests to 1 flatSuite
+ * 3. Concat results of 1 and 2
+ * 4. Sort by count of `before|after` hooks (max on top)
+ * 5.
+ *   a. if original suite has before|after hooks, returns single flatSuite:
+ *      all tests are concated and suiteHooksCount set to MAX count of before|after hooks
+ *
+ *   b. if original suite does not have before|after hooks, returns array of flat suites:
+ *      When it occurs for file suite it is basically `file splitting` because each sub-suite
+ *      can be sorted individually to beginning or end of target suites (depending on it's before/after count)
  *
  * @typedef {Object} FlatSuite
  * @property {Array<Test>} tests
- * @property {Number} suiteHooksCount max number of suite-level hooks (before / after)
+ * @property {Number} suiteHooksCount MAX number of suite-level hooks (before / after)
  */
+
 
 const {config} = require('../../configurator');
 
@@ -34,7 +42,7 @@ module.exports = class SuiteFlattener {
     this._flattenTests();
     this._filterEmpty();
     this._sortBySuiteHooksCount();
-    return this._needSingleFlatSuite() ? this._wrapAsSingleFlatSuite() : this._flatSuites;
+    return this._needSingleFlatSuite() ? this._mergeAsSingleFlatSuite() : this._flatSuites;
   }
 
   _calcSuiteHooksCount() {
@@ -45,9 +53,8 @@ module.exports = class SuiteFlattener {
   }
 
   _flattenSubSuites() {
-    this._suite.children
-      .filter(item => item.isSuite)
-      .map(suite => this._flattenSubSuite(suite));
+    const subSuites = this._suite.children.filter(item => item.isSuite);
+    subSuites.forEach(suite => this._flattenSubSuite(suite));
   }
 
   _flattenSubSuite(suite) {
@@ -69,7 +76,17 @@ module.exports = class SuiteFlattener {
     this._flatSuites.sort((x, y) => y.suiteHooksCount - x.suiteHooksCount);
   }
 
-  _wrapAsSingleFlatSuite() {
+  _needSingleFlatSuite() {
+    if (this._suiteHooksCount > 0) {
+      return true;
+    } else if (this._isFileSuite()) {
+      return config.newSessionPerFile || !config.splitSuites;
+    } else {
+      return false;
+    }
+  }
+
+  _mergeAsSingleFlatSuite() {
     if (this._flatSuites.length) {
       const maxSuiteHooksCount = this._flatSuites[0].suiteHooksCount;
       const tests = this._mergeTests();
@@ -82,16 +99,6 @@ module.exports = class SuiteFlattener {
 
   _mergeTests() {
     return this._flatSuites.reduce((res, flatSuite) => res.concat(flatSuite.tests), []);
-  }
-
-  _needSingleFlatSuite() {
-    if (this._suiteHooksCount > 0) {
-      return true;
-    } else if (this._isFileSuite()) {
-      return config.newSessionPerFile || !config.splitSuites;
-    } else {
-      return false;
-    }
   }
 
   _isFileSuite() {
