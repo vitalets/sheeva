@@ -115,7 +115,6 @@ module.exports = {
 
   /**
    * Called when virtual worker is starting.
-   * Can start any real worker, e.g. WebWorker or Node.js instance.
    *
    * @param {Worker} worker
    * @returns {Promise}
@@ -123,8 +122,17 @@ module.exports = {
   startWorker: function (worker) { },
 
   /**
+   * Implementation of worker job execution
+   *
+   * @param {Worker} worker
+   * @returns {Promise}
+   */
+  executeWorkerJob: function (worker) {
+    return worker.queue.runOn(worker.session);
+  },
+
+  /**
    * Called when virtual worker is ending.
-   * Can stop any real worker, e.g. WebWorker or Node.js instance.
    *
    * @param {Worker} worker
    * @returns {Promise}

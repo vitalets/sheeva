@@ -8,12 +8,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const outputPath = path.join(path.resolve('dist'), 'test-web-workers');
 
 module.exports = {
-  entry: {
-    index: __dirname,
-    worker: path.join(__dirname, 'worker')
-  },
+  entry: __dirname,
   output: {
-    filename: '[name].js',
+    filename: 'index.js',
     path: outputPath
   },
   devtool: 'source-map',
@@ -22,10 +19,7 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin([outputPath], {root: path.resolve('.')}),
-    new HtmlWebpackPlugin({
-      chunks: ['index'],
-      title: 'Sheeva self-tests (web workers)'
-    }),
+    new HtmlWebpackPlugin({title: 'Sheeva self-tests (web workers)'}),
     new CopyWebpackPlugin([
       {from: 'test/data', to: 'data'},
     ]),
