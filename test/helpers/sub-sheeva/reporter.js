@@ -7,8 +7,6 @@
 /* eslint-disable complexity */
 const events = require('../../../src/events');
 
-const DEFAULT_INCLUDE = ['TEST_END'];
-
 module.exports = class LogReporter {
   /**
    * Constructor
@@ -18,7 +16,7 @@ module.exports = class LogReporter {
    * @param {Array} [options.exclude]
    */
   constructor(options) {
-    this._setOptions(options);
+    this._options = options;
     this._rawLog = [];
     this._flatLog = [];
     this._treeLog = {};
@@ -144,12 +142,5 @@ module.exports = class LogReporter {
       result = include.some(str => eventName.startsWith(str));
     }
     return result;
-  }
-
-  _setOptions(options) {
-    if (!options.include && !options.exclude) {
-      options.include = DEFAULT_INCLUDE;
-    }
-    this._options = options;
   }
 };

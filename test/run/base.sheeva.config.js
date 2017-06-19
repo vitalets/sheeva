@@ -21,7 +21,7 @@ module.exports = {
       const subSheevaOptions = mergeWith({delay: target.delay}, context.options, optionsFromTest, customizer);
       return new SubSheevaRunner(code, subSheevaOptions).run();
     };
-    return fn(run);
+    return fn(run, context);
   },
 };
 

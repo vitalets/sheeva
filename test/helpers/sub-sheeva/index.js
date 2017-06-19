@@ -18,6 +18,8 @@ const BASE_CONFIG = {
   },
 };
 
+const DEFAULT_INCLUDE = ['TEST_END'];
+
 module.exports = class SubSheevaRunner {
   /**
    * Constructor
@@ -35,12 +37,9 @@ module.exports = class SubSheevaRunner {
    */
   constructor(code, options) {
     this._code = Array.isArray(code) ? code : [code];
-    this._files = this._createFilesArray();
     this._options = options;
-    this._reporter = new Reporter({
-      include: options.include,
-      exclude: options.exclude,
-    });
+    this._files = this._createFilesArray();
+    this._reporter = this._createReporter();
     this._config = this._createConfig();
     this._sheeva = null;
     this._output = null;
@@ -52,6 +51,14 @@ module.exports = class SubSheevaRunner {
     return this._sheeva.run()
       .then(result => this._setOutput(result))
       .catch(e => this._attachOutputToError(e));
+  }
+
+  _createReporter() {
+    let {include, exclude} = this._options;
+    if (!include && !exclude) {
+      include = DEFAULT_INCLUDE;
+    }
+    return new Reporter({include, exclude});
   }
 
   _createFilesArray() {
