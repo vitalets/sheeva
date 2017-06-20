@@ -56,7 +56,7 @@ module.exports = class Worker {
     this._queue = queue;
     return Promise.resolve()
       .then(() => this._needNewSession() ? this._reCreateSession() : null)
-      .then(() => this._queue.runOn(this._session))
+      .then(() => config.executeWorkerJob(this))
       .finally(() => this._queue = null);
   }
 

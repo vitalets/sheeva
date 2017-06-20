@@ -48,7 +48,9 @@ module.exports = class Candidate {
   _split(testsCount) {
     const fromIndex = this._queue.tests.length - testsCount;
     const splittedTests = this._queue.tests.splice(fromIndex);
-    this._splittedQueue = new Queue(splittedTests);
+    // for splitted queue flatSuite does not have index as it was not in original flatSuite array
+    const flatSuite = {tests: splittedTests, index: null};
+    this._splittedQueue = new Queue(flatSuite);
   }
 
   _hasEnoughRemainingTests() {

@@ -19,6 +19,7 @@ describe('result', () => {
       'config',
       'errors',
       'executionPerTarget',
+      'filteredFlatSuitesPerTarget',
       'flatSuitesPerTarget',
       'matchedFiles',
       'only',

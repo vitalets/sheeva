@@ -68,7 +68,7 @@ describe('annotation: retry', () => {
       describe('suite 1', () => {
         $retry();
         $timeout(20)
-        it('test 0', () => sleep(25));
+        it('test 0', () => sleep(30));
       });
     `, {include: ['TEST']});
 

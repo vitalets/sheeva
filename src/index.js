@@ -23,7 +23,21 @@ module.exports = class Sheeva {
    */
   constructor(rawConfig) {
     this._rawConfig = rawConfig;
-    this._executer = null;
+  }
+
+  /**
+   * Run tests execution
+   *
+   * @returns {Promise}
+   */
+  run() {
+    return Promise.resolve()
+      .then(() => this.prepare())
+      .then(() => this.execute())
+      .finally(e => this.end(e))
+      // todo: return Result instead of state
+      //.then(() => state.getResult());
+      .then(() => state);
   }
 
   /**
@@ -45,11 +59,11 @@ module.exports = class Sheeva {
   /**
    * Executes tests by flat suites
    *
+   * @param {Locator} [locator]
    * @returns {Promise}
    */
-  execute() {
-    this._executer = this._executer || new Executer();
-    return this._executer.run();
+  execute(locator) {
+    return new Executer().run(locator);
   }
 
   /**
@@ -66,21 +80,6 @@ module.exports = class Sheeva {
       .finally(e => reporter.handleEvent(RUNNER_END, {error: error || e}))
       .finally(() => reporter.stopListen())
       .catch(e => Promise.reject(error || e));
-  }
-
-  /**
-   * Run tests execution
-   *
-   * @returns {Promise}
-   */
-  run() {
-    return Promise.resolve()
-      .then(() => this.prepare())
-      .then(() => this.execute())
-      .finally(e => this.end(e))
-      // todo: return Result instead of state
-      //.then(() => state.getResult());
-      .then(() => state);
   }
 
   _init() {

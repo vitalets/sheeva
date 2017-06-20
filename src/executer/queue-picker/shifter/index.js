@@ -12,7 +12,7 @@ module.exports = class Shifter {
    * Constructor
    */
   constructor() {
-    this._flatSuitesPerTarget = state.flatSuitesPerTarget;
+    this._flatSuitesPerTarget = state.filteredFlatSuitesPerTarget;
   }
 
   /**
@@ -26,7 +26,7 @@ module.exports = class Shifter {
       const flatSuites = this._flatSuitesPerTarget.get(target);
       if (flatSuites.length) {
         const flatSuite = flatSuites.shift();
-        return new Queue(flatSuite.tests);
+        return new Queue(flatSuite);
       }
     }
   }

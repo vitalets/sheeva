@@ -9,7 +9,6 @@
  * 3. error in runner - terminate queue: move to the end and execute all after hooks
  */
 
-const assert = require('assert');
 const utils = require('../../utils');
 const {config} = require('../../configurator');
 const reporter = require('../../reporter');
@@ -24,11 +23,11 @@ module.exports = class Queue {
   /**
    * Constructor
    *
-   * @param {Array} tests
+   * @param {FlatSuite} flatSuite
    */
-  constructor(tests) {
-    assertTests(tests);
-    this._cursor = new Cursor(tests);
+  constructor(flatSuite) {
+    this._flatSuite = flatSuite;
+    this._cursor = new Cursor(flatSuite.tests);
     this._session = null;
     this._hookFn = null;
     this._beforeHooks = null;
@@ -37,6 +36,10 @@ module.exports = class Queue {
     this._suiteStack = [];
     this._error = null;
     this._promised = new utils.Promised();
+  }
+
+  get index() {
+    return this._flatSuite.index;
   }
 
   get tests() {
@@ -169,8 +172,3 @@ module.exports = class Queue {
     return Boolean(this._cursor.currentTest);
   }
 };
-
-function assertTests(tests) {
-  assert(Array.isArray(tests), 'Queue should be created from tests array');
-  assert(tests.length, 'Queue should be created on non-empty tests array');
-}

@@ -5,19 +5,22 @@
 'use strict';
 
 const {config} = require('../../configurator');
+const state = require('../../state');
 const Shifter = require('./shifter');
 const Splitter = require('./splitter');
 
 module.exports = class QueuePicker {
   /**
    * Constructor
+   *
+   * @param {Set} workers
    */
   constructor(workers) {
+    this._targets = Array.from(state.filteredFlatSuitesPerTarget.keys());
     this._workers = workers;
     this._shifter = new Shifter();
     this._splitter = new Splitter(workers);
     this._session = null;
-    this._target = null;
   }
 
   /**
@@ -31,8 +34,8 @@ module.exports = class QueuePicker {
    */
   getNextQueue(session) {
     this._session = session;
-    this._target = session && session.target;
-    return this._target && this._getForTarget(this._target) || this._getForAnyTarget();
+    const target = session && session.target;
+    return target && this._getForTarget(target) || this._getForAnyTarget();
   }
 
   /**
@@ -71,9 +74,7 @@ module.exports = class QueuePicker {
   }
 
   _getAvailableTargets() {
-    return config.targets
-      .filter(target => target !== this._target)
-      .filter(target => !this._isTargetConcurrencyReached(target));
+    return this._targets.filter(target => !this._isTargetConcurrencyReached(target));
   }
 
   _isTargetConcurrencyReached(target) {

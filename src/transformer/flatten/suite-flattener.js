@@ -19,6 +19,7 @@
  * @typedef {Object} FlatSuite
  * @property {Array<Test>} tests
  * @property {Number} suiteHooksCount MAX number of suite-level hooks (before / after)
+ * @property {Number} index
  */
 
 

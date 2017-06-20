@@ -72,6 +72,7 @@ class State {
   }
 
   _initExecuter() {
+    this.filteredFlatSuitesPerTarget = new ExtraMap();
     this.sessions = new ExtraMap();
     this.executionPerTarget = new ExtraMap();
     this.workers = new ExtraSet();

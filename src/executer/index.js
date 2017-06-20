@@ -16,6 +16,7 @@ const {config} = require('../configurator');
 const state = require('../state');
 const reporter = require('../reporter');
 const utils = require('../utils');
+const Filter = require('./filter');
 const QueuePicker = require('./queue-picker');
 const Workers = require('./workers');
 const HookFn = require('./caller/hooks/hook-fn');
@@ -41,9 +42,12 @@ module.exports = class Executer {
 
   /**
    * Run
+   *
+   * @param {Locator} [locator]
    */
-  run() {
+  run(locator) {
     return this._promised.call(() => {
+      new Filter(locator).apply();
       reporter.handleEvent(EXECUTER_START);
       this._workers = new Workers();
       this._picker = new QueuePicker(this._workers);
