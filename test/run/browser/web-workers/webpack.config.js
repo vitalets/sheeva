@@ -7,12 +7,13 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const outputPath = path.join(path.resolve('dist'), 'test-web-workers');
 
-module.exports = {
+const masterConfig = {
   entry: __dirname,
   output: {
     filename: 'index.js',
-    path: outputPath
+    path: outputPath,
   },
+  target: 'web',
   devtool: 'source-map',
   resolve: {
     extensions: ['.browser.js', '.js', '.json']
@@ -25,3 +26,18 @@ module.exports = {
     ]),
   ]
 };
+
+const workerConfig = {
+  entry: path.resolve(__dirname, 'worker.js'),
+  output: {
+    filename: 'worker.js',
+    path: outputPath,
+  },
+  target: 'webworker',
+  devtool: 'source-map',
+  resolve: {
+    extensions: ['.browser.js', '.js', '.json']
+  },
+};
+
+module.exports = [masterConfig, workerConfig];

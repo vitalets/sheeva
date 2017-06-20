@@ -17,6 +17,7 @@ describe('events', () => {
 
       return expectResolve(output, [
         'RUNNER_START',
+        'RUNNER_STARTED',
         'RUNNER_END',
       ]);
     });
@@ -25,6 +26,7 @@ describe('events', () => {
       const output = run(``);
       return expectResolve(output, [
         'RUNNER_START',
+        'RUNNER_STARTED',
         'RUNNER_END',
       ]);
     });

@@ -23,6 +23,7 @@ describe('api', () => {
     return sheeva.run().then(() => {
       expect(reporter.getFlatLog(), 'to equal', [
           'RUNNER_START',
+          'RUNNER_STARTED',
           'EXECUTER_START',
           'WORKER_ADD 0',
           'TARGET_START target 1',
@@ -46,6 +47,7 @@ describe('api', () => {
     return sheeva.prepare().then(() => {
       expect(reporter.getFlatLog(), 'to equal', [
           'RUNNER_START',
+          'RUNNER_STARTED',
         ]
       );
     });
@@ -59,6 +61,7 @@ describe('api', () => {
       .then(() => {
         expect(reporter.getFlatLog(), 'to equal', [
           'RUNNER_START',
+          'RUNNER_STARTED',
           'EXECUTER_START',
           'WORKER_ADD 0',
           'TARGET_START target 1',
@@ -85,6 +88,7 @@ describe('api', () => {
       .then(() => {
         expect(reporter.getFlatLog(), 'to equal', [
             'RUNNER_START',
+            'RUNNER_STARTED',
             'EXECUTER_START',
             'WORKER_ADD 0',
             'TARGET_START target 1',
@@ -134,6 +138,7 @@ describe('api', () => {
         .then(() => {
           expect(reporter.getFlatLog(), 'to equal', [
               'RUNNER_START',
+              'RUNNER_STARTED',
               'EXECUTER_START',
               'WORKER_ADD 0',
               'TARGET_START target 1',
@@ -164,6 +169,7 @@ describe('api', () => {
         .then(() => {
           expect(config.reporters.getFlatLog(), 'to equal', [
               'RUNNER_START',
+              'RUNNER_STARTED',
 
               'EXECUTER_START',
               'WORKER_ADD 0',
@@ -208,6 +214,7 @@ describe('api', () => {
         .then(() => {
           expect(config.reporters.getFlatLog(), 'to equal', [
               'RUNNER_START',
+              'RUNNER_STARTED',
 
               'EXECUTER_START',
               'WORKER_ADD 0',
