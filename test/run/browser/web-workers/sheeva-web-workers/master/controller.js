@@ -12,15 +12,15 @@ const resolveMap = {
 };
 
 module.exports = class Adapter {
-  constructor({workerFile, workerIndex}) {
-    this._workerFile = workerFile;
+  constructor({workerUrl, workerIndex}) {
+    this._workerUrl = workerUrl;
     this._workerIndex = workerIndex;
     this._webWorker = null;
     this._resolve = null;
     this._reject = null;
   }
   start() {
-    this._webWorker = new window.Worker(this._workerFile);
+    this._webWorker = new window.Worker(this._workerUrl);
     this._webWorker.onmessage = event => this._onMessage(event);
     this._webWorker.onerror = event => this._onError(event);
     return this._send(START);

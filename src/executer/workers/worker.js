@@ -44,19 +44,19 @@ module.exports = class Worker {
 
   start() {
     return Promise.resolve()
-      .then(() => config.startWorker(this));
+      .then(() => config.startWorker(this, config));
   }
 
   end() {
     return Promise.resolve()
-      .then(() => config.endWorker(this));
+      .then(() => config.endWorker(this, config));
   }
 
   run(queue) {
     this._queue = queue;
     return Promise.resolve()
       .then(() => this._needNewSession() ? this._reCreateSession() : null)
-      .then(() => config.executeWorkerJob(this))
+      .then(() => config.executeWorkerJob(this, config))
       .finally(() => this._queue = null);
   }
 

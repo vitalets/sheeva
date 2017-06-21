@@ -117,17 +117,19 @@ module.exports = {
    * Called when virtual worker is starting.
    *
    * @param {Worker} worker
+   * @param {Object} config
    * @returns {Promise}
    */
-  startWorker: function (worker) { },
+  startWorker: function (worker, config) { },
 
   /**
    * Implementation of worker job execution
    *
    * @param {Worker} worker
+   * @param {Object} config
    * @returns {Promise}
    */
-  executeWorkerJob: function (worker) {
+  executeWorkerJob: function (worker, config) {
     return worker.queue.runOn(worker.session);
   },
 
@@ -135,9 +137,10 @@ module.exports = {
    * Called when virtual worker is ending.
    *
    * @param {Worker} worker
+   * @param {Object} config
    * @returns {Promise}
    */
-  endWorker: function (worker) { },
+  endWorker: function (worker, config) { },
 
   /**
    * Attach any data to session.

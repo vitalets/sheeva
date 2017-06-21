@@ -57,6 +57,7 @@
     "babel-cli": "^6.24.1",
     "babel-plugin-runtyper": "^0.2.2",
     "clean-webpack-plugin": "^0.1.16",
+    "compression-webpack-plugin": "^0.4.0",
     "copy-webpack-plugin": "^4.0.1",
     "escape-string-regexp": "^1.0.5",
     "eslint": "^3.19.0",
