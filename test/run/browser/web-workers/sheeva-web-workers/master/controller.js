@@ -20,7 +20,7 @@ module.exports = class Adapter {
     this._reject = null;
   }
   start() {
-    this._webWorker = new window.Worker(this._workerUrl);
+    this._webWorker = new window.Worker(this._workerUrl, {name: `Worker ${this._workerIndex}`});
     this._webWorker.onmessage = event => this._onMessage(event);
     this._webWorker.onerror = event => this._onError(event);
     return this._send(START);
