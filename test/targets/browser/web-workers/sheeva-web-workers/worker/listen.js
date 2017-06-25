@@ -4,22 +4,22 @@
 
 'use strict';
 
-const {START, EXECUTE, END} = require('../events');
+const {START, EXECUTE, END} = require('../messages');
 
 module.exports = function (sheeva) {
-  self.addEventListener('message', function (e) {
-    const data = e.data;
+  self.addEventListener('message', function (message) {
+    const {messageType, messageData} = message.data;
 
-    if (data.type === START) {
+    if (messageType === START) {
       sheeva.prepare();
     }
 
-    if (data.type === EXECUTE) {
-      const {targetId, flatSuiteIndex} = data.data;
+    if (messageType === EXECUTE) {
+      const {targetId, flatSuiteIndex} = messageData;
       sheeva.execute({targetId, flatSuiteIndex});
     }
 
-    if (data.type === END) {
+    if (messageType === END) {
       sheeva.end();
     }
   });

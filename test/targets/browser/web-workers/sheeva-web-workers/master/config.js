@@ -40,7 +40,7 @@ exports.get = function ({workerUrl}) {
 };
 
 /**
- * Simply creating workers by URL
+ * Simply creating workers by direct URL (slower, but shows source-maps)
  */
 exports.getSimple = function ({workerUrl}) {
   return {
@@ -48,6 +48,7 @@ exports.getSimple = function ({workerUrl}) {
       worker.controller = new Controller({
         workerUrl,
         workerIndex: worker.index,
+        emit: (event, data) => worker.session.emit(event, data),
       });
       return worker.controller.start();
     },

@@ -8,5 +8,5 @@ module.exports = {
   START: 'START',
   EXECUTE: 'EXECUTE',
   END: 'END',
-  EVENT: 'EVENT',
+  RUNNER_EVENT: 'RUNNER_EVENT',
 };

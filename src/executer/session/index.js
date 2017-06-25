@@ -77,34 +77,34 @@ module.exports = class Session {
       .then(() => this._ended());
   }
 
+  emit(event, data = {}) {
+    data.session = this;
+    data.target = this._target;
+    reporter.handleEvent(event, data);
+  }
+
   _starting() {
     if (this._status !== STATUS.CREATED) {
       throw new Error(`Can not start session ${this._index} as it is already in ${this._status} status`);
     }
-    this._emit(SESSION_START);
+    this.emit(SESSION_START);
     this._status = STATUS.STARTING;
   }
 
   _started() {
     if (this._status === STATUS.STARTING) {
       this._status = STATUS.STARTED;
-      this._emit(SESSION_STARTED);
+      this.emit(SESSION_STARTED);
     }
   }
 
   _ending() {
     this._status = STATUS.ENDING;
-    this._emit(SESSION_ENDING);
+    this.emit(SESSION_ENDING);
   }
 
   _ended() {
     this._status = STATUS.ENDED;
-    this._emit(SESSION_END);
-  }
-
-  _emit(event, data = {}) {
-    data.session = this;
-    data.target = this._target;
-    reporter.handleEvent(event, data);
+    this.emit(SESSION_END);
   }
 };

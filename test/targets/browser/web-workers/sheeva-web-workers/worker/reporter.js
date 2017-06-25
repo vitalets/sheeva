@@ -1,23 +1,28 @@
 
 'use strict';
 
-const {RUNNER_EVENT} = require('../events');
+const serializerr = require('serializerr');
+const {RUNNER_EVENT} = require('../messages');
 
 const PASS_EVENTS = {
+  RUNNER_STARTED: true,
+  EXECUTER_END: true,
+  RUNNER_END: true,
+  SUITE_START: true,
+  SUITE_END: true,
+  HOOK_START: true,
+  HOOK_END: true,
   TEST_START: true,
   TEST_END: true,
   TEST_RETRY: true,
-  //HOOK_START: true,
-  HOOK_END: true,
-  SUITE_START: true,
-  SUITE_END: true,
+  EXTRA_ERROR: true,
 };
 
 module.exports = class WorkerReporter {
   handleEvent(event, data) {
     if (PASS_EVENTS.hasOwnProperty(event)) {
-      data = clean(data);
-      self.postMessage({type: RUNNER_EVENT, data: {event, data}});
+      clean(data);
+      self.postMessage({messageType: RUNNER_EVENT, messageData: {event, data}});
     }
   }
 };
@@ -25,4 +30,8 @@ module.exports = class WorkerReporter {
 function clean(data) {
   delete data.session;
   delete data.target;
+  delete data.state;
+  if (data.error) {
+    data.error = serializerr(data.error);
+  }
 }

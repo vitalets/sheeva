@@ -6,7 +6,7 @@ const baseConfig = require('./sheeva.config');
 const masterUtils = require('./sheeva-web-workers/master');
 
 const workerUrl = 'worker.js';
-const config = Object.assign({}, baseConfig, masterUtils.config.get({workerUrl}), {
+const config = Object.assign({}, baseConfig, masterUtils.config.getSimple({workerUrl}), {
   concurrency: 4,
   splitSuites: false,
   reporters: new ConsoleReporter(),
