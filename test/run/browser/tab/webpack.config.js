@@ -5,7 +5,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const outputPath = path.join(path.resolve('dist'), 'test-window');
+const outputPath = path.join(path.resolve('dist'), 'test-tab');
 
 module.exports = {
   entry: __dirname,
