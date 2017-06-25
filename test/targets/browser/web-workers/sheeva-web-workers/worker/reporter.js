@@ -1,7 +1,6 @@
 
 'use strict';
 
-const serializerr = require('serializerr');
 const {RUNNER_EVENT} = require('../messages');
 
 const PASS_EVENTS = {
@@ -32,6 +31,11 @@ function clean(data) {
   delete data.target;
   delete data.state;
   if (data.error) {
-    data.error = serializerr(data.error);
+    serializeError(data);
   }
+}
+
+function serializeError(data) {
+  const {name, message, stack} = data.error;
+  data.error = {name, message, stack};
 }
