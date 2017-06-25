@@ -57,7 +57,7 @@ describe('config startWorker / endWorker', () => {
       });
     });
 
-    it('should call startWorker / endWorker for concurrency = 2 (files = 2, splitSuites = false)', run => {
+    it('should call startWorker / endWorker for concurrency = 2 (files = 2, splitRunningSuites = false)', run => {
       const config = {
         concurrency: 2,
       };
@@ -77,10 +77,10 @@ describe('config startWorker / endWorker', () => {
       });
     });
 
-    it('should call startWorker / endWorker for concurrency = 2 (files = 1, splitSuites = true)', run => {
+    it('should call startWorker / endWorker for concurrency = 2 (files = 1, splitRunningSuites = true)', run => {
       const config = {
         concurrency: 2,
-        splitSuites: true,
+        splitRunningSuites: true,
       };
       const output = run([`
         describe('suite 1', () => {

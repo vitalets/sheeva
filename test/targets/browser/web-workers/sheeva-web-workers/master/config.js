@@ -27,6 +27,7 @@ exports.get = function ({workerUrl}) {
       worker.controller = new Controller({
         workerUrl: config.workerUrl,
         workerIndex: worker.index,
+        emit: (event, data) => worker.session.emit(event, data),
       });
       return worker.controller.start();
     },

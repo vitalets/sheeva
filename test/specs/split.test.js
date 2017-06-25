@@ -1,11 +1,11 @@
 'use strict';
 
-describe('split files', () => {
+describe('splitRunningSuites', () => {
 
   it('should split suite on 2 parallel sessions (and call needed hooks)', run => {
     const config = {
       concurrency: 2,
-      splitSuites: true
+      splitRunningSuites: true
     };
     const include = ['SESSION', 'SUITE', 'HOOK_END', 'TEST_END'];
     const output = run([`
@@ -59,7 +59,7 @@ describe('split files', () => {
   it('should split suite on 3 parallel sessions', run => {
     const config = {
       concurrency: 3,
-      splitSuites: true
+      splitRunningSuites: true
     };
     const output = run([`
       describe('suite 1', () => {
@@ -102,7 +102,7 @@ describe('split files', () => {
   it('should split normally even if tests count less than concurrency', run => {
     const config = {
       concurrency: 10,
-      splitSuites: true
+      splitRunningSuites: true
     };
     const output = run([`
       describe('suite 1', () => {
@@ -141,7 +141,7 @@ describe('split files', () => {
     };
     const config = {
       concurrency: 2,
-      splitSuites: true
+      splitRunningSuites: true
     };
     const output = run([`
       describe('suite 1', () => {

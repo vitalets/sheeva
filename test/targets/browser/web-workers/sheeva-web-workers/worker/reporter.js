@@ -21,6 +21,7 @@ module.exports = class WorkerReporter {
   handleEvent(event, data) {
     if (PASS_EVENTS.hasOwnProperty(event)) {
       clean(data);
+      // console.log(event, data);
       self.postMessage({messageType: RUNNER_EVENT, messageData: {event, data}});
     }
   }

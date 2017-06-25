@@ -11,7 +11,7 @@ const SubSheevaRunner = require('../helpers/sub-sheeva');
 module.exports = {
   concurrency: 5,
   newSessionPerFile: false,
-  splitSuites: true,
+  splitRunningSuites: true,
   callHookFn: function ({fn, context}) {
     context.options = context.options || {};
     return fn(context);

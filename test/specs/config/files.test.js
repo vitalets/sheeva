@@ -49,7 +49,6 @@ describe('config.files', () => {
     return expectResolve(output, assertions);
   });
 
-  $ignore(isWebWorker);
   it('should process file as object with function content', run => {
     const config = {
       files: [{
@@ -67,6 +66,8 @@ describe('config.files', () => {
 
   $if(isBrowser);
   describe('browser', () => {
+    // todo: in web-worker base url is created by URL.createObjectURL, so relative path is invalid
+    $ignore(isWebWorker);
     it('should process file as url', run => {
       const config = {files: ['data/test.js']};
       const output = run([], {config});
@@ -79,7 +80,7 @@ describe('config.files', () => {
       };
       const output = run([], {config});
       return expectReject(output, {
-        message: /The script at '.*abc.*' failed to load/,
+        message: /(The script at '.*abc.*' failed to load)|(The URL '.*abc.*' is invalid)/,
       });
     });
   });

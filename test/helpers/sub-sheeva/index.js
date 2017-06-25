@@ -12,7 +12,7 @@ const Reporter = require('./reporter');
 
 const BASE_CONFIG = {
   concurrency: 1,
-  splitSuites: false,
+  splitRunningSuites: false,
   createTargets: function () {
     return [{id: 'target1'}];
   },

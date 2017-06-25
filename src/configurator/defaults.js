@@ -36,9 +36,9 @@ module.exports = {
   newSessionPerFile: false,
 
   /**
-   * Allows to split suites between parallel sessions
+   * Split running suites between parallel workers
    */
-  splitSuites: false,
+  splitRunningSuites: false,
 
   /**
    * Break runner on first error

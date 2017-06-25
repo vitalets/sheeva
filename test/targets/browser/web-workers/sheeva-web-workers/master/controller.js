@@ -29,7 +29,9 @@ module.exports = class Adapter {
   run(queue) {
     return this._postMessage(EXECUTE, {
       targetId: queue.target.id,
-      flatSuiteIndex: queue.index
+      flatSuiteIndex: queue.index,
+      name: queue.topSuite.name,
+      testsCount: queue.tests.length,
     });
   }
   end() {
@@ -46,7 +48,7 @@ module.exports = class Adapter {
   _onMessage(message) {
     const {messageData} = message.data;
     const {event, data} = messageData;
-
+    // console.log(event)
     if (resolveMap.hasOwnProperty(event)) {
       this._resolve(data);
     } else {

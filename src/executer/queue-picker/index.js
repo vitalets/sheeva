@@ -67,7 +67,7 @@ module.exports = class QueuePicker {
   }
 
   _trySplitRunningQueues(targets) {
-    if (config.splitSuites && targets.length) {
+    if (config.splitRunningSuites && targets.length) {
       const options = this._getSplitterOptions();
       return this._splitter.trySplit(targets, options);
     }

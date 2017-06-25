@@ -16,7 +16,7 @@ program
   .option('--concurrency <number>', 'number of concurrent sessions')
   .option('--reporters <string>', 'comma separated reporters')
   .option('--target <string>', 'target id to run')
-  .option('--split-suites', 'allows split of suites between parallel sessions')
+  .option('--split-running-suites', 'allows split of suites between parallel sessions')
   .option('--no-only', 'disallow ONLY tests. Useful for pre commit / pre push hooks')
   .option('--break-on-error', 'break on first error')
   .option('--timeout <number>', 'global timeout')

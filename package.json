@@ -22,7 +22,7 @@
     "lint-spellcheck": "eslint src -c .eslintrc-spellcheck --no-eslintrc",
     "circular": "madge --circular --warning src",
     "tt": "node src-stable/cli --config=test/targets/node/sheeva.config.js",
-    "ttdev": "node src/cli --config=test/targets/node/sheeva.config.js",
+    "ttd": "node src/cli --config=test/targets/node/sheeva.config.js",
     "test": "npm run tt -- --target=node-sync --break-on-error --timeout=0",
     "td": "npm run ttdev -- --target=node-sync --break-on-error --timeout=0",
     "test-append": "SHEEVA_APPEND=true npm run tt",

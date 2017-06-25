@@ -81,7 +81,7 @@ module.exports = class SuiteFlattener {
     if (this._suiteHooksCount > 0) {
       return true;
     } else if (this._isFileSuite()) {
-      return config.newSessionPerFile || !config.splitSuites;
+      return config.newSessionPerFile;
     } else {
       return false;
     }
