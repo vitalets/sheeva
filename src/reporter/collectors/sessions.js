@@ -45,7 +45,7 @@ module.exports = class SessionsCollector {
         break;
       }
       case SUITE_START: {
-        if (!data.suite.parent) {
+        if (data.suite.parentNames.length === 0) {
           const sessionStat = this._sessions.get(data.session);
           sessionStat.files.push(data.suite.name);
         }

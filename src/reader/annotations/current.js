@@ -17,9 +17,9 @@ module.exports = class CurrentAnnotation {
     this._tags = [];
     this._ignore = [];
     this._if = [];
-    this._timeout = 0;
-    this._retry = 0;
-    this._data = null;
+    this._timeout = undefined;
+    this._retry = undefined;
+    this._data = undefined;
   }
 
   addOnly() {

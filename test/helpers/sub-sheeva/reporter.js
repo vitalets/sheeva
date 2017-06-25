@@ -25,7 +25,7 @@ module.exports = class LogReporter {
   handleEvent(event, data) {
     this._rawLog.push({event, data});
     const errMessage = data && data.error ? ` ${data.error.message}` : '';
-    const suiteName = data && data.suite && data.suite.parent ? data.suite.name : 'root';
+    const suiteName = data && data.suite && data.suite.parentNames.length ? data.suite.name : 'root';
     switch (event) {
       case events.RUNNER_START: {
         this._add(data, `${event}`);

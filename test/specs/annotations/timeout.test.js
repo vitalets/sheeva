@@ -33,6 +33,20 @@ describe('annotation: timeout', () => {
     ]);
   });
 
+  it('should overwrite suite timeout', run => {
+    const output = run(`
+      $timeout(50);
+      describe('suite 1', () => {
+        $timeout(20);
+        it('test 0', () => sleep(30));
+      });
+    `);
+
+    return expectResolve(output, [
+      'TEST_END test 0 Timeout 20 ms exceeded',
+    ]);
+  });
+
   it('should fail after global timeout', run => {
     const config = {
       timeout: 20

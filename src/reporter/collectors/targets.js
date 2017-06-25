@@ -5,7 +5,10 @@
 'use strict';
 
 const state = require('../../state');
-const {RUNNER_STARTED, TEST_END} = require('../../events');
+const {
+  RUNNER_STARTED,
+  TEST_END
+} = require('../../events');
 
 module.exports = class TargetsCollector {
   constructor() {

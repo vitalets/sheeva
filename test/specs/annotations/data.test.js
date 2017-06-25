@@ -10,7 +10,7 @@ describe('annotation: data', () => {
   it('should attach data to test', run => {
     const assertions = {
       '0.data.test.data.id': 123,
-      '1.data.test.data': null,
+      '1.data.test.data': undefined,
     };
     const output = run(`
       describe('suite 1', () => {

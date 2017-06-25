@@ -8,6 +8,22 @@
  * @typedef {Object} Hook
  */
 
+const INHERIT_PROPS = [
+  'timeout'
+];
+
+const NON_JSON_PROPS = {
+  children: true,
+  before: true,
+  beforeEach: true,
+  after: true,
+  afterEach: true,
+  fn: true,
+  parent: true,
+  parents: true,
+  target: true,
+};
+
 /**
  * Creates suite object
  *
@@ -26,6 +42,7 @@ exports.createSuite = function (options, parent = null) {
   if (parent) {
     linkItems(suite, parent);
   }
+  setJson(suite);
   return suite;
 };
 
@@ -41,6 +58,7 @@ exports.createTest = function (options, parent) {
     retry: options.retry,
   });
   linkItems(test, parent);
+  setJson(test);
   return test;
 };
 
@@ -61,16 +79,26 @@ exports.createHook = function (options, parent) {
     isPre: type.startsWith('before'),
   });
   linkItems(hook, parent, type);
+  setJson(hook);
   return hook;
 };
 
+/**
+ * Links 2 items:
+ * - test + suite
+ * - suite + suite
+ * - hook + suite
+ *
+ * @param {Object} child
+ * @param {Object} parent
+ * @param {String} [childrenField] may be 'before|beforeEAch|..' for hooks
+ */
 function linkItems(child, parent, childrenField = 'children') {
   child.parent = parent;
   child.parents = parent.parents.concat([parent]);
+  child.parentNames = parent.parentNames.concat([parent.name]);
   parent[childrenField].push(child);
-  if (parent.timeout && !child.timeout) {
-    child.timeout = parent.timeout;
-  }
+  inheritProps(parent, child);
 }
 
 function extendBase(options, extraOptions) {
@@ -80,9 +108,28 @@ function extendBase(options, extraOptions) {
     only: options.only,
     skip: options.skip,
     tags: options.tags || [],
-    parents: [],
     parent: undefined,
+    parents: [],
+    parentNames: [],
     timeout: options.timeout,
     data: options.data,
+    json: {}
   }, extraOptions);
+}
+
+function inheritProps(parent, child) {
+  INHERIT_PROPS.forEach(prop => {
+    if (parent[prop] !== undefined && child[prop] === undefined) {
+      child[prop] = parent[prop];
+    }
+  });
+}
+
+function setJson(item) {
+  item.json = Object.keys(item)
+    .filter(key => !NON_JSON_PROPS.hasOwnProperty(key))
+    .reduce((res, key) => {
+      res[key] = item[key];
+      return res;
+    }, {});
 }

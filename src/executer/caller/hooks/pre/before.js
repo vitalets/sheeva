@@ -17,7 +17,7 @@ module.exports = class Before extends Base {
 
   _emitSuiteStart(suite) {
     const data = {
-      suite,
+      suite: suite.json,
       session: this._hookFn.session,
       target: this._hookFn.session.target,
     };

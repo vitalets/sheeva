@@ -89,7 +89,7 @@ const TestCaller = module.exports = class TestCaller {
     data = Object.assign({
       session: this._session,
       target: this._session.target,
-      test: this._test,
+      test: this._test.json,
       attempt: this._retry.attempt
     }, data);
     reporter.handleEvent(event, data);

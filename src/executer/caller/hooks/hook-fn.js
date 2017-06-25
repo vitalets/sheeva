@@ -57,8 +57,8 @@ const HookFn = module.exports = class HookFn {
     data = Object.assign({
       session: this._session,
       target: this._session.target,
-      hook: this._hook,
-      suite: this._hook.parent,
+      hook: this._hook.json,
+      suite: this._hook.parent.json,
     }, data);
     reporter.handleEvent(event, data);
   }
