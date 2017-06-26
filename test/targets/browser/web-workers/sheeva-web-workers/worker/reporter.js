@@ -37,6 +37,13 @@ function clean(data) {
 }
 
 function serializeError(data) {
-  const {name, message, stack} = data.error;
+  const {name, message, stack, suite, test} = data.error;
   data.error = {name, message, stack};
+  // todo: find better solution =)
+  if (suite) {
+    data.error.suite = suite.json;
+  }
+  if (test) {
+    data.error.test = test.json;
+  }
 }

@@ -9,9 +9,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const outputPath = path.join(path.resolve('dist'), 'test-web-workers');
 
 const masterConfig = {
-  entry: __dirname,
+  entry: path.resolve(__dirname, 'master.js'),
   output: {
-    filename: 'index.js',
+    filename: 'master.js',
     path: outputPath,
   },
   target: 'web',

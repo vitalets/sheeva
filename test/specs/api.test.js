@@ -107,6 +107,38 @@ describe('api', () => {
       });
   });
 
+  it('prepare + execute & end', (run, context) => {
+    const {Sheeva, config, reporter} = context;
+    config.files = {
+      content: `it('test 1', () => sleep(100));`
+    };
+    const sheeva = new Sheeva(config);
+    return Promise.resolve()
+      .then(() => sheeva.prepare())
+      .then(() => {
+         sheeva.execute();
+         return new Promise(resolve => setTimeout(resolve, 20))
+           .then(() => sheeva.end());
+      })
+      .then(() => {
+        expect(reporter.getFlatLog(), 'to equal', [
+            'RUNNER_START',
+            'RUNNER_STARTED',
+            'EXECUTER_START',
+            'WORKER_ADD 0',
+            'TARGET_START target 1',
+            'SESSION_START 0',
+            'SUITE_START root',
+            'TEST_START test 1',
+            'SESSION_END 0',
+            'WORKER_DELETE 0',
+            'EXECUTER_END',
+            'RUNNER_END'
+          ]
+        );
+      });
+  });
+
   it('should throw for execute without prepare', (run, context) => {
     const {sheeva} = context;
     const output = sheeva.execute();

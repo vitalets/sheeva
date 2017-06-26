@@ -10,6 +10,7 @@ const workerUrl = 'worker.js';
 const config = Object.assign({}, baseConfig, masterUtils.config.get({workerUrl}), {
   concurrency: 4,
   splitRunningSuites: false,
+  breakOnError: true,
   reporters: new ConsoleReporter(),
   //reporters: new DebugReporter(),
 });

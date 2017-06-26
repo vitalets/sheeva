@@ -23,6 +23,7 @@ module.exports = class Sheeva {
    */
   constructor(rawConfig) {
     this._rawConfig = rawConfig;
+    this._executer = null;
   }
 
   /**
@@ -63,7 +64,8 @@ module.exports = class Sheeva {
    * @returns {Promise}
    */
   execute(locator) {
-    return new Executer().run(locator);
+    this._executer = new Executer();
+    return this._executer.run(locator);
   }
 
   /**
@@ -75,6 +77,7 @@ module.exports = class Sheeva {
   end(error) {
     const {config} = configurator;
     return Promise.resolve()
+      .then(() => this._isExecuting() ? this._executer.terminate() : null)
       .then(() => config.endRunner(config))
       .catch(e => error ? reporter.handleError(e) : Promise.reject(e))
       .finally(e => reporter.handleEvent(RUNNER_END, {error: error || e}))
@@ -93,5 +96,9 @@ module.exports = class Sheeva {
     const {config} = configurator;
     return utils.thenCall(() => config.startRunner(config))
       .then(() => reporter.handleEvent(RUNNER_STARTED));
+  }
+
+  _isExecuting() {
+    return this._executer && this._executer.isExecuting;
   }
 };

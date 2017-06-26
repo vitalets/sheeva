@@ -15,9 +15,8 @@ module.exports = function (sheeva) {
     }
 
     if (messageType === EXECUTE) {
-      // console.log(messageData)
-      const {targetId, flatSuiteIndex} = messageData;
-      sheeva.execute({targetId, flatSuiteIndex});
+      sheeva.execute(messageData)
+        .catch(() => {}); // all errors are reported to master
     }
 
     if (messageType === END) {

@@ -123,7 +123,7 @@ module.exports = class Queue {
    *     and continue from the next suite
    *
    * 3. error in runner
-   * - config.breakOnError = true|false: terminate
+   * -  always terminate despite of config.breakOnError
    */
   _handleError(error) {
     this._error = error;

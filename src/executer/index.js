@@ -29,6 +29,13 @@ const {
   TARGET_END,
 } = require('../events');
 
+const STATUS = {
+  READY: 0,
+  EXECUTING: 1,
+  TERMINATING: 2,
+  ENDED: 3,
+};
+
 module.exports = class Executer {
   /**
    * Constructor
@@ -38,6 +45,11 @@ module.exports = class Executer {
     this._workers = null;
     this._picker = null;
     this._promised = new utils.Promised();
+    this._status = STATUS.READY;
+  }
+
+  get isExecuting() {
+    return this._status === STATUS.EXECUTING;
   }
 
   /**
@@ -46,6 +58,7 @@ module.exports = class Executer {
    * @param {Locator} [locator]
    */
   run(locator) {
+    this._status = STATUS.EXECUTING;
     return this._promised.call(() => {
       new Filter(locator).apply();
       reporter.handleEvent(EXECUTER_START);
@@ -55,13 +68,23 @@ module.exports = class Executer {
     });
   }
 
+  /**
+   * Terminate tests running.
+   */
+  terminate(error) {
+    this._status = STATUS.TERMINATING;
+    return this._workers.terminate()
+    // todo: catch and emit extra error
+      .finally(() => this._end(error));
+  }
+
   _startWorkers() {
     while (!this._isConcurrencyReached()) {
       const queue = this._picker.getNextQueue();
       if (queue) {
         this._addWorker(queue)
           .then(worker => this._runQueue(worker, queue))
-          .catch(e => this._terminate(e));
+          .catch(e => this.terminate(e));
       } else {
         this._checkEnd();
         break;
@@ -90,22 +113,13 @@ module.exports = class Executer {
   _deleteWorker(worker) {
     this._workers.delete(worker)
       .then(() => this._checkEnd())
-      .catch(e => this._terminate(e));
+      .catch(e => this.terminate(e));
   }
 
   _runQueue(worker, queue) {
     worker.run(queue)
       .then(() => this._handleFreeWorker(worker))
-      .catch(e => this._terminate(e));
-  }
-
-  /**
-   * Pass through only system errors - in that case runner rejects
-   */
-  _terminate(error) {
-    this._workers.terminate()
-      // todo: catch and emit extra error
-      .finally(() => this._end(error));
+      .catch(e => this.terminate(e));
   }
 
   _isConcurrencyReached() {
@@ -119,11 +133,12 @@ module.exports = class Executer {
   }
 
   _end(error) {
+    this._status = STATUS.ENDED;
     reporter.handleEvent(EXECUTER_END, {error});
-    if (error) {
-      return HookFn.isHookError(error) || TestCaller.isTestError(error)
-        ? this._promised.resolve()
-        : this._promised.reject(error);
+    // pass through only system errors, test and hook errors are just reported, but don't reject main promise
+    const isReject = error && !TestCaller.isTestError(error) && !HookFn.isHookError(error);
+    if (isReject) {
+      this._promised.reject(error);
     } else {
       this._promised.resolve();
     }

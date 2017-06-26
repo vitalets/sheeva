@@ -24,7 +24,7 @@
     "tt": "node src-stable/cli --config=test/targets/node/sheeva.config.js",
     "ttd": "node src/cli --config=test/targets/node/sheeva.config.js",
     "test": "npm run tt -- --target=node-sync --break-on-error --timeout=0",
-    "td": "npm run ttdev -- --target=node-sync --break-on-error --timeout=0",
+    "td": "npm run ttd -- --target=node-sync --break-on-error --timeout=0",
     "test-append": "SHEEVA_APPEND=true npm run tt",
     "test-runtyper": "SHEEVA_DIR=src-instrumented npm run tt",
     "norep": "npm t -- --reporters=",
@@ -51,6 +51,7 @@
     "assert": "^1.4.1",
     "commander": "^2.9.0",
     "glob": "^7.1.2",
+    "pendings": "^0.1.4",
     "promise.prototype.finally.err": "^2.0.1"
   },
   "devDependencies": {
