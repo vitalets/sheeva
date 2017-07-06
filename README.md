@@ -114,3 +114,6 @@ There are several types of errors that may occur while running tests:
 *Note 1:* reporter is responsible for displaying all errors except runner error.  
 *Note 2:* if `config.breakOnError` is enabled then runner will terminate on any error.  
 *Note 3:* there can be several errors at once, e.g. error in `before` hook can cause error in `after` hook.  
+
+## License
+MIT @ [Vitaliy Potapov](https://github.com/vitalets)
