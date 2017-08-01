@@ -19,7 +19,7 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin([outputPath], {root: path.resolve('.')}),
-    new HtmlWebpackPlugin({title: 'Sheeva self-tests (window)'}),
+    new HtmlWebpackPlugin({title: 'Sheeva self-tests (tab)'}),
     new CopyWebpackPlugin([
       {from: 'test/data', to: 'data'},
     ]),
