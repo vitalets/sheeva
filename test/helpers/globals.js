@@ -4,9 +4,7 @@
  * Globals for main sheeva tests
  */
 
-// use pre-built unexpected as it can not be built with rollup normally
-// see: https://github.com/unexpectedjs/unexpected/issues/369
-//const expect = require('unexpected/unexpected.js');
+// use pre-built unexpected for faster build
 const expect = require('unexpected/unexpected.js');
 
 Object.assign(global, {
